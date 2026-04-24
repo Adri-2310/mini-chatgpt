@@ -1,0 +1,33 @@
+<script setup>
+defineProps({
+    models: {
+        type: Array,
+        required: true,
+    },
+    modelValue: {
+        type: String,
+        required: true,
+    },
+});
+
+defineEmits(['update:modelValue']);
+</script>
+
+<template>
+    <div>
+        <label for="model" class="block text-sm font-medium text-slate-300 mb-2">
+            Sélectionner un modèle
+        </label>
+        <select
+            id="model"
+            :value="modelValue"
+            @input="$emit('update:modelValue', $event.target.value)"
+            class="w-full px-4 py-2 bg-slate-700 border border-slate-600 text-white rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition"
+        >
+            <option value="">-- Choisir un modèle --</option>
+            <option v-for="model in models" :key="model.id" :value="model.id">
+                {{ model.name }} ({{ model.provider }})
+            </option>
+        </select>
+    </div>
+</template>

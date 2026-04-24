@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,4 +26,7 @@ Route::middleware([
     Route::get('/chat', function () {
         return Inertia::render('Chat');
     })->name('chat');
+
+    Route::get('/ask', [AskController::class, 'index'])->name('ask');
+    Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
 });
