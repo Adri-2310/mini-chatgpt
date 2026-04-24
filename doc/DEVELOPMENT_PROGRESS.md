@@ -11,10 +11,10 @@
 
 | Statut | Nombre |
 |--------|--------|
-| ✅ Complétée | 2/10 |
+| ✅ Complétée | 3/10 |
 | 🟡 En cours | 0/10 |
-| ⏳ À faire | 8/10 |
-| **Progression** | **20%** |
+| ⏳ À faire | 7/10 |
+| **Progression** | **30%** |
 
 ---
 
@@ -70,11 +70,11 @@
 ### **Bloc 2: Exercice 1 - Question Simple (Sans historique)**
 
 #### 3️⃣ Exercice 1: Page Ask (Question simple)
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🔴 Haute  
 **Estimation:** 2-3h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 24 avril 2026
 
 **Tâches:**
 - [ ] Installer `openai-php/laravel`
@@ -369,14 +369,14 @@
 
 ```
 Bloc 1: Frontend Setup        [██████████] 100%
-Bloc 2: Exercice 1            [░░░░░░░░░░] 0%
+Bloc 2: Exercice 1            [██████████] 100%
 Bloc 3: Exercice 2            [░░░░░░░░░░] 0%
 Bloc 4: Exercice 3            [░░░░░░░░░░] 0%
 Bloc 5: Exercice 4            [░░░░░░░░░░] 0%
 Bloc 6: Data & Infrastructure [░░░░░░░░░░] 0%
 Bloc 7: Testing & Final       [░░░░░░░░░░] 0%
 ────────────────────────────────────────────
-TOTAL                         [██░░░░░░░░] 20%
+TOTAL                         [███░░░░░░░] 30%
 ```
 
 ---
@@ -416,7 +416,7 @@ TOTAL                         [██░░░░░░░░] 20%
 | Jalon | Date prévue | Date réelle | Statut |
 |-------|------------|------------|--------|
 | Frontend setup | - | 24/04/2026 | ✅ |
-| Exercice 1 OK | - | - | ⏳ |
+| Exercice 1 OK | - | 24/04/2026 | ✅ |
 | Exercice 2 OK | - | - | ⏳ |
 | Exercice 3 OK | - | - | ⏳ |
 | Exercice 4 OK | - | - | ⏳ |
