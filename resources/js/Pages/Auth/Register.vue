@@ -24,7 +24,7 @@ const submit = () => {
 </script>
 
 <template>
-    <Head title="Register" />
+    <Head title="Inscription" />
 
     <AuthenticationCard>
         <template #logo>
@@ -33,12 +33,12 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Nom" />
                 <TextInput
                     id="name"
                     v-model="form.name"
                     type="text"
-                    class="mt-1 block w-full"
+                    placeholder="Votre nom complet"
                     required
                     autofocus
                     autocomplete="name"
@@ -52,7 +52,7 @@ const submit = () => {
                     id="email"
                     v-model="form.email"
                     type="email"
-                    class="mt-1 block w-full"
+                    placeholder="votre@email.com"
                     required
                     autocomplete="username"
                 />
@@ -60,12 +60,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Mot de passe" />
                 <TextInput
                     id="password"
                     v-model="form.password"
                     type="password"
-                    class="mt-1 block w-full"
+                    placeholder="••••••••"
                     required
                     autocomplete="new-password"
                 />
@@ -73,12 +73,12 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <InputLabel for="password_confirmation" value="Confirmer le mot de passe" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
+                    placeholder="••••••••"
                     required
                     autocomplete="new-password"
                 />
@@ -90,21 +90,21 @@ const submit = () => {
                     <div class="flex items-center">
                         <Checkbox id="terms" v-model:checked="form.terms" name="terms" required />
 
-                        <div class="ms-2">
-                            I agree to the <a target="_blank" :href="route('terms.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Terms of Service</a> and <a target="_blank" :href="route('policy.show')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Privacy Policy</a>
+                        <div class="ms-2 text-sm text-slate-400">
+                            J'accepte les <a target="_blank" :href="route('terms.show')" class="text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition">Conditions de Service</a> et la <a target="_blank" :href="route('policy.show')" class="text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition">Politique de Confidentialité</a>
                         </div>
                     </div>
                     <InputError class="mt-2" :message="form.errors.terms" />
                 </InputLabel>
             </div>
 
-            <div class="flex items-center justify-end mt-4">
-                <Link :href="route('login')" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Already registered?
+            <div class="flex items-center justify-between mt-6">
+                <Link :href="route('login')" class="text-sm text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition">
+                    Déjà inscrit ?
                 </Link>
 
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
+                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                    S'inscrire
                 </PrimaryButton>
             </div>
         </form>
