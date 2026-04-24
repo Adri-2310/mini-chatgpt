@@ -1,1 +1,67 @@
+# Claude Code
 .claude
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# PHP / Laravel
+/vendor/
+/node_modules/
+.env
+.env.local
+.env.*.local
+composer.lock
+npm-debug.log
+yarn-error.log
+
+# Build & Artifacts
+/public/js/
+/public/css/
+/public/hot
+/public/storage
+/storage/logs/
+/storage/debugbar/
+/bootstrap/cache/
+.phpunit.result.cache
+phpunit.xml
+
+# Development
+.editorconfig
+.gitattributes
+
+# Testing
+/coverage/
+.coverage
+
+# Cache
+.cache/
+*.cache
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# OS specific
+Thumbs.db
+.DS_Store
+
+# Environment files
+.env.backup
+.env.*.backup
+
+# IDE Workspace
+.workspace.xml
+*.sublime-workspace
+
+# Node/NPM
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
