@@ -11,10 +11,10 @@
 
 | Statut | Nombre |
 |--------|--------|
-| ✅ Complétée | 0/10 |
+| ✅ Complétée | 2/10 |
 | 🟡 En cours | 0/10 |
-| ⏳ À faire | 10/10 |
-| **Progression** | **0%** |
+| ⏳ À faire | 8/10 |
+| **Progression** | **20%** |
 
 ---
 
@@ -23,11 +23,11 @@
 ### **Bloc 1: Frontend Setup (Pages statiques)**
 
 #### 1️⃣ Créer la page d'accueil (Landing Page)
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🟡 Moyen  
 **Estimation:** 1-2h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 24 avril 2026
 
 **Tâches:**
 - [ ] Créer `Welcome.vue` ou `Home.vue`
@@ -45,11 +45,11 @@
 ---
 
 #### 2️⃣ Styliser les pages Auth (Login/Register/Logout)
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🟡 Moyen  
 **Estimation:** 1-2h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 24 avril 2026
 
 **Tâches:**
 - [ ] Personnaliser layout Auth de Jetstream
@@ -368,7 +368,7 @@
 ### Progression par bloc:
 
 ```
-Bloc 1: Frontend Setup        [░░░░░░░░░░] 0%
+Bloc 1: Frontend Setup        [██████████] 100%
 Bloc 2: Exercice 1            [░░░░░░░░░░] 0%
 Bloc 3: Exercice 2            [░░░░░░░░░░] 0%
 Bloc 4: Exercice 3            [░░░░░░░░░░] 0%
@@ -376,7 +376,7 @@ Bloc 5: Exercice 4            [░░░░░░░░░░] 0%
 Bloc 6: Data & Infrastructure [░░░░░░░░░░] 0%
 Bloc 7: Testing & Final       [░░░░░░░░░░] 0%
 ────────────────────────────────────────────
-TOTAL                         [░░░░░░░░░░] 0%
+TOTAL                         [██░░░░░░░░] 20%
 ```
 
 ---
@@ -415,7 +415,7 @@ TOTAL                         [░░░░░░░░░░] 0%
 
 | Jalon | Date prévue | Date réelle | Statut |
 |-------|------------|------------|--------|
-| Frontend setup | - | - | ⏳ |
+| Frontend setup | - | 24/04/2026 | ✅ |
 | Exercice 1 OK | - | - | ⏳ |
 | Exercice 2 OK | - | - | ⏳ |
 | Exercice 3 OK | - | - | ⏳ |
