@@ -48,6 +48,7 @@ Guides pratiques et documentation technique.
 ## 🚀 Quick Links
 
 - **[README Principal](../README.md)** - Guide d'installation et utilisation
+- **[Development Progress](./DEVELOPMENT_PROGRESS.md)** - Suivi du développement en temps réel
 - **[Repository GitHub](https://github.com/Adri-2310/mini-chatgpt)**
 - **Branches**: `main` (production), `dev` (développement)
 
