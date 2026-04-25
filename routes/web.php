@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AskController;
+use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -23,10 +25,11 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::get('/chat', function () {
-        return Inertia::render('Chat');
-    })->name('chat');
+    Route::get('/chat', [ConversationController::class, 'chat'])->name('chat');
 
     Route::get('/ask', [AskController::class, 'index'])->name('ask');
     Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
+
+    Route::apiResource('conversations', ConversationController::class);
+    Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])->name('messages.store');
 });

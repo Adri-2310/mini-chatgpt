@@ -56,4 +56,37 @@ class ChatService
             throw new \Exception('Erreur lors de l\'appel à l\'API: ' . $e->getMessage());
         }
     }
+
+    public function askWithHistory(string $model, array $messages): string
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$this->apiKey}",
+                'HTTP-Referer' => config('app.url'),
+                'X-Title' => config('app.name'),
+            ])->timeout(30)->withoutVerifying()->post(self::API_URL, [
+                'model' => $model,
+                'messages' => $messages,
+                'temperature' => 0.7,
+                'max_tokens' => 2000,
+            ]);
+
+            if ($response->failed()) {
+                $errorBody = $response->json();
+                $errorMsg = $errorBody['error']['message'] ?? $response->body();
+                throw new \Exception("API Error ({$response->status()}): {$errorMsg}");
+            }
+
+            $data = $response->json();
+
+            if (!isset($data['choices'][0]['message']['content'])) {
+                throw new \Exception('Structure de réponse invalide');
+            }
+
+            return $data['choices'][0]['message']['content'];
+        } catch (\Exception $e) {
+            \Log::error('ChatService Error: ' . $e->getMessage());
+            throw new \Exception('Erreur lors de l\'appel à l\'API: ' . $e->getMessage());
+        }
+    }
 }
