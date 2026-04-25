@@ -19,21 +19,30 @@ class ChatService
         }
     }
 
-    public function ask(string $model, string $question): string
+    public function ask(string $model, string $question, ?string $systemPrompt = null): string
     {
         try {
+            $messages = [];
+
+            if ($systemPrompt) {
+                $messages[] = [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ];
+            }
+
+            $messages[] = [
+                'role' => 'user',
+                'content' => $question,
+            ];
+
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$this->apiKey}",
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
             ])->timeout(30)->withoutVerifying()->post(self::API_URL, [
                 'model' => $model,
-                'messages' => [
-                    [
-                        'role' => 'user',
-                        'content' => $question,
-                    ],
-                ],
+                'messages' => $messages,
                 'temperature' => 0.7,
                 'max_tokens' => 2000,
             ]);
@@ -57,9 +66,16 @@ class ChatService
         }
     }
 
-    public function askWithHistory(string $model, array $messages): string
+    public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null): string
     {
         try {
+            if ($systemPrompt) {
+                array_unshift($messages, [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ]);
+            }
+
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$this->apiKey}",
                 'HTTP-Referer' => config('app.url'),

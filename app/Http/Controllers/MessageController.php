@@ -40,9 +40,16 @@ class MessageController extends Controller
                 ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
                 ->toArray();
 
+            $systemPrompt = null;
+            $customInstruction = auth()->user()->customInstruction;
+            if ($customInstruction && $customInstruction->enabled) {
+                $systemPrompt = $customInstruction->instructions;
+            }
+
             $aiResponse = $this->chatService->askWithHistory(
                 $request->input('model'),
-                $messageHistory
+                $messageHistory,
+                $systemPrompt
             );
 
             $assistantMessage = $conversation->messages()->create([

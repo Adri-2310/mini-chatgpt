@@ -48,9 +48,16 @@ class AskController extends Controller
         ]);
 
         try {
+            $systemPrompt = null;
+            $customInstruction = auth()->user()->customInstruction;
+            if ($customInstruction && $customInstruction->enabled) {
+                $systemPrompt = $customInstruction->instructions;
+            }
+
             $response = $this->chatService->ask(
                 $request->input('model'),
-                $request->input('question')
+                $request->input('question'),
+                $systemPrompt
             );
 
             return response()->json([

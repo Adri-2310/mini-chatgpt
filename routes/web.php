@@ -3,6 +3,7 @@
 use App\Http\Controllers\AskController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\SettingsController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,8 @@ Route::middleware([
     })->name('dashboard');
 
     Route::get('/chat', [ConversationController::class, 'chat'])->name('chat');
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+    Route::put('/settings/instructions', [SettingsController::class, 'update'])->name('settings.instructions.update');
 
     Route::get('/ask', [AskController::class, 'index'])->name('ask');
     Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
