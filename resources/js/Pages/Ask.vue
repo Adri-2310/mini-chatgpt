@@ -34,7 +34,7 @@ const handleSubmit = async (question) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': page.props.csrf_token,
+                'X-CSRF-TOKEN': page.props.csrf_token,
             },
             body: JSON.stringify({
                 question: question,

@@ -34,7 +34,7 @@ const createNewConversation = async () => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': page.props.csrf_token,
+                'X-CSRF-TOKEN': page.props.csrf_token,
             },
             body: JSON.stringify({}),
         });
@@ -86,7 +86,7 @@ const handleMessageSubmit = async (content) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-Token': page.props.csrf_token,
+                'X-CSRF-TOKEN': page.props.csrf_token,
             },
             body: JSON.stringify({
                 content,
