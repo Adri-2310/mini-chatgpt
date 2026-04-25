@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
+import { Head, usePage, router } from '@inertiajs/vue3';
+import Nav from '../Components/Nav.vue';
 import ConversationList from '../Components/ConversationList.vue';
 import ChatHeader from '../Components/ChatHeader.vue';
 import MessageList from '../Components/MessageList.vue';
@@ -124,33 +125,39 @@ const handleMessageSubmit = async (content) => {
 </script>
 
 <template>
-    <div class="flex h-screen bg-slate-900">
-        <ConversationList
-            :conversations="conversations"
-            :active-conversation-id="activeConversationId"
-            @select="selectConversation"
-            @new="createNewConversation"
-        />
+    <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+        <Head title="Conversations" />
 
-        <div class="flex-1 flex flex-col">
-            <ChatHeader
-                :conversation-title="conversationTitle"
-                :selected-model="selectedModel"
-                :models="models"
-                :model-disabled="isConversationStarted"
-                @update:selected-model="selectedModel = $event"
+        <Nav />
+
+        <div class="flex h-[calc(100vh-64px)] bg-slate-900">
+            <ConversationList
+                :conversations="conversations"
+                :active-conversation-id="activeConversationId"
+                @select="selectConversation"
+                @new="createNewConversation"
             />
 
-            <div v-if="error" class="px-4 py-3 bg-red-900/30 border border-red-500/50 text-red-300 text-sm mx-4 mt-4 rounded">
-                {{ error }}
+            <div class="flex-1 flex flex-col">
+                <ChatHeader
+                    :conversation-title="conversationTitle"
+                    :selected-model="selectedModel"
+                    :models="models"
+                    :model-disabled="isConversationStarted"
+                    @update:selected-model="selectedModel = $event"
+                />
+
+                <div v-if="error" class="px-4 py-3 bg-red-900/30 border border-red-500/50 text-red-300 text-sm mx-4 mt-4 rounded">
+                    {{ error }}
+                </div>
+
+                <MessageList :messages="messages" :loading="loading" />
+
+                <MessageInput
+                    :disabled="!activeConversationId || loading"
+                    @submit="handleMessageSubmit"
+                />
             </div>
-
-            <MessageList :messages="messages" :loading="loading" />
-
-            <MessageInput
-                :disabled="!activeConversationId || loading"
-                @submit="handleMessageSubmit"
-            />
         </div>
     </div>
 </template>
