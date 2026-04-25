@@ -24,8 +24,8 @@ class AskController extends Controller
                 'provider' => 'OpenAI',
             ],
             [
-                'id' => 'google/gemini-2.5-flash-exp',
-                'name' => 'Gemini 2.5 Flash',
+                'id' => 'google/gemini-3-flash-preview',
+                'name' => 'Gemini 3 Flash Preview',
                 'provider' => 'Google',
             ],
             [

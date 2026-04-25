@@ -14,7 +14,7 @@ defineProps({
 });
 
 const page = usePage();
-const selectedModel = ref('');
+const selectedModel = ref('anthropic/claude-3.5-haiku');
 const response = ref('');
 const loading = ref(false);
 const error = ref('');
@@ -30,7 +30,7 @@ const handleSubmit = async (question) => {
     response.value = '';
 
     try {
-        const result = await fetch(route('ask.store'), {
+        const result = await fetch('/ask', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -92,6 +92,7 @@ const handleSubmit = async (question) => {
                     <ModelSelector
                         :models="models"
                         v-model="selectedModel"
+                        :disabled="loading"
                     />
                 </div>
 
