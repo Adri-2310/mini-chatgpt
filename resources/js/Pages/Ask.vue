@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Head } from '@inertiajs/vue3';
-import axios from 'axios';
+import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ModelSelector from '@/Components/ModelSelector.vue';
 import QuestionForm from '@/Components/QuestionForm.vue';
@@ -14,6 +13,7 @@ defineProps({
     },
 });
 
+const page = usePage();
 const selectedModel = ref('');
 const response = ref('');
 const loading = ref(false);
@@ -30,18 +30,26 @@ const handleSubmit = async (question) => {
     response.value = '';
 
     try {
-        const result = await axios.post(route('ask.store'), {
-            question: question,
-            model: selectedModel.value,
+        const result = await fetch(route('ask.store'), {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': page.props.csrf_token,
+            },
+            body: JSON.stringify({
+                question: question,
+                model: selectedModel.value,
+            }),
         });
 
-        if (result.data.success) {
-            response.value = result.data.response;
+        const data = await result.json();
+        if (data.success) {
+            response.value = data.response;
         } else {
-            error.value = result.data.error || 'Une erreur est survenue';
+            error.value = data.error || 'Une erreur est survenue';
         }
     } catch (err) {
-        error.value = err.response?.data?.error || 'Erreur lors de l\'appel API';
+        error.value = 'Erreur lors de l\'appel API';
         console.error('API Error:', err);
     } finally {
         loading.value = false;

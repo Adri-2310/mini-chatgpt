@@ -10,7 +10,20 @@ class ConversationController extends Controller
 {
     public function chat()
     {
-        return Inertia::render('Chat');
+        $conversations = auth()->user()->conversations()
+            ->orderByDesc('updated_at')
+            ->get(['id', 'title', 'model_used', 'updated_at']);
+
+        $models = [
+            ['id' => 'openai/gpt-4o-mini', 'name' => 'GPT-4o mini', 'provider' => 'OpenAI'],
+            ['id' => 'google/gemini-2.5-flash-exp', 'name' => 'Gemini 2.5 Flash', 'provider' => 'Google'],
+            ['id' => 'anthropic/claude-3.5-haiku', 'name' => 'Claude 3.5 Haiku', 'provider' => 'Anthropic'],
+        ];
+
+        return Inertia::render('Chat', [
+            'conversations' => $conversations,
+            'models' => $models,
+        ]);
     }
 
     public function index()
