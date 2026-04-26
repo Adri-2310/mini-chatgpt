@@ -13,8 +13,13 @@ const emit = defineEmits(['submit']);
 
 const question = ref('');
 
+const isValid = () => {
+    const trimmed = question.value.trim();
+    return trimmed.length >= 5 && trimmed.length <= 2000;
+};
+
 const handleSubmit = () => {
-    if (question.value.trim()) {
+    if (isValid()) {
         emit('submit', question.value);
         question.value = '';
     }
@@ -37,10 +42,16 @@ const handleSubmit = () => {
             ></textarea>
         </div>
 
-        <div class="flex justify-end">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div v-if="question.trim() && !isValid()" class="text-sm text-amber-400">
+                {{ question.trim().length < 5 ? 'Minimum 5 caractères' : 'Maximum 2000 caractères' }}
+            </div>
+            <div v-else class="text-sm text-slate-500">
+                {{ question.trim().length }} / 2000
+            </div>
             <PrimaryButton
                 type="submit"
-                :disabled="disabled || !question.trim()"
+                :disabled="disabled || !isValid()"
                 class="w-full sm:w-auto"
             >
                 {{ disabled ? 'Chargement...' : 'Poser la question' }}

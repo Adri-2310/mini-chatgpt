@@ -18,9 +18,7 @@ class MessageController extends Controller
 
     public function store(Request $request, Conversation $conversation)
     {
-        if ($conversation->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Non autorisé'], 403);
-        }
+        $this->authorize('addMessage', $conversation);
 
         $request->validate([
             'content' => 'required|string|min:1|max:5000',

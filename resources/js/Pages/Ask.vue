@@ -49,6 +49,19 @@ const handleSubmit = async (question) => {
             }),
         });
 
+        if (!result.ok) {
+            error.value = `Erreur serveur: ${result.status}`;
+            console.error('HTTP Error:', result.status);
+            return;
+        }
+
+        const contentType = result.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+            error.value = 'Erreur: réponse invalide du serveur';
+            console.error('Invalid content type:', contentType);
+            return;
+        }
+
         const data = await result.json();
         if (data.success) {
             response.value = data.response;

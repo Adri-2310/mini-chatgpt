@@ -41,9 +41,7 @@ class ConversationController extends Controller
 
     public function show(Conversation $conversation)
     {
-        if ($conversation->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Non autorisé'], 403);
-        }
+        $this->authorize('view', $conversation);
 
         $messages = $conversation->messages()
             ->orderBy('created_at')
@@ -57,9 +55,7 @@ class ConversationController extends Controller
 
     public function destroy(Conversation $conversation)
     {
-        if ($conversation->user_id !== auth()->id()) {
-            return response()->json(['error' => 'Non autorisé'], 403);
-        }
+        $this->authorize('delete', $conversation);
 
         $conversation->messages()->delete();
         $conversation->delete();
