@@ -1,11 +1,18 @@
 <script setup>
+import { Head, usePage, Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { usePage } from '@inertiajs/vue3';
-import { Link } from '@inertiajs/vue3';
+
+defineOptions({
+  layout: AppLayout,
+  layoutProps: {
+    title: 'Dashboard'
+  }
+});
 </script>
 
 <template>
-    <AppLayout title="Dashboard">
+    <Head title="Dashboard" />
+    <div>
         <!-- Hero Section -->
         <div class="mb-16 text-center">
             <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
@@ -60,5 +67,5 @@ import { Link } from '@inertiajs/vue3';
                 </div>
             </Link>
         </div>
-    </AppLayout>
+    </div>
 </template>

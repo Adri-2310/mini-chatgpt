@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
+import { useMarkdown } from '@/composables/useMarkdown';
 import 'highlight.js/styles/atom-one-dark.css';
 
 const props = defineProps({
@@ -11,22 +10,10 @@ const props = defineProps({
     },
 });
 
-const md = new MarkdownIt({
-    highlight: (code, lang) => {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return `<pre class="hljs"><code>${hljs.highlight(code, { language: lang, ignoreIllegals: true }).value}</code></pre>`;
-            } catch (e) {
-                console.error('Highlight error:', e);
-            }
-        }
-        return `<pre class="hljs"><code>${md.utils.escapeHtml(code)}</code></pre>`;
-    },
-});
+const { render } = useMarkdown();
 
 const renderedContent = computed(() => {
-    if (!props.content) return '';
-    return md.render(props.content);
+    return render(props.content);
 });
 </script>
 

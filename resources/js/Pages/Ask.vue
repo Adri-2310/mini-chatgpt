@@ -6,6 +6,13 @@ import ModelSelector from '@/Components/ModelSelector.vue';
 import QuestionForm from '@/Components/QuestionForm.vue';
 import ResponseDisplay from '@/Components/ResponseDisplay.vue';
 
+defineOptions({
+  layout: AppLayout,
+  layoutProps: {
+    title: 'Poser une question'
+  }
+});
+
 defineProps({
     models: {
         type: Array,
@@ -60,15 +67,8 @@ const handleSubmit = async (question) => {
 <template>
     <Head title="Poser une question" />
 
-    <AppLayout title="Poser une question">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                🤖 Posez une question à une IA
-            </h2>
-        </template>
-
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg rounded-lg p-6 sm:p-8">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg rounded-lg p-6 sm:p-8">
                 <!-- Titre & description -->
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold text-white mb-2">
@@ -108,5 +108,4 @@ const handleSubmit = async (question) => {
                 <ResponseDisplay :content="response" />
             </div>
         </div>
-    </AppLayout>
 </template>

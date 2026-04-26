@@ -1,7 +1,7 @@
 <script setup>
-import ResponseDisplay from './ResponseDisplay.vue';
+import { useMarkdown } from '@/composables/useMarkdown';
 
-defineProps({
+const props = defineProps({
     role: {
         type: String,
         required: true,
@@ -11,56 +11,36 @@ defineProps({
         required: true,
     },
 });
+
+const { render } = useMarkdown();
+
+const formatContent = (content) => {
+    if (props.role === 'assistant') {
+        return render(content);
+    }
+    return content;
+};
 </script>
 
 <template>
-    <div :class="['flex mb-4', role === 'user' ? 'justify-end' : 'justify-start']">
+    <div :class="['flex mb-4', props.role === 'user' ? 'justify-end' : 'justify-start']">
         <div
             :class="[
                 'max-w-xs lg:max-w-md px-4 py-3 rounded-lg',
-                role === 'user'
+                props.role === 'user'
                     ? 'bg-blue-600 text-white'
                     : 'bg-slate-700 text-slate-100'
             ]"
         >
-            <div v-if="role === 'assistant'" class="prose prose-invert max-w-none text-sm">
-                <div v-html="formatContent(content)"></div>
+            <div v-if="props.role === 'assistant'" class="prose prose-invert max-w-none text-sm">
+                <div v-html="formatContent(props.content)"></div>
             </div>
             <div v-else class="text-sm">
-                {{ content }}
+                {{ props.content }}
             </div>
         </div>
     </div>
 </template>
-
-<script>
-import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
-
-const md = new MarkdownIt({
-    highlight: (code, lang) => {
-        if (lang && hljs.getLanguage(lang)) {
-            try {
-                return `<pre class="hljs"><code>${hljs.highlight(code, { language: lang, ignoreIllegals: true }).value}</code></pre>`;
-            } catch (e) {
-                console.error('Highlight error:', e);
-            }
-        }
-        return `<pre class="hljs"><code>${md.utils.escapeHtml(code)}</code></pre>`;
-    },
-});
-
-export default {
-    methods: {
-        formatContent(content) {
-            if (this.role === 'assistant') {
-                return md.render(content);
-            }
-            return content;
-        },
-    },
-};
-</script>
 
 <style scoped>
 :deep(.prose) {

@@ -1,8 +1,15 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Head, usePage, router } from '@inertiajs/vue3';
-import Nav from '../Components/Nav.vue';
+import { usePage, router } from '@inertiajs/vue3';
+import ChatLayout from '../Layouts/ChatLayout.vue';
 import ConversationList from '../Components/ConversationList.vue';
+
+defineOptions({
+  layout: ChatLayout,
+  layoutProps: {
+    title: 'Conversations'
+  }
+});
 import ChatHeader from '../Components/ChatHeader.vue';
 import MessageList from '../Components/MessageList.vue';
 import MessageInput from '../Components/MessageInput.vue';
@@ -125,12 +132,7 @@ const handleMessageSubmit = async (content) => {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
-        <Head title="Conversations" />
-
-        <Nav />
-
-        <div class="flex h-[calc(100vh-64px)] bg-slate-900">
+    <div class="flex bg-slate-900">
             <ConversationList
                 :conversations="conversations"
                 :active-conversation-id="activeConversationId"
@@ -159,5 +161,4 @@ const handleMessageSubmit = async (content) => {
                 />
             </div>
         </div>
-    </div>
 </template>

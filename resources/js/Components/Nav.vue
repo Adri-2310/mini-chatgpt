@@ -48,22 +48,22 @@ const logout = () => {
 
                         <template #content>
                             <div class="block px-4 py-2 text-xs text-gray-400">
-                                Manage Account
+                                Gérer le compte
                             </div>
 
                             <DropdownLink :href="route('profile.show')">
-                                Profile
+                                Profil
                             </DropdownLink>
 
                             <DropdownLink :href="route('settings')">
-                                Settings
+                                Paramètres
                             </DropdownLink>
 
                             <div class="border-t border-gray-200" />
 
                             <form @submit.prevent="logout">
                                 <DropdownLink as="button">
-                                    Log Out
+                                    Déconnexion
                                 </DropdownLink>
                             </form>
                         </template>
@@ -94,14 +94,14 @@ const logout = () => {
             </div>
             <div class="border-t border-slate-700 px-2 pt-2 pb-3 space-y-1">
                 <Link :href="route('profile.show')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
-                    Profile
+                    Profil
                 </Link>
                 <Link :href="route('settings')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
-                    Settings
+                    Paramètres
                 </Link>
                 <form @submit.prevent="logout">
                     <button type="button" class="w-full text-left px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
-                        Log Out
+                        Déconnexion
                     </button>
                 </form>
             </div>

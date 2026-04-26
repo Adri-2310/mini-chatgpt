@@ -7,6 +7,13 @@ import InputLabel from '@/Components/InputLabel.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 
+defineOptions({
+  layout: AppLayout,
+  layoutProps: {
+    title: 'Paramètres'
+  }
+});
+
 const props = defineProps({
     customInstruction: Object,
 });
@@ -18,8 +25,12 @@ const form = ref({
 
 const page = usePage();
 const submitted = ref(false);
+const error = ref('');
 
 const submit = async () => {
+    error.value = '';
+    submitted.value = false;
+
     try {
         const response = await fetch('/settings/instructions', {
             method: 'PUT',
@@ -35,9 +46,13 @@ const submit = async () => {
             setTimeout(() => {
                 submitted.value = false;
             }, 3000);
+        } else {
+            const data = await response.json();
+            error.value = data.message || 'Une erreur est survenue lors de la sauvegarde';
         }
-    } catch (error) {
-        console.error('Error:', error);
+    } catch (err) {
+        error.value = 'Erreur réseau: impossible de se connecter au serveur';
+        console.error('Error:', err);
     }
 };
 </script>
@@ -45,15 +60,17 @@ const submit = async () => {
 <template>
     <Head title="Paramètres" />
 
-    <AppLayout title="Paramètres">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Paramètres
-            </h2>
-        </template>
-
+    <div>
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <!-- Message d'erreur -->
+                <div
+                    v-if="error"
+                    class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg"
+                >
+                    ✗ {{ error }}
+                </div>
+
                 <!-- Message de succès -->
                 <div
                     v-if="submitted"
@@ -108,5 +125,5 @@ const submit = async () => {
                 </FormSection>
             </div>
         </div>
-    </AppLayout>
+    </div>
 </template>
