@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\ChatService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -18,7 +19,11 @@ class MessageController extends Controller
 
     public function store(Request $request, Conversation $conversation)
     {
-        $this->authorize('addMessage', $conversation);
+        try {
+            $this->authorize('addMessage', $conversation);
+        } catch (AuthorizationException) {
+            return response()->json(['error' => 'Non autorisé'], 403);
+        }
 
         $request->validate([
             'content' => 'required|string|min:1|max:5000',

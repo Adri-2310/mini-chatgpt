@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -41,7 +42,11 @@ class ConversationController extends Controller
 
     public function show(Conversation $conversation)
     {
-        $this->authorize('view', $conversation);
+        try {
+            $this->authorize('view', $conversation);
+        } catch (AuthorizationException) {
+            return response()->json(['error' => 'Non autorisé'], 403);
+        }
 
         $messages = $conversation->messages()
             ->orderBy('created_at')
@@ -55,7 +60,11 @@ class ConversationController extends Controller
 
     public function destroy(Conversation $conversation)
     {
-        $this->authorize('delete', $conversation);
+        try {
+            $this->authorize('delete', $conversation);
+        } catch (AuthorizationException) {
+            return response()->json(['error' => 'Non autorisé'], 403);
+        }
 
         $conversation->messages()->delete();
         $conversation->delete();
