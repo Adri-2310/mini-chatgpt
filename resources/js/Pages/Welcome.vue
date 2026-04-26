@@ -23,9 +23,9 @@
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
       <div class="text-center space-y-8">
         <h1 class="text-5xl md:text-6xl font-bold leading-tight">
-          Discutez avec les meilleures
+          Parlez avec
           <span class="block bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            IA du marché
+            GPT-4, Gemini et Claude
           </span>
         </h1>
 
@@ -152,27 +152,13 @@
     </section>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 border-t border-slate-700 py-12">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid md:grid-cols-2 gap-8">
-          <div>
-            <h3 class="font-bold text-lg mb-2">Mini-ChatGPT</h3>
-            <p class="text-slate-400 text-sm">
-              La plateforme tout-en-un pour discuter
-              avec les meilleures IA.
-            </p>
-          </div>
-          <div class="text-right text-slate-400 text-sm">
-            © 2026 Mini-ChatGPT | Examen SGBD
-          </div>
-        </div>
-      </div>
-    </footer>
+    <Footer />
   </div>
 </template>
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import Footer from '@/Components/Footer.vue';
 </script>
 
 <style scoped>
