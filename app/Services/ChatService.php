@@ -12,7 +12,7 @@ class ChatService
 
     public function __construct()
     {
-        $this->apiKey = env('OPENROUTER_API_KEY');
+        $this->apiKey = config('services.openrouter.key');
 
         if (!$this->apiKey) {
             throw new \Exception('OPENROUTER_API_KEY n\'est pas configurée');
