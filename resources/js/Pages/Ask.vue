@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ModelSelector from '@/Components/ModelSelector.vue';
@@ -13,7 +13,7 @@ defineOptions({
   }
 });
 
-defineProps({
+const props = defineProps({
     models: {
         type: Array,
         required: true,

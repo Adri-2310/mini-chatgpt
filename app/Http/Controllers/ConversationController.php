@@ -14,15 +14,9 @@ class ConversationController extends Controller
             ->orderByDesc('updated_at')
             ->get(['id', 'title', 'model_used', 'updated_at']);
 
-        $models = [
-            ['id' => 'openai/gpt-4o-mini', 'name' => 'GPT-4o mini', 'provider' => 'OpenAI'],
-            ['id' => 'google/gemini-3-flash-preview', 'name' => 'Gemini 3 Flash Preview', 'provider' => 'Google'],
-            ['id' => 'anthropic/claude-3.5-haiku', 'name' => 'Claude 3.5 Haiku', 'provider' => 'Anthropic'],
-        ];
-
         return Inertia::render('Chat', [
             'conversations' => $conversations,
-            'models' => $models,
+            'models' => config('ai_models.available'),
         ]);
     }
 
@@ -39,7 +33,7 @@ class ConversationController extends Controller
     {
         $conversation = auth()->user()->conversations()->create([
             'title' => 'Nouvelle conversation',
-            'model_used' => $request->input('model') ?? 'openai/gpt-4o',
+            'model_used' => $request->input('model') ?? config('ai_models.default'),
         ]);
 
         return response()->json($conversation);
