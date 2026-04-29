@@ -1,14 +1,19 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 
+const page = usePage();
 const showingNavigationDropdown = ref(false);
+
+const isAuthenticated = computed(() => !!page.props.auth.user);
 
 const logout = () => {
     router.post(route('logout'));
 };
+
+const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome');
 </script>
 
 <template>
@@ -17,15 +22,15 @@ const logout = () => {
             <div class="flex justify-between h-16">
                 <!-- Logo -->
                 <div class="flex items-center">
-                    <Link :href="route('dashboard')" class="flex items-center space-x-2 hover:opacity-80 transition">
+                    <Link :href="route(homeRoute)" class="flex items-center space-x-2 hover:opacity-80 transition">
                         <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
                             🤖 Mini-ChatGPT
                         </span>
                     </Link>
                 </div>
 
-                <!-- Desktop Navigation Links -->
-                <div class="hidden sm:flex items-center space-x-8">
+                <!-- Desktop Navigation Links - Authenticated -->
+                <div v-if="isAuthenticated" class="hidden sm:flex items-center space-x-8">
                     <Link :href="route('ask')" class="text-slate-300 hover:text-white transition font-medium">
                         Parler
                     </Link>
@@ -34,12 +39,22 @@ const logout = () => {
                     </Link>
                 </div>
 
-                <!-- Desktop Settings Dropdown -->
-                <div class="hidden sm:flex items-center">
+                <!-- Desktop Navigation Links - Non-Authenticated -->
+                <div v-else class="hidden sm:flex items-center space-x-8">
+                    <Link :href="route('login')" class="text-slate-300 hover:text-white transition font-medium">
+                        Connexion
+                    </Link>
+                    <Link :href="route('register')" class="text-slate-300 hover:text-white transition font-medium">
+                        Inscription
+                    </Link>
+                </div>
+
+                <!-- Desktop Settings Dropdown - Authenticated -->
+                <div v-if="isAuthenticated" class="hidden sm:flex items-center">
                     <Dropdown align="right" width="48">
                         <template #trigger>
                             <button class="flex items-center text-sm font-medium text-slate-300 hover:text-white transition">
-                                {{ $page.props.auth.user.name }}
+                                {{ page.props.auth.user.name }}
                                 <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                 </svg>
@@ -82,8 +97,8 @@ const logout = () => {
             </div>
         </div>
 
-        <!-- Mobile Navigation Menu -->
-        <div :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden bg-slate-800/50 border-t border-slate-700">
+        <!-- Mobile Navigation Menu - Authenticated -->
+        <div v-if="isAuthenticated" :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden bg-slate-800/50 border-t border-slate-700">
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <Link :href="route('ask')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
                     Parler
@@ -104,6 +119,18 @@ const logout = () => {
                         Déconnexion
                     </button>
                 </form>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu - Non-Authenticated -->
+        <div v-else :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden bg-slate-800/50 border-t border-slate-700">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <Link :href="route('login')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                    Connexion
+                </Link>
+                <Link :href="route('register')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
+                    Inscription
+                </Link>
             </div>
         </div>
     </nav>
