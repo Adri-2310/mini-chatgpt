@@ -1,23 +1,6 @@
 <template>
   <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
-    <!-- Navigation -->
-    <nav class="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-700">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between items-center h-16">
-          <div class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            🤖 Mini-ChatGPT
-          </div>
-          <div class="flex items-center space-x-4">
-            <Link :href="route('login')" class="text-slate-300 hover:text-white transition">
-              Connexion
-            </Link>
-            <Link :href="route('register')" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
-              S'inscrire
-            </Link>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <Nav />
 
     <!-- Hero Section -->
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
@@ -158,6 +141,7 @@
 
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import Nav from '@/Components/Nav.vue';
 import Footer from '@/Components/Footer.vue';
 </script>
 
