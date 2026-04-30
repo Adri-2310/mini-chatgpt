@@ -165,6 +165,39 @@ const handleMessageSubmit = async (content) => {
         model: selectedModel.value,
     });
 };
+
+const deleteConversation = async (conversationId) => {
+    try {
+        const response = await fetch(`/conversations/${conversationId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': page.props.csrf_token,
+            },
+        });
+
+        if (response.ok) {
+            // Retirer de la liste
+            const index = conversations.value.findIndex(c => c.id === conversationId);
+            if (index > -1) {
+                conversations.value.splice(index, 1);
+            }
+
+            // Si c'était la conversation active, réinitialiser
+            if (activeConversationId.value === conversationId) {
+                activeConversationId.value = null;
+                messages.value = [];
+            }
+
+            error.value = null;
+        } else {
+            error.value = 'Erreur lors de la suppression';
+        }
+    } catch (err) {
+        error.value = 'Erreur lors de la suppression de la conversation';
+        console.error('Error deleting conversation:', err);
+    }
+};
 </script>
 
 <template>
@@ -174,6 +207,7 @@ const handleMessageSubmit = async (content) => {
                 :active-conversation-id="activeConversationId"
                 @select="selectConversation"
                 @new="createNewConversation"
+                @delete="deleteConversation"
             />
 
             <div class="flex-1 flex flex-col">
