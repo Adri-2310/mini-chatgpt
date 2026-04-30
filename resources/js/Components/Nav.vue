@@ -53,11 +53,22 @@ const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome'
                 <div v-if="isAuthenticated" class="hidden sm:flex items-center">
                     <Dropdown align="right" width="48">
                         <template #trigger>
-                            <button class="flex items-center text-sm font-medium text-slate-300 hover:text-white transition">
-                                {{ page.props.auth.user.name }}
-                                <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
+                            <button class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-slate-700 transition">
+                                <img
+                                    v-if="page.props.auth.user.profile_photo_url"
+                                    :src="page.props.auth.user.profile_photo_url"
+                                    :alt="page.props.auth.user.name"
+                                    class="size-8 rounded-full object-cover"
+                                />
+                                <div v-else class="size-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold text-sm">
+                                    {{ page.props.auth.user.name.charAt(0).toUpperCase() }}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-slate-300">{{ page.props.auth.user.name }}</span>
+                                    <svg class="-me-0.5 size-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </div>
                             </button>
                         </template>
 
@@ -99,6 +110,20 @@ const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome'
 
         <!-- Mobile Navigation Menu - Authenticated -->
         <div v-if="isAuthenticated" :class="{'block': showingNavigationDropdown, 'hidden': !showingNavigationDropdown}" class="sm:hidden bg-slate-800/50 border-t border-slate-700">
+            <!-- User Profile Header -->
+            <div class="px-4 py-3 border-b border-slate-700 flex items-center gap-3">
+                <img
+                    v-if="page.props.auth.user.profile_photo_url"
+                    :src="page.props.auth.user.profile_photo_url"
+                    :alt="page.props.auth.user.name"
+                    class="size-10 rounded-full object-cover"
+                />
+                <div v-else class="size-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-semibold">
+                    {{ page.props.auth.user.name.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-sm font-medium text-white">{{ page.props.auth.user.name }}</span>
+            </div>
+
             <div class="px-2 pt-2 pb-3 space-y-1">
                 <Link :href="route('ask')" class="block px-3 py-2 rounded-md text-slate-300 hover:text-white hover:bg-slate-700 transition">
                     Parler
