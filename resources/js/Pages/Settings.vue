@@ -60,13 +60,13 @@ const submit = async () => {
 <template>
     <Head title="Paramètres" />
 
-    <div>
+    <div class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen">
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <!-- Message d'erreur -->
                 <div
                     v-if="error"
-                    class="mb-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg"
+                    class="mb-4 px-4 py-3 bg-red-900/30 border border-red-500/50 text-red-300 rounded-lg"
                 >
                     ✗ {{ error }}
                 </div>
@@ -74,7 +74,7 @@ const submit = async () => {
                 <!-- Message de succès -->
                 <div
                     v-if="submitted"
-                    class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg"
+                    class="mb-4 px-4 py-3 bg-green-900/30 border border-green-500/50 text-green-300 rounded-lg"
                 >
                     ✓ Instructions personnalisées sauvegardées avec succès
                 </div>
@@ -97,9 +97,9 @@ const submit = async () => {
                                 maxlength="2000"
                                 rows="8"
                                 placeholder="Ex: Tu es un expert en développement web. Réponds toujours en français et fournis des exemples de code quand approprié."
-                                class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+                                class="mt-1 block w-full px-4 py-2 border border-slate-600 bg-slate-700 text-white rounded-lg shadow-sm focus:ring-blue-400 focus:border-blue-400"
                             ></textarea>
-                            <p class="mt-2 text-sm text-gray-500">
+                            <p class="mt-2 text-sm text-slate-400">
                                 {{ form.instructions.length }} / 2000 caractères
                             </p>
                         </div>
@@ -110,7 +110,7 @@ const submit = async () => {
                                     id="enabled"
                                     v-model:checked="form.enabled"
                                 />
-                                <label for="enabled" class="ml-2 block text-sm text-gray-700">
+                                <label for="enabled" class="ml-2 block text-sm text-slate-300">
                                     Activer les instructions personnalisées
                                 </label>
                             </div>

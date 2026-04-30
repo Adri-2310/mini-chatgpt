@@ -78,11 +78,11 @@ const clearPhotoFileInput = () => {
 <template>
     <FormSection @submitted="updateProfileInformation">
         <template #title>
-            Profile Information
+            Informations de Profil
         </template>
 
         <template #description>
-            Update your account's profile information and email address.
+            Mettez à jour vos informations de profil et votre adresse e-mail.
         </template>
 
         <template #form>
@@ -113,7 +113,7 @@ const clearPhotoFileInput = () => {
                 </div>
 
                 <SecondaryButton class="mt-2 me-2" type="button" @click.prevent="selectNewPhoto">
-                    Select A New Photo
+                    Sélectionner une nouvelle photo
                 </SecondaryButton>
 
                 <SecondaryButton
@@ -122,7 +122,7 @@ const clearPhotoFileInput = () => {
                     class="mt-2"
                     @click.prevent="deletePhoto"
                 >
-                    Remove Photo
+                    Supprimer la photo
                 </SecondaryButton>
 
                 <InputError :message="form.errors.photo" class="mt-2" />
@@ -130,7 +130,7 @@ const clearPhotoFileInput = () => {
 
             <!-- Name -->
             <div class="col-span-6 sm:col-span-4">
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Nom" />
                 <TextInput
                     id="name"
                     v-model="form.name"
@@ -157,7 +157,7 @@ const clearPhotoFileInput = () => {
 
                 <div v-if="$page.props.jetstream.hasEmailVerification && user.email_verified_at === null">
                     <p class="text-sm mt-2">
-                        Your email address is unverified.
+                        Votre adresse e-mail n'est pas vérifiée.
 
                         <Link
                             :href="route('verification.send')"
@@ -166,12 +166,12 @@ const clearPhotoFileInput = () => {
                             class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             @click.prevent="sendEmailVerification"
                         >
-                            Click here to re-send the verification email.
+                            Cliquez ici pour renvoyer l'e-mail de vérification.
                         </Link>
                     </p>
 
                     <div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-600">
-                        A new verification link has been sent to your email address.
+                        Un nouveau lien de vérification a été envoyé à votre adresse e-mail.
                     </div>
                 </div>
             </div>
@@ -179,11 +179,11 @@ const clearPhotoFileInput = () => {
 
         <template #actions>
             <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Saved.
+                Enregistré.
             </ActionMessage>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Save
+                Enregistrer
             </PrimaryButton>
         </template>
     </FormSection>
