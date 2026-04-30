@@ -30,17 +30,22 @@ const emit = defineEmits(['update:selectedModel']);
 <template>
     <div class="border-b border-slate-600 bg-slate-800/50 p-4">
         <div class="flex items-center justify-between gap-4">
-            <div class="flex-1">
+            <div class="flex-1" />
+            <div class="flex-1 text-center">
                 <h1 class="text-xl font-semibold text-white truncate">
                     {{ conversationTitle }}
                 </h1>
             </div>
-            <ModelSelector
-                :model-value="selectedModel"
-                :models="models"
-                :disabled="modelDisabled"
-                @update:model-value="emit('update:selectedModel', $event)"
-            />
+            <div class="flex-1 flex justify-end">
+                <div class="bg-slate-700/30 rounded-lg px-4 py-3 border border-slate-600/50">
+                    <ModelSelector
+                        :model-value="selectedModel"
+                        :models="models"
+                        :disabled="modelDisabled"
+                        @update:model-value="emit('update:selectedModel', $event)"
+                    />
+                </div>
+            </div>
         </div>
     </div>
 </template>
