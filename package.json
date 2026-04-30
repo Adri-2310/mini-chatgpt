@@ -21,6 +21,7 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
+        "@laravel/stream-vue": "^0.3.13",
         "highlight.js": "^11.11.1",
         "markdown-it": "^14.1.1"
     }

@@ -32,7 +32,9 @@ Route::middleware([
 
     Route::get('/ask', [AskController::class, 'index'])->name('ask');
     Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
+    Route::post('/ask/stream', [AskController::class, 'stream'])->name('ask.stream');
 
     Route::apiResource('conversations', ConversationController::class);
     Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])->name('messages.store');
+    Route::post('/conversations/{conversation}/messages/stream', [MessageController::class, 'streamStore'])->name('messages.stream');
 });

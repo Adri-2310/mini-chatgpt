@@ -1,8 +1,12 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
+import { useStream } from '@laravel/stream-vue';
 import ChatLayout from '../Layouts/ChatLayout.vue';
 import ConversationList from '../Components/ConversationList.vue';
+import ChatHeader from '../Components/ChatHeader.vue';
+import MessageList from '../Components/MessageList.vue';
+import MessageInput from '../Components/MessageInput.vue';
 
 defineOptions({
   layout: ChatLayout,
@@ -10,9 +14,6 @@ defineOptions({
     title: 'Conversations'
   }
 });
-import ChatHeader from '../Components/ChatHeader.vue';
-import MessageList from '../Components/MessageList.vue';
-import MessageInput from '../Components/MessageInput.vue';
 
 const props = defineProps({
     conversations: Array,
@@ -24,9 +25,11 @@ const conversations = ref(props.conversations);
 const activeConversationId = ref(null);
 const messages = ref([]);
 const selectedModel = ref('openai/gpt-4o-mini');
-const loading = ref(false);
 const error = ref(null);
 const isConversationStarted = ref(false);
+
+// Création du buffer pour le streaming
+let streamBuffer = '';
 
 const activeConversation = computed(() => {
     return conversations.value.find((c) => c.id === activeConversationId.value);
@@ -82,52 +85,82 @@ const selectConversation = async (conversationId) => {
     }
 };
 
+const { isStreaming, send: sendStream } = useStream(
+    () => `/conversations/${activeConversationId.value}/messages/stream`,
+    {
+        onData: (rawData) => {
+            // Ajout au buffer et découpage
+            streamBuffer += rawData;
+            const lines = streamBuffer.split('\n');
+            streamBuffer = lines.pop() || '';
+
+            for (const line of lines) {
+                if (line.trim() === '') continue;
+
+                if (line.includes('[DONE]')) {
+                    return;
+                }
+
+                if (line.startsWith('data: ')) {
+                    const jsonStr = line.substring(6);
+                    try {
+                        const data = JSON.parse(jsonStr);
+                        if (data.content) {
+                            // On cible le message de l'assistant (le dernier de la liste)
+                            const lastMessage = messages.value[messages.value.length - 1];
+                            if (lastMessage && lastMessage.role === 'assistant') {
+                                // On ajoute la lettre générée !
+                                lastMessage.content += data.content;
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Erreur de parsing JSON sur un chunk:', e);
+                    }
+                }
+            }
+        },
+        onFinish: () => {
+            streamBuffer = ''; // Nettoyage du buffer
+            isConversationStarted.value = true;
+            conversations.value.sort(
+                (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
+            );
+        },
+        onError: (err) => {
+            error.value = 'Erreur lors du streaming: ' + err;
+            console.error('Stream error:', err);
+        },
+    }
+);
+
 const handleMessageSubmit = async (content) => {
     if (!activeConversationId.value) {
         return;
     }
 
-    loading.value = true;
     error.value = null;
-    try {
-        const response = await fetch(`/conversations/${activeConversationId.value}/messages`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': page.props.csrf_token,
-            },
-            body: JSON.stringify({
-                content,
-                model: selectedModel.value,
-            }),
-        });
+    streamBuffer = ''; // Réinitialisation du buffer avant un nouveau message
 
-        const data = await response.json();
-        if (data.success) {
-            messages.value = data.messages;
-            isConversationStarted.value = true;
+    const userMessage = {
+        id: Date.now(),
+        role: 'user',
+        content: content,
+        created_at: new Date().toISOString(),
+    };
+    messages.value.push(userMessage);
 
-            if (data.title_updated) {
-                const conversation = conversations.value.find(
-                    (c) => c.id === activeConversationId.value
-                );
-                if (conversation) {
-                    conversation.title = data.new_title;
-                }
-            }
+    const assistantMessage = {
+        id: Date.now() + 1,
+        role: 'assistant',
+        content: '',
+        created_at: new Date().toISOString(),
+    };
+    messages.value.push(assistantMessage);
 
-            conversations.value.sort(
-                (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
-            );
-        } else {
-            error.value = data.error || 'Une erreur est survenue';
-        }
-    } catch (err) {
-        error.value = 'Une erreur est survenue lors de l\'envoi du message';
-        console.error('Error sending message:', err);
-    } finally {
-        loading.value = false;
-    }
+    sendStream({
+        content: content,
+        model: selectedModel.value,
+    });
 };
 </script>
 
@@ -153,10 +186,10 @@ const handleMessageSubmit = async (content) => {
                     {{ error }}
                 </div>
 
-                <MessageList :messages="messages" :loading="loading" />
+                <MessageList :messages="messages" :loading="isStreaming" />
 
                 <MessageInput
-                    :disabled="!activeConversationId || loading"
+                    :disabled="!activeConversationId || isStreaming"
                     @submit="handleMessageSubmit"
                 />
             </div>

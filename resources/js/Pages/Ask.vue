@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
+import { useStream } from '@laravel/stream-vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import ModelSelector from '@/Components/ModelSelector.vue';
 import QuestionForm from '@/Components/QuestionForm.vue';
@@ -23,8 +24,45 @@ const props = defineProps({
 const page = usePage();
 const selectedModel = ref('anthropic/claude-3.5-haiku');
 const response = ref('');
-const loading = ref(false);
 const error = ref('');
+
+// Création d'un buffer
+let streamBuffer = '';
+
+const { isStreaming, send: sendStream } = useStream('/ask/stream', {
+    onData: (rawData) => {
+        streamBuffer += rawData;
+        const lines = streamBuffer.split('\n');
+        streamBuffer = lines.pop() || '';
+
+        for (const line of lines) {
+            if (line.trim() === '') continue;
+
+            if (line.includes('[DONE]')) {
+                return;
+            }
+
+            if (line.startsWith('data: ')) {
+                const jsonStr = line.substring(6);
+                try {
+                    const data = JSON.parse(jsonStr);
+                    if (data.content) {
+                        response.value += data.content;
+                    }
+                } catch (e) {
+                    console.error('❌ Erreur de parsing JSON :', e, "Texte qui a posé problème :", jsonStr);
+                }
+            }
+        }
+    },
+    onFinish: () => {
+        streamBuffer = '';
+    },
+    onError: (err) => {
+        error.value = 'Erreur lors du streaming: ' + err;
+        console.error('🔴 Stream error:', err);
+    },
+});
 
 const handleSubmit = async (question) => {
     if (!selectedModel.value) {
@@ -32,48 +70,14 @@ const handleSubmit = async (question) => {
         return;
     }
 
-    loading.value = true;
     error.value = '';
     response.value = '';
+    streamBuffer = ''; // Réinitialisation du buffer pour la nouvelle question
 
-    try {
-        const result = await fetch('/ask', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': page.props.csrf_token,
-            },
-            body: JSON.stringify({
-                question: question,
-                model: selectedModel.value,
-            }),
-        });
-
-        if (!result.ok) {
-            error.value = `Erreur serveur: ${result.status}`;
-            console.error('HTTP Error:', result.status);
-            return;
-        }
-
-        const contentType = result.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-            error.value = 'Erreur: réponse invalide du serveur';
-            console.error('Invalid content type:', contentType);
-            return;
-        }
-
-        const data = await result.json();
-        if (data.success) {
-            response.value = data.response;
-        } else {
-            error.value = data.error || 'Une erreur est survenue';
-        }
-    } catch (err) {
-        error.value = 'Erreur lors de l\'appel API';
-        console.error('API Error:', err);
-    } finally {
-        loading.value = false;
-    }
+    sendStream({
+        question: question,
+        model: selectedModel.value,
+    });
 };
 </script>
 
@@ -82,7 +86,6 @@ const handleSubmit = async (question) => {
 
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg rounded-lg p-6 sm:p-8">
-                <!-- Titre & description -->
                 <div class="mb-8">
                     <h1 class="text-3xl font-bold text-white mb-2">
                         Discutez avec les meilleures IA du marché
@@ -92,7 +95,6 @@ const handleSubmit = async (question) => {
                     </p>
                 </div>
 
-                <!-- Message d'erreur -->
                 <div
                     v-if="error"
                     class="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300"
@@ -100,24 +102,21 @@ const handleSubmit = async (question) => {
                     {{ error }}
                 </div>
 
-                <!-- Sélecteur de modèle -->
                 <div class="mb-6">
                     <ModelSelector
                         :models="models"
                         v-model="selectedModel"
-                        :disabled="loading"
+                        :disabled="isStreaming"
                     />
                 </div>
 
-                <!-- Formulaire de question -->
                 <div class="mb-8">
                     <QuestionForm
-                        :disabled="loading"
+                        :disabled="isStreaming"
                         @submit="handleSubmit"
                     />
                 </div>
 
-                <!-- Réponse -->
                 <ResponseDisplay :content="response" />
             </div>
         </div>
