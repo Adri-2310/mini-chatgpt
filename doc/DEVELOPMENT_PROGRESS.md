@@ -11,10 +11,10 @@
 
 | Statut | Nombre |
 |--------|--------|
-| ✅ Complétée | 3/10 |
+| ✅ Complétée | 6/10 |
 | 🟡 En cours | 0/10 |
-| ⏳ À faire | 7/10 |
-| **Progression** | **30%** |
+| ⏳ À faire | 4/10 |
+| **Progression** | **60%** |
 
 ---
 
@@ -105,11 +105,11 @@
 ### **Bloc 3: Exercice 2 - Dashboard Chat (Avec historique)**
 
 #### 4️⃣ Exercice 2: Dashboard Chat (Conversations)
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🔴 Haute  
 **Estimation:** 3-4h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 30 avril 2026
 
 **Backend:**
 - [ ] Créer `ConversationController`
@@ -172,11 +172,11 @@
 ### **Bloc 4: Exercice 3 - Instructions Personnalisées**
 
 #### 5️⃣ Exercice 3: Settings Instructions Personnalisées
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🟡 Moyen  
 **Estimation:** 2h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 30 avril 2026
 
 **Backend:**
 - [ ] Créer `SettingsController`
@@ -216,11 +216,11 @@
 ### **Bloc 5: Exercice 4 - Streaming Temps Réel**
 
 #### 6️⃣ Exercice 4: Streaming temps réel (SSE)
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🔴 Haute  
 **Estimation:** 2-3h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 30 avril 2026
 
 **Backend:**
 - [ ] Configurer `StreamResponse` Laravel
@@ -370,13 +370,13 @@
 ```
 Bloc 1: Frontend Setup        [██████████] 100%
 Bloc 2: Exercice 1            [██████████] 100%
-Bloc 3: Exercice 2            [░░░░░░░░░░] 0%
-Bloc 4: Exercice 3            [░░░░░░░░░░] 0%
-Bloc 5: Exercice 4            [░░░░░░░░░░] 0%
+Bloc 3: Exercice 2            [██████████] 100%
+Bloc 4: Exercice 3            [██████████] 100%
+Bloc 5: Exercice 4            [██████████] 100%
 Bloc 6: Data & Infrastructure [░░░░░░░░░░] 0%
 Bloc 7: Testing & Final       [░░░░░░░░░░] 0%
 ────────────────────────────────────────────
-TOTAL                         [███░░░░░░░] 30%
+TOTAL                         [██████░░░░] 60%
 ```
 
 ---
@@ -417,13 +417,13 @@ TOTAL                         [███░░░░░░░] 30%
 |-------|------------|------------|--------|
 | Frontend setup | - | 24/04/2026 | ✅ |
 | Exercice 1 OK | - | 24/04/2026 | ✅ |
-| Exercice 2 OK | - | - | ⏳ |
-| Exercice 3 OK | - | - | ⏳ |
-| Exercice 4 OK | - | - | ⏳ |
+| Exercice 2 OK | - | 30/04/2026 | ✅ |
+| Exercice 3 OK | - | 30/04/2026 | ✅ |
+| Exercice 4 OK | - | 30/04/2026 | ✅ |
 | Tests complets | - | - | ⏳ |
 | Prêt soutenance | 24/06/2026 | - | ⏳ |
 
 ---
 
-**Dernière mise à jour:** 24 avril 2026  
+**Dernière mise à jour:** 30 avril 2026  
 **Mis à jour par:** Adrien Mertens
