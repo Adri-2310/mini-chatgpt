@@ -57,7 +57,7 @@ const deleteConversation = async () => {
 </script>
 
 <template>
-    <div class="h-screen w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
+    <div class="h-full w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
         <!-- Header avec bouton nouveau -->
         <div class="p-4 border-b border-slate-700 space-y-3">
             <button

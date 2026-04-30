@@ -210,7 +210,7 @@ const deleteConversation = async (conversationId) => {
 </script>
 
 <template>
-    <div class="flex bg-slate-900">
+    <div class="flex h-full bg-slate-900">
             <ConversationList
                 :conversations="conversations"
                 :active-conversation-id="activeConversationId"
