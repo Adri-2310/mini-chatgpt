@@ -30,6 +30,9 @@ const error = ref('');
 let streamBuffer = '';
 
 const { isStreaming, send: sendStream } = useStream('/ask/stream', {
+    headers: {
+        'X-CSRF-TOKEN': page.props.csrf_token,
+    },
     onData: (rawData) => {
         streamBuffer += rawData;
         const lines = streamBuffer.split('\n');

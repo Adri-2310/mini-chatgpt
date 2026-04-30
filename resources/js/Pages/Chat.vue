@@ -88,6 +88,9 @@ const selectConversation = async (conversationId) => {
 const { isStreaming, send: sendStream } = useStream(
     () => `/conversations/${activeConversationId.value}/messages/stream`,
     {
+        headers: {
+            'X-CSRF-TOKEN': page.props.csrf_token,
+        },
         onData: (rawData) => {
             // Ajout au buffer et découpage
             streamBuffer += rawData;
