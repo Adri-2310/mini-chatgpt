@@ -221,6 +221,7 @@ const deleteConversation = async (conversationId) => {
 
             <div class="flex-1 flex flex-col">
                 <ChatHeader
+                    v-if="activeConversationId"
                     :conversation-title="conversationTitle"
                     :selected-model="selectedModel"
                     :models="models"
@@ -232,14 +233,34 @@ const deleteConversation = async (conversationId) => {
                     {{ error }}
                 </div>
 
-                <div class="flex-1 overflow-y-auto">
-                    <MessageList :messages="messages" :loading="isStreaming" />
-                </div>
+                <template v-if="!activeConversationId">
+                    <div class="flex-1 flex flex-col items-center justify-center">
+                        <div class="text-center max-w-md px-8">
+                            <div class="text-5xl mb-6">👋</div>
+                            <h2 class="text-3xl font-bold text-white mb-4">Bienvenue!</h2>
+                            <p class="text-slate-300 text-lg mb-8">
+                                Commencez une nouvelle conversation ou sélectionnez-en une existante pour continuer.
+                            </p>
+                            <button
+                                @click="createNewConversation"
+                                class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition font-semibold"
+                            >
+                                + Créer une conversation
+                            </button>
+                        </div>
+                    </div>
+                </template>
 
-                <MessageInput
-                    :disabled="!activeConversationId || isStreaming"
-                    @submit="handleMessageSubmit"
-                />
+                <template v-else>
+                    <div class="flex-1 overflow-y-auto">
+                        <MessageList :messages="messages" :loading="isStreaming" />
+                    </div>
+
+                    <MessageInput
+                        :disabled="!activeConversationId || isStreaming"
+                        @submit="handleMessageSubmit"
+                    />
+                </template>
             </div>
         </div>
 </template>
