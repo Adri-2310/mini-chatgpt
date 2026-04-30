@@ -1,3 +1,17 @@
+<script setup>
+import { onMounted } from 'vue';
+import { usePage, router } from '@inertiajs/vue3';
+import Nav from '@/Components/Nav.vue';
+
+const page = usePage();
+
+onMounted(() => {
+    if (page.props.auth?.user) {
+        router.visit(route('dashboard'));
+    }
+});
+</script>
+
 <template>
   <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 text-white">
     <Nav />
