@@ -27,9 +27,18 @@ const messages = ref([]);
 const selectedModel = ref('openai/gpt-4o-mini');
 const error = ref(null);
 const isConversationStarted = ref(false);
+const messageListContainer = ref(null);
 
 // Création du buffer pour le streaming
 let streamBuffer = '';
+
+const scrollToBottom = () => {
+    if (messageListContainer.value) {
+        setTimeout(() => {
+            messageListContainer.value.scrollTop = messageListContainer.value.scrollHeight;
+        }, 0);
+    }
+};
 
 const activeConversation = computed(() => {
     return conversations.value.find((c) => c.id === activeConversationId.value);
@@ -84,6 +93,7 @@ const selectConversation = async (conversationId) => {
             }
 
             error.value = null;
+            scrollToBottom();
         } else {
             error.value = 'Erreur lors du chargement de la conversation';
         }
@@ -129,6 +139,8 @@ const { isStreaming, send: sendStream } = useStream(
                     }
                 }
             }
+
+            scrollToBottom();
         },
         onFinish: async () => {
             streamBuffer = '';
@@ -154,6 +166,8 @@ const { isStreaming, send: sendStream } = useStream(
             conversations.value.sort(
                 (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
             );
+
+            scrollToBottom();
         },
         onError: (err) => {
             error.value = 'Erreur lors du streaming: ' + err;
@@ -270,7 +284,7 @@ const deleteConversation = async (conversationId) => {
                 </template>
 
                 <template v-else>
-                    <div class="flex-1 overflow-y-auto">
+                    <div ref="messageListContainer" class="flex-1 overflow-y-auto">
                         <MessageList :messages="messages" :loading="isStreaming" />
                     </div>
 
