@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted } from 'vue';
-import { usePage, router } from '@inertiajs/vue3';
+import { Link, usePage, router } from '@inertiajs/vue3';
 import Nav from '@/Components/Nav.vue';
+import Footer from '@/Components/Footer.vue';
 
 const page = usePage();
 
@@ -152,13 +153,6 @@ onMounted(() => {
     <Footer />
   </div>
 </template>
-
-<script setup>
-import { Link } from '@inertiajs/vue3';
-import Nav from '@/Components/Nav.vue';
-import Footer from '@/Components/Footer.vue';
-</script>
-
 <style scoped>
 html {
   scroll-behavior: smooth;
