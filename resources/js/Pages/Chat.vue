@@ -130,9 +130,27 @@ const { isStreaming, send: sendStream } = useStream(
                 }
             }
         },
-        onFinish: () => {
-            streamBuffer = ''; // Nettoyage du buffer
+        onFinish: async () => {
+            streamBuffer = '';
             isConversationStarted.value = true;
+
+            try {
+                const response = await fetch(`/conversations/${activeConversationId.value}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const index = conversations.value.findIndex(c => c.id === activeConversationId.value);
+                    if (index > -1) {
+                        conversations.value[index] = {
+                            ...conversations.value[index],
+                            title: data.conversation.title,
+                            updated_at: data.conversation.updated_at,
+                        };
+                    }
+                }
+            } catch (err) {
+                console.error('Erreur lors de la mise à jour de la conversation:', err);
+            }
+
             conversations.value.sort(
                 (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
             );
