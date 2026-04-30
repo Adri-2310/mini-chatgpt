@@ -58,6 +58,25 @@ class ConversationController extends Controller
         ]);
     }
 
+    public function update(Request $request, Conversation $conversation)
+    {
+        try {
+            $this->authorize('update', $conversation);
+        } catch (AuthorizationException) {
+            return response()->json(['error' => 'Non autorisé'], 403);
+        }
+
+        $request->validate([
+            'title' => 'required|string|min:1|max:255',
+        ]);
+
+        $conversation->update([
+            'title' => $request->input('title'),
+        ]);
+
+        return response()->json($conversation);
+    }
+
     public function destroy(Conversation $conversation)
     {
         try {

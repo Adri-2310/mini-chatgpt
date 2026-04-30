@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     conversations: {
@@ -14,9 +15,13 @@ const props = defineProps({
 
 const emit = defineEmits(['select', 'new', 'delete']);
 
+const page = usePage();
 const searchQuery = ref('');
 const conversationToDelete = ref(null);
 const showDeleteConfirm = ref(false);
+const conversationToEdit = ref(null);
+const editTitle = ref('');
+const showEditModal = ref(false);
 
 const filteredConversations = computed(() => {
     if (!searchQuery.value.trim()) {
@@ -52,6 +57,39 @@ const deleteConversation = async () => {
         emit('delete', conversationToDelete.value.id);
         showDeleteConfirm.value = false;
         conversationToDelete.value = null;
+    }
+};
+
+const startEditConversation = (conversation) => {
+    conversationToEdit.value = conversation;
+    editTitle.value = conversation.title;
+    showEditModal.value = true;
+};
+
+const updateConversationTitle = async () => {
+    if (!conversationToEdit.value || !editTitle.value.trim()) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/conversations/${conversationToEdit.value.id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': page.props.csrf_token,
+            },
+            body: JSON.stringify({
+                title: editTitle.value.trim(),
+            }),
+        });
+
+        if (response.ok) {
+            conversationToEdit.value.title = editTitle.value.trim();
+            showEditModal.value = false;
+            conversationToEdit.value = null;
+        }
+    } catch (err) {
+        console.error('Erreur lors de la modification:', err);
     }
 };
 </script>
@@ -116,7 +154,17 @@ const deleteConversation = async () => {
                         </div>
                     </div>
 
-                    <!-- Bouton de suppression -->
+                    <!-- Boutons d'édition et suppression -->
+                    <button
+                        @click.stop="startEditConversation(conversation)"
+                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-slate-600 rounded text-slate-400 hover:text-blue-400"
+                        title="Éditer"
+                    >
+                        <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                    </button>
+
                     <button
                         @click.stop="confirmDelete(conversation)"
                         class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-slate-600 rounded text-slate-400 hover:text-red-400"
@@ -128,6 +176,36 @@ const deleteConversation = async () => {
                     </button>
                 </div>
             </template>
+        </div>
+    </div>
+
+    <!-- Modal d'édition -->
+    <div v-if="showEditModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-sm mx-4 space-y-4">
+            <h3 class="text-lg font-medium text-white">
+                Éditer la conversation
+            </h3>
+            <input
+                v-model="editTitle"
+                type="text"
+                class="w-full px-3 py-2 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-offset-0 transition text-sm"
+                placeholder="Titre de la conversation"
+                autofocus
+            />
+            <div class="flex gap-3 justify-end">
+                <button
+                    @click="showEditModal = false"
+                    class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition text-sm"
+                >
+                    Annuler
+                </button>
+                <button
+                    @click="updateConversationTitle"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm"
+                >
+                    Enregistrer
+                </button>
+            </div>
         </div>
     </div>
 
