@@ -232,7 +232,9 @@ const deleteConversation = async (conversationId) => {
                     {{ error }}
                 </div>
 
-                <MessageList :messages="messages" :loading="isStreaming" />
+                <div class="flex-1 overflow-y-auto">
+                    <MessageList :messages="messages" :loading="isStreaming" />
+                </div>
 
                 <MessageInput
                     :disabled="!activeConversationId || isStreaming"
