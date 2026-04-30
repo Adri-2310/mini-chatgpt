@@ -37,6 +37,11 @@ class MessageController extends Controller
                 'model' => $request->input('model'),
             ]);
 
+            $model = $request->input('model');
+            if ($conversation->messages()->count() === 1) {
+                $conversation->update(['model_used' => $model]);
+            }
+
             $messageHistory = $conversation->messages()
                 ->orderBy('created_at')
                 ->get(['role', 'content'])
@@ -106,6 +111,11 @@ class MessageController extends Controller
                 'model' => $request->input('model'),
             ]);
 
+            $model = $request->input('model');
+            if ($conversation->messages()->count() === 1) {
+                $conversation->update(['model_used' => $model]);
+            }
+
             $messageHistory = $conversation->messages()
                 ->orderBy('created_at')
                 ->get(['role', 'content'])
@@ -117,8 +127,6 @@ class MessageController extends Controller
             if ($customInstruction && $customInstruction->enabled) {
                 $systemPrompt = $customInstruction->instructions;
             }
-
-            $model = $request->input('model');
 
             return response()->stream(function () use ($conversation, $messageHistory, $systemPrompt, $model, $request) {
                 $fullResponse = '';

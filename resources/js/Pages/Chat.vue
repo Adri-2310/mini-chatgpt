@@ -47,7 +47,9 @@ const createNewConversation = async () => {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': page.props.csrf_token,
             },
-            body: JSON.stringify({}),
+            body: JSON.stringify({
+                model: selectedModel.value,
+            }),
         });
 
         const data = await response.json();
@@ -75,6 +77,12 @@ const selectConversation = async (conversationId) => {
             const data = await response.json();
             messages.value = data.messages || [];
             isConversationStarted.value = (messages.value.length > 0);
+
+            // Restaurer le modèle utilisé pour cette conversation
+            if (data.conversation?.model_used) {
+                selectedModel.value = data.conversation.model_used;
+            }
+
             error.value = null;
         } else {
             error.value = 'Erreur lors du chargement de la conversation';
@@ -142,7 +150,8 @@ const handleMessageSubmit = async (content) => {
     }
 
     error.value = null;
-    streamBuffer = ''; // Réinitialisation du buffer avant un nouveau message
+    streamBuffer = '';
+    isConversationStarted.value = true;
 
     const userMessage = {
         id: Date.now(),
