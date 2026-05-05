@@ -11,10 +11,10 @@
 
 | Statut | Nombre |
 |--------|--------|
-| ✅ Complétée | 6/10 |
+| ✅ Complétée | 8/10 |
 | 🟡 En cours | 0/10 |
-| ⏳ À faire | 4/10 |
-| **Progression** | **60%** |
+| ⏳ À faire | 2/10 |
+| **Progression** | **80%** |
 
 ---
 
@@ -263,54 +263,53 @@
 ### **Bloc 6: Support Data & Infrastructure**
 
 #### 7️⃣ Créer seeders pour les données de test
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🟢 Basse  
 **Estimation:** 30min  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 1 mai 2026
 
 **Tâches:**
-- [ ] Créer `LlmModelSeeder`
-  - [ ] Ajouter gpt-4o (OpenAI)
-  - [ ] Ajouter gemini-2.5-flash (Google)
-  - [ ] Ajouter claude-3.5-sonnet (Anthropic)
-- [ ] Créer `UserSeeder` (optionnel)
-  - [ ] Utilisateurs de test
-- [ ] Exécuter: `php artisan db:seed`
-- [ ] Vérifier données créées
+- [x] Créer `LlmModelSeeder`
+  - [x] Ajouter gpt-4o-mini (OpenAI)
+  - [x] Ajouter gemini-3-flash-preview (Google)
+  - [x] Ajouter claude-3.5-haiku (Anthropic)
+- [x] Intégrer dans `DatabaseSeeder`
+- [x] Exécuter: `php artisan db:seed`
+- [x] Vérifier données créées
 
 **Notes:**
-- Seeders pour faciliter tests
-- À exécuter après migrations
+- Seeders intégrés et fonctionnels
+- LlmModelSeeder appelé dans DatabaseSeeder::run()
 
 ---
 
 #### 8️⃣ Configurer menu navbar avec options
-**Status:** ⏳ À faire  
+**Status:** ✅ Complétée  
 **Priorité:** 🟡 Moyen  
 **Estimation:** 1h  
-**Date de début:** -  
-**Date de fin:** -
+**Date de début:** 24 avril 2026  
+**Date de fin:** 2 mai 2026
 
 **Tâches:**
-- [ ] Créer composant `Navbar.vue` ou utiliser `AppLayout`
-- [ ] Logo Mini-ChatGPT
-- [ ] Lien Home (landing page)
-- [ ] Lien Dashboard (si logged in)
-- [ ] Menu déroulant (top right)
-  - [ ] 👤 Profil
-  - [ ] ⚙️ Settings Instructions
-  - [ ] 🎨 Thème (optionnel)
-  - [ ] 🚪 Déconnexion
-- [ ] Design responsive
-- [ ] Utilisé dans `AppLayout.vue` (toutes les pages)
+- [x] Créer composant `Nav.vue`
+- [x] Logo Mini-ChatGPT (gradient coloré)
+- [x] Lien Home (redirects intelligente: welcome si guest, dashboard si auth)
+- [x] Liens navigation (Parler, Conversations si authentifié)
+- [x] Menu déroulant (top right)
+  - [x] 👤 Profil
+  - [x] ⚙️ Paramètres
+  - [x] 🚪 Déconnexion
+- [x] Design responsive dark theme (Tailwind slate)
+- [x] Utilisé dans `AppLayout.vue` et `ChatLayout.vue`
+- [x] Mobile hamburger menu
 
 **Critères d'acceptation:**
-- [ ] Navbar visible sur toutes les pages auth
-- [ ] Logo cliquable = redirection home
-- [ ] Menu déroulant fonctionnel
-- [ ] Mobile-friendly
-- [ ] Design cohérent
+- [x] Navbar visible sur toutes les pages
+- [x] Logo cliquable = redirection intelligente
+- [x] Menu déroulant fonctionnel
+- [x] Mobile-friendly avec hamburger
+- [x] Design cohérent avec le reste de l'app
 
 ---
 
@@ -373,32 +372,33 @@ Bloc 2: Exercice 1            [██████████] 100%
 Bloc 3: Exercice 2            [██████████] 100%
 Bloc 4: Exercice 3            [██████████] 100%
 Bloc 5: Exercice 4            [██████████] 100%
-Bloc 6: Data & Infrastructure [░░░░░░░░░░] 0%
-Bloc 7: Testing & Final       [░░░░░░░░░░] 0%
+Bloc 6: Data & Infrastructure [██████████] 100%
+Bloc 7: Testing & Final       [████░░░░░░] 50%
 ────────────────────────────────────────────
-TOTAL                         [██████░░░░] 60%
+TOTAL                         [████████░░] 80%
 ```
 
 ---
 
 ## 📝 Notes générales
 
-### Dépendances à installer:
-- [ ] `openai-php/laravel` - pour appels API
-- [ ] `markdown-it-vue` - rendu Markdown
-- [ ] `highlight.js` - coloration code
-- [ ] `laravel/stream-vue` - streaming SSE (optionnel)
+### Dépendances installées:
+- [x] `openai-php/laravel` - pour appels API
+- [x] `markdown-it-vue` - rendu Markdown
+- [x] `highlight.js` - coloration code
+- [x] Vue.js 3 avec Composition API
+- [x] TailwindCSS + Inertia.js
 
-### Clés API à obtenir:
-- [ ] OpenAI (GPT-4o)
-- [ ] Google Gemini
-- [ ] Anthropic Claude
-- [ ] Configurer dans `.env`
+### Clés API à configurer:
+- [x] OpenAI (utilisable via OpenRouter)
+- [x] Google Gemini (configurée)
+- [x] Anthropic Claude (configurée)
+- [x] Variables d'environnement dans `.env`
 
 ### Architecture DB:
 - Migrations: ✅ Créées
 - Models: ✅ Créés avec relations
-- Seeders: ⏳ À créer
+- Seeders: ✅ Créés et intégrés
 
 ---
 
@@ -420,10 +420,11 @@ TOTAL                         [██████░░░░] 60%
 | Exercice 2 OK | - | 30/04/2026 | ✅ |
 | Exercice 3 OK | - | 30/04/2026 | ✅ |
 | Exercice 4 OK | - | 30/04/2026 | ✅ |
+| Seeders + Navbar OK | - | 02/05/2026 | ✅ |
 | Tests complets | - | - | ⏳ |
 | Prêt soutenance | 24/06/2026 | - | ⏳ |
 
 ---
 
-**Dernière mise à jour:** 30 avril 2026  
+**Dernière mise à jour:** 05 mai 2026  
 **Mis à jour par:** Adrien Mertens

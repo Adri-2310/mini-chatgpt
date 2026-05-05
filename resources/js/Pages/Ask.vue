@@ -90,11 +90,14 @@ const handleSubmit = async (question) => {
     <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-lg rounded-lg p-6 sm:p-8">
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-white mb-2">
-                        Discutez avec les meilleures IA du marché
+                    <h1 class="text-4xl sm:text-5xl font-bold leading-tight text-white mb-2">
+                        Posez votre question à
+                        <span class="block bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
+                            GPT-4o, Gemini ou Claude
+                        </span>
                     </h1>
-                    <p class="text-slate-400">
-                        Posez une question unique sans historique. Chaque question est traitée indépendamment.
+                    <p class="text-slate-400 text-lg mt-4">
+                        Une question unique, sans historique. Chaque réponse est traitée indépendamment.
                     </p>
                 </div>
 
