@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3';
 import Banner from '@/Components/Banner.vue';
 import Nav from '@/Components/Nav.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 defineProps({
     title: String,
@@ -11,6 +12,8 @@ defineProps({
 <template>
     <div>
         <Head :title="title" />
+
+        <ToastNotification />
 
         <Banner />
 

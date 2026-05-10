@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import FormSection from '@/Components/FormSection.vue';
@@ -24,13 +24,9 @@ const form = ref({
 });
 
 const page = usePage();
-const submitted = ref(false);
-const error = ref('');
+const $toastr = inject('$toastr');
 
 const submit = async () => {
-    error.value = '';
-    submitted.value = false;
-
     try {
         const response = await fetch('/settings/instructions', {
             method: 'PUT',
@@ -42,16 +38,20 @@ const submit = async () => {
         });
 
         if (response.ok) {
-            submitted.value = true;
-            setTimeout(() => {
-                submitted.value = false;
-            }, 3000);
+            if ($toastr) {
+                $toastr.success('Instructions personnalisées sauvegardées avec succès');
+            }
         } else {
             const data = await response.json();
-            error.value = data.message || 'Une erreur est survenue lors de la sauvegarde';
+            const message = data.message || 'Une erreur est survenue lors de la sauvegarde';
+            if ($toastr) {
+                $toastr.error(message);
+            }
         }
     } catch (err) {
-        error.value = 'Erreur réseau: impossible de se connecter au serveur';
+        if ($toastr) {
+            $toastr.error('Erreur réseau: impossible de se connecter au serveur');
+        }
         console.error('Error:', err);
     }
 };
@@ -63,22 +63,6 @@ const submit = async () => {
     <div class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen">
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <!-- Message d'erreur -->
-                <div
-                    v-if="error"
-                    class="mb-4 px-4 py-3 bg-red-900/30 border border-red-500/50 text-red-300 rounded-lg"
-                >
-                    ✗ {{ error }}
-                </div>
-
-                <!-- Message de succès -->
-                <div
-                    v-if="submitted"
-                    class="mb-4 px-4 py-3 bg-green-900/30 border border-green-500/50 text-green-300 rounded-lg"
-                >
-                    ✓ Instructions personnalisées sauvegardées avec succès
-                </div>
-
                 <FormSection @submitted="submit">
                     <template #title>
                         Instructions Personnalisées

@@ -1,5 +1,5 @@
 <script setup>
-import { usePage, router } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { watch, onMounted, inject } from 'vue';
 
 const page = usePage();
@@ -9,9 +9,21 @@ const props = defineProps({
     status: String,
 });
 
+const messageTranslations = {
+    'profile-information-updated': 'Vos informations de profil ont été mises à jour avec succès.',
+    'password-updated': 'Votre mot de passe a été mis à jour avec succès.',
+    'two-factor-authentication-enabled': 'L\'authentification à deux facteurs a été activée.',
+    'two-factor-authentication-disabled': 'L\'authentification à deux facteurs a été désactivée.',
+};
+
+const translateMessage = (message) => {
+    return messageTranslations[message] || message;
+};
+
 const showToast = (message, type = 'success') => {
     if (message && $toastr) {
-        $toastr[type](message);
+        const translatedMessage = translateMessage(message);
+        $toastr[type](translatedMessage);
     }
 };
 
