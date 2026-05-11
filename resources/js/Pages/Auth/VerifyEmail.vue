@@ -40,22 +40,14 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
                     Renvoyer l'Email de Vérification
                 </PrimaryButton>
 
-                <div>
-                    <Link
-                        :href="route('profile.show')"
-                        class="underline text-sm text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500 transition"
-                    >
-                        Modifier Profil</Link>
-
-                    <Link
-                        :href="route('logout')"
-                        method="post"
-                        as="button"
-                        class="underline text-sm text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500 transition ms-2"
-                    >
-                        Déconnexion
-                    </Link>
-                </div>
+                <Link
+                    :href="route('logout')"
+                    method="post"
+                    as="button"
+                    class="underline text-sm text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-0 focus:ring-blue-500 transition"
+                >
+                    Déconnexion
+                </Link>
             </div>
         </form>
     </AuthenticationCard>

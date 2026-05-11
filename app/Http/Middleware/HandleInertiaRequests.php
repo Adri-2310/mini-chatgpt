@@ -38,6 +38,13 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'csrf_token' => csrf_token(),
+            'flash' => function () {
+                return [
+                    'status' => session('status'),
+                    'error' => session('error'),
+                    'message' => session('message'),
+                ];
+            },
         ];
     }
 }

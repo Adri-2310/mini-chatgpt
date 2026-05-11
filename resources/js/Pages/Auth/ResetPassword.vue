@@ -6,6 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 const props = defineProps({
     email: String,
@@ -28,6 +29,8 @@ const submit = () => {
 
 <template>
     <Head title="Réinitialiser le mot de passe" />
+
+    <ToastNotification :status="$page.props.flash?.status" />
 
     <AuthenticationCard>
         <template #logo>

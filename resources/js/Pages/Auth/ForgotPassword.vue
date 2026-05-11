@@ -6,6 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 defineProps({
     status: String,
@@ -23,6 +24,8 @@ const submit = () => {
 <template>
     <Head title="Réinitialiser le mot de passe" />
 
+    <ToastNotification :status="status" />
+
     <AuthenticationCard>
         <template #logo>
             <AuthenticationCardLogo />
@@ -32,9 +35,6 @@ const submit = () => {
             Vous avez oublié votre mot de passe ? Aucun problème. Indiquez-nous simplement votre adresse email et nous vous enverrons un lien de réinitialisation du mot de passe qui vous permettra d'en choisir un nouveau.
         </div>
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-400">
-            {{ status }}
-        </div>
 
         <form @submit.prevent="submit">
             <div>
