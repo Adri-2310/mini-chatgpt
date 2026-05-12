@@ -11,10 +11,10 @@
 
 | Statut | Nombre |
 |--------|--------|
-| ✅ Complétée | 8/10 |
-| 🟡 En cours | 0/10 |
-| ⏳ À faire | 2/10 |
-| **Progression** | **80%** |
+| ✅ Complétée | 8/11 |
+| 🟡 En cours | 0/11 |
+| ⏳ À faire | 3/11 |
+| **Progression** | **73%** |
 
 ---
 
@@ -315,7 +315,62 @@
 
 ### **Bloc 7: Testing & Finalisation**
 
-#### 9️⃣ Tester et debugger l'application complète
+#### 9️⃣ Tests automatisés & Logs système
+**Status:** ⏳ À faire  
+**Priorité:** 🔴 Haute  
+**Estimation:** 4-5h  
+**Date de début:** -  
+**Date de fin:** -
+
+**Tests unitaires (ChatService):**
+- [ ] `tests/Unit/ChatServiceTest.php`
+  - [ ] Test ask() avec réponse valide
+  - [ ] Test erreurs HTTP 500
+  - [ ] Test askWithHistory() envoie historique
+  - [ ] Test streaming yielde chunks
+  - [ ] Test erreurs dans JSON API
+
+**Tests Feature (Controllers):**
+- [ ] `tests/Feature/ConversationControllerTest.php`
+  - [ ] Index retourne conversations authentifiées uniquement
+  - [ ] Store crée conversation
+  - [ ] Update renomme
+  - [ ] Destroy supprime
+  - [ ] Destroy bloqué pour autre user
+- [ ] `tests/Feature/MessageControllerTest.php`
+  - [ ] Auth requise
+  - [ ] Autorisation (autre user bloqué)
+  - [ ] Création user + assistant messages
+  - [ ] Model_used mis à jour au 1er message
+  - [ ] Titre généré après 4 messages
+  - [ ] Streaming retourne event-stream
+- [ ] `tests/Feature/AskControllerTest.php`
+  - [ ] Auth requise
+  - [ ] Réponse IA simple
+  - [ ] Streaming simple
+
+**Factories:**
+- [ ] `database/factories/ConversationFactory.php`
+- [ ] `database/factories/MessageFactory.php`
+
+**Logs système:**
+- [ ] `config/logging.php` : ajouter canal 'ai' (daily, 30 jours)
+- [ ] `app/Services/ChatService.php` : logger appels IA (début, durée, erreurs)
+- [ ] `app/Http/Controllers/MessageController.php` : logger erreurs
+
+**Documentation:**
+- [ ] Checklist dev : `docs/CHECKLIST_TESTS_LOGS.md`
+- [ ] Plan détaillé : `docs/TESTS_LOGS_PLAN.md`
+
+**Critères d'acceptation:**
+- [ ] Tous les tests passent: `composer test`
+- [ ] Couverture ≥80% pour ChatService, Controllers
+- [ ] Logs IA écrits dans `storage/logs/ai.log`
+- [ ] Logs sans contenu des messages (privacy)
+
+---
+
+#### 🔟 Tester et debugger l'application complète
 **Status:** ⏳ À faire  
 **Priorité:** 🟡 Moyen  
 **Estimation:** 2-3h  
@@ -341,7 +396,7 @@
 
 ---
 
-#### 🔟 Faire commit final et documentation
+#### 1️⃣1️⃣ Faire commit final et documentation
 **Status:** ⏳ À faire  
 **Priorité:** 🟢 Basse  
 **Estimation:** 30min  
@@ -349,14 +404,16 @@
 **Date de fin:** -
 
 **Tâches:**
-- [ ] Commit final: "Finaliser Mini-ChatGPT - Tous les exercices"
+- [ ] Commit final: "Finaliser Mini-ChatGPT - Tests & Logs intégrés"
 - [ ] Vérifier `.gitignore` (pas de `.env`)
 - [ ] Vérifier `.env.example` à jour
-- [ ] README.md à jour avec instructions setup
+- [ ] README.md à jour avec instructions setup & tests
 - [ ] doc/ bien organisée
   - [ ] /requirements
   - [ ] /architecture
   - [ ] DEVELOPMENT_PROGRESS.md (ce fichier)
+  - [ ] CHECKLIST_TESTS_LOGS.md (checklist dev)
+  - [ ] TESTS_LOGS_PLAN.md (plan détaillé)
 - [ ] Ajouter screenshots des fonctionnalités
 - [ ] Prêt pour présentation/soutenance
 
@@ -373,9 +430,10 @@ Bloc 3: Exercice 2            [██████████] 100%
 Bloc 4: Exercice 3            [██████████] 100%
 Bloc 5: Exercice 4            [██████████] 100%
 Bloc 6: Data & Infrastructure [██████████] 100%
-Bloc 7: Testing & Final       [████░░░░░░] 50%
+Bloc 7: Tests & Logs          [░░░░░░░░░░] 0%
+Bloc 8: Testing & Final       [░░░░░░░░░░] 0%
 ────────────────────────────────────────────
-TOTAL                         [████████░░] 80%
+TOTAL                         [████████░░] 73%
 ```
 
 ---
@@ -421,10 +479,13 @@ TOTAL                         [████████░░] 80%
 | Exercice 3 OK | - | 30/04/2026 | ✅ |
 | Exercice 4 OK | - | 30/04/2026 | ✅ |
 | Seeders + Navbar OK | - | 02/05/2026 | ✅ |
+| Tests & Logs Plan | - | 13/05/2026 | ✅ |
+| Tests & Logs impl. | - | - | ⏳ |
 | Tests complets | - | - | ⏳ |
 | Prêt soutenance | 24/06/2026 | - | ⏳ |
 
 ---
 
-**Dernière mise à jour:** 05 mai 2026  
-**Mis à jour par:** Adrien Mertens
+**Dernière mise à jour:** 13 mai 2026  
+**Mis à jour par:** Adrien Mertens  
+**Notes:** Ajout du bloc 7 (Tests & Logs) avec plan détaillé et checklist développement

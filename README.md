@@ -354,16 +354,55 @@ Toutes les notifications sont **100% en français** :
 
 ## 🧪 Tests
 
+### Tests automatisés
+
 ```bash
-# Tests unitaires
+# Lancer tous les tests
 php artisan test
 
-# Tests avec coverage
+# Tests avec couverture
 php artisan test --coverage
 
-# Tests E2E (optionnel - Dusk)
+# Tests spécifiques
+php artisan test --filter MessageController
+php artisan test --filter ConversationController
+php artisan test --filter ChatService
+```
+
+### Coberture de tests
+
+L'application inclut une suite de tests complète couvrant :
+
+- **Tests unitaires** : `ChatService` (appels API, streaming, gestion erreurs)
+- **Tests Feature** : `MessageController`, `ConversationController`, `AskController`
+- **Factories** : `ConversationFactory`, `MessageFactory` pour les données de test
+- **Coverage** : ≥80% pour les services et controllers critiques
+
+### Logs système
+
+Un système de logs dédié à l'IA est configuré :
+
+```bash
+# Voir les logs en temps réel
+tail -f storage/logs/ai.log
+
+# Logs de tous les appels IA
+# - Début de l'appel (model)
+# - Durée en millisecondes
+# - Erreurs HTTP/API
+# - Sans contenu des messages (privacy)
+```
+
+Configuration : canal `ai` dans `config/logging.php`, rotation daily sur 30 jours.
+
+### Tests E2E (optionnel)
+
+```bash
+# Tests E2E avec Dusk
 php artisan dusk
 ```
+
+**Documentation complète** : Voir `/docs/CHECKLIST_TESTS_LOGS.md` et `/docs/TESTS_LOGS_PLAN.md`
 
 ---
 

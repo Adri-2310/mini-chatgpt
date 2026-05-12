@@ -33,6 +33,23 @@ Architecture système et schémas.
 
 ---
 
+### 🧪 Tests & Logs
+Tests automatisés et système de logs.
+
+- **[CHECKLIST_TESTS_LOGS.md](./CHECKLIST_TESTS_LOGS.md)** - Checklist développement
+  - Étapes numérotées avec checkboxes
+  - Tests unitaires et feature
+  - Configuration des logs
+  - Vérification finale
+
+- **[TESTS_LOGS_PLAN.md](./TESTS_LOGS_PLAN.md)** - Plan détaillé d'implémentation
+  - Code d'exemple complet pour chaque test
+  - Stratégies de mock (Http::fake, Mockery)
+  - Fichiers à créer/modifier avec détails
+  - Métriques de succès
+
+---
+
 ### 📖 [Guides](./guides/)
 Guides pratiques et documentation technique.
 
@@ -59,12 +76,14 @@ Guides pratiques et documentation technique.
 | Phase | Titre | Status |
 |-------|-------|--------|
 | 1 | Fondations (BD + Auth) | ✅ Complétée |
-| 2 | Gestion des Conversations | ⏳ En attente |
-| 3 | Sélecteur de Modèle + LLM | ⏳ En attente |
-| 4 | Affichage en Temps Réel | ⏳ En attente |
-| 5 | Instructions Personnalisées | ⏳ En attente |
-| 6 | Polissage + Tests | ⏳ En attente |
-| 7 | Fonctionnalités Avancées | ⏳ Optionnel |
+| 2 | Chat Simple (Ask) | ✅ Complétée |
+| 3 | Conversations avec Historique | ✅ Complétée |
+| 4 | Instructions Personnalisées | ✅ Complétée |
+| 5 | Streaming Temps Réel | ✅ Complétée |
+| 6 | Seeders + Navigation | ✅ Complétée |
+| 7 | **Tests & Logs (Nouveau)** | 🟡 En planification |
+| 8 | Polissage + Tests Manuels | ⏳ À faire |
+| 9 | Fonctionnalités Avancées | ⏳ Optionnel |
 
 ---
 
