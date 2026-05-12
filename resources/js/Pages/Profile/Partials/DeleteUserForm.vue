@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
 import DangerButton from '@/Components/DangerButton.vue';
@@ -10,6 +10,8 @@ import TextInput from '@/Components/TextInput.vue';
 
 const confirmingUserDeletion = ref(false);
 const passwordInput = ref(null);
+
+const $toastr = inject('$toastr');
 
 const form = useForm({
     password: '',
@@ -24,8 +26,22 @@ const confirmUserDeletion = () => {
 const deleteUser = () => {
     form.delete(route('current-user.destroy'), {
         preserveScroll: true,
-        onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
+        onSuccess: () => {
+            closeModal();
+            if ($toastr) {
+                $toastr.success('Votre compte a été supprimé avec succès.');
+            }
+        },
+        onError: () => {
+            passwordInput.value.focus();
+            if ($toastr && Object.keys(form.errors).length > 0) {
+                Object.values(form.errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+        },
         onFinish: () => form.reset(),
     });
 };

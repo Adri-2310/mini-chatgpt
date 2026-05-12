@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, inject } from 'vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import ActionSection from '@/Components/ActionSection.vue';
 import ConfirmsPassword from '@/Components/ConfirmsPassword.vue';
@@ -9,6 +9,8 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+
+const $toastr = inject('$toastr');
 
 const props = defineProps({
     requiresConfirmation: Boolean,
@@ -81,6 +83,18 @@ const confirmTwoFactorAuthentication = () => {
             confirming.value = false;
             qrCode.value = null;
             setupKey.value = null;
+            if ($toastr) {
+                $toastr.success('L\'authentification à deux facteurs a été activée.');
+            }
+        },
+        onError: () => {
+            if ($toastr && Object.keys(confirmationForm.errors).length > 0) {
+                Object.values(confirmationForm.errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
         },
     });
 };
@@ -88,7 +102,17 @@ const confirmTwoFactorAuthentication = () => {
 const regenerateRecoveryCodes = () => {
     axios
         .post(route('two-factor.recovery-codes'))
-        .then(() => showRecoveryCodes());
+        .then(() => {
+            showRecoveryCodes();
+            if ($toastr) {
+                $toastr.success('Les codes de récupération ont été régénérés.');
+            }
+        })
+        .catch(() => {
+            if ($toastr) {
+                $toastr.error('Une erreur est survenue lors de la régénération des codes.');
+            }
+        });
 };
 
 const disableTwoFactorAuthentication = () => {
@@ -99,6 +123,15 @@ const disableTwoFactorAuthentication = () => {
         onSuccess: () => {
             disabling.value = false;
             confirming.value = false;
+            if ($toastr) {
+                $toastr.success('L\'authentification à deux facteurs a été désactivée.');
+            }
+        },
+        onError: () => {
+            disabling.value = false;
+            if ($toastr) {
+                $toastr.error('Une erreur est survenue lors de la désactivation de la 2FA.');
+            }
         },
     });
 };

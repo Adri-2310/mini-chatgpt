@@ -14,6 +14,9 @@ const messageTranslations = {
     'password-updated': 'Votre mot de passe a été mis à jour avec succès.',
     'two-factor-authentication-enabled': 'L\'authentification à deux facteurs a été activée.',
     'two-factor-authentication-disabled': 'L\'authentification à deux facteurs a été désactivée.',
+    'auth.failed': 'Identifiants invalides.',
+    'auth.throttle': 'Trop de tentatives de connexion. Veuillez réessayer dans quelques secondes.',
+    'auth.password': 'Le mot de passe fourni est incorrect.',
 };
 
 const translateMessage = (message) => {

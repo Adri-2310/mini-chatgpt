@@ -1,7 +1,6 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import ActionMessage from '@/Components/ActionMessage.vue';
 import ActionSection from '@/Components/ActionSection.vue';
 import DialogModal from '@/Components/DialogModal.vue';
 import InputError from '@/Components/InputError.vue';
@@ -16,6 +15,8 @@ defineProps({
 const confirmingLogout = ref(false);
 const passwordInput = ref(null);
 
+const $toastr = inject('$toastr');
+
 const form = useForm({
     password: '',
 });
@@ -29,8 +30,22 @@ const confirmLogout = () => {
 const logoutOtherBrowserSessions = () => {
     form.delete(route('other-browser-sessions.destroy'), {
         preserveScroll: true,
-        onSuccess: () => closeModal(),
-        onError: () => passwordInput.value.focus(),
+        onSuccess: () => {
+            closeModal();
+            if ($toastr) {
+                $toastr.success('Vous avez été déconnecté de vos autres sessions.');
+            }
+        },
+        onError: () => {
+            passwordInput.value.focus();
+            if ($toastr && Object.keys(form.errors).length > 0) {
+                Object.values(form.errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+        },
         onFinish: () => form.reset(),
     });
 };
@@ -91,10 +106,6 @@ const closeModal = () => {
                 <PrimaryButton @click="confirmLogout">
                     Déconnecter les Autres Sessions
                 </PrimaryButton>
-
-                <ActionMessage :on="form.recentlySuccessful" class="ms-3">
-                    Terminé.
-                </ActionMessage>
             </div>
 
             <!-- Log Out Other Devices Confirmation Modal -->

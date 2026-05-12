@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { inject } from 'vue';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -7,6 +8,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 const form = useForm({
     name: '',
@@ -16,8 +18,19 @@ const form = useForm({
     terms: false,
 });
 
+const $toastr = inject('$toastr');
+
 const submit = () => {
     form.post(route('register'), {
+        onError: (errors) => {
+            if ($toastr && Object.keys(errors).length > 0) {
+                Object.values(errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+        },
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
 };
@@ -25,6 +38,8 @@ const submit = () => {
 
 <template>
     <Head title="Inscription" />
+
+    <ToastNotification />
 
     <AuthenticationCard>
         <template #logo>

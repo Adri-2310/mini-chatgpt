@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
-import ActionMessage from '@/Components/ActionMessage.vue';
+import { inject } from 'vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -12,6 +12,8 @@ import TextInput from '@/Components/TextInput.vue';
 const props = defineProps({
     user: Object,
 });
+
+const $toastr = inject('$toastr');
 
 const form = useForm({
     _method: 'PUT',
@@ -32,7 +34,21 @@ const updateProfileInformation = () => {
     form.post(route('user-profile-information.update'), {
         errorBag: 'updateProfileInformation',
         preserveScroll: true,
-        onSuccess: () => clearPhotoFileInput(),
+        onSuccess: () => {
+            clearPhotoFileInput();
+            if ($toastr) {
+                $toastr.success('Vos informations de profil ont été mises à jour avec succès.');
+            }
+        },
+        onError: () => {
+            if ($toastr && Object.keys(form.errors).length > 0) {
+                Object.values(form.errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+        },
     });
 };
 
@@ -178,10 +194,6 @@ const clearPhotoFileInput = () => {
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Enregistré.
-            </ActionMessage>
-
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Enregistrer
             </PrimaryButton>

@@ -1,5 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { inject } from 'vue';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
@@ -20,11 +21,22 @@ const form = useForm({
     remember: false,
 });
 
+const $toastr = inject('$toastr');
+
 const submit = () => {
     form.transform(data => ({
         ...data,
         remember: form.remember ? 'on' : '',
     })).post(route('login'), {
+        onError: (errors) => {
+            if ($toastr && Object.keys(errors).length > 0) {
+                Object.values(errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+        },
         onFinish: () => form.reset('password'),
     });
 };

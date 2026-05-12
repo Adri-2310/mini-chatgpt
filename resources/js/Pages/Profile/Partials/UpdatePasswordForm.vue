@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useForm } from '@inertiajs/vue3';
-import ActionMessage from '@/Components/ActionMessage.vue';
+import { inject } from 'vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -10,6 +10,8 @@ import TextInput from '@/Components/TextInput.vue';
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
+
+const $toastr = inject('$toastr');
 
 const form = useForm({
     current_password: '',
@@ -21,8 +23,21 @@ const updatePassword = () => {
     form.put(route('user-password.update'), {
         errorBag: 'updatePassword',
         preserveScroll: true,
-        onSuccess: () => form.reset(),
+        onSuccess: () => {
+            form.reset();
+            if ($toastr) {
+                $toastr.success('Votre mot de passe a été mis à jour avec succès.');
+            }
+        },
         onError: () => {
+            if ($toastr && Object.keys(form.errors).length > 0) {
+                Object.values(form.errors).forEach(error => {
+                    if (error) {
+                        $toastr.error(error);
+                    }
+                });
+            }
+
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
                 passwordInput.value.focus();
@@ -88,10 +103,6 @@ const updatePassword = () => {
         </template>
 
         <template #actions>
-            <ActionMessage :on="form.recentlySuccessful" class="me-3">
-                Enregistré.
-            </ActionMessage>
-
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Enregistrer
             </PrimaryButton>

@@ -1,18 +1,34 @@
 <script setup>
 import { computed } from 'vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { inject } from 'vue';
 import AuthenticationCard from '@/Components/AuthenticationCard.vue';
 import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import ToastNotification from '@/Components/ToastNotification.vue';
 
 const props = defineProps({
     status: String,
 });
 
+const page = usePage();
+const $toastr = inject('$toastr');
+
 const form = useForm({});
 
 const submit = () => {
-    form.post(route('verification.send'));
+    form.post(route('verification.send'), {
+        onSuccess: () => {
+            if ($toastr) {
+                $toastr.success('Un nouveau lien de vérification a été envoyé à votre adresse email.');
+            }
+        },
+        onError: () => {
+            if ($toastr) {
+                $toastr.error('Une erreur est survenue lors de l\'envoi du lien de vérification.');
+            }
+        },
+    });
 };
 
 const verificationLinkSent = computed(() => props.status === 'verification-link-sent');
@@ -20,6 +36,8 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
 <template>
     <Head title="Vérification de l'Email" />
+
+    <ToastNotification />
 
     <AuthenticationCard>
         <template #logo>
