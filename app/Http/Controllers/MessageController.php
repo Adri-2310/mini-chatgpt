@@ -68,9 +68,13 @@ class MessageController extends Controller
 
             $titleUpdated = false;
             if (!$conversation->title || $conversation->title === 'Nouvelle conversation') {
-                $title = substr($request->input('content'), 0, 50);
-                $conversation->update(['title' => $title]);
-                $titleUpdated = true;
+                $messageCount = $conversation->messages()->count();
+
+                if ($messageCount >= 4) {
+                    $title = $this->generateConversationTitle($conversation, $request->input('model'));
+                    $conversation->update(['title' => $title]);
+                    $titleUpdated = true;
+                }
             }
 
             $messages = $conversation->messages()
@@ -88,6 +92,36 @@ class MessageController extends Controller
                 'success' => false,
                 'error' => $e->getMessage(),
             ], 500);
+        }
+    }
+
+    private function generateConversationTitle(Conversation $conversation, string $model): string
+    {
+        $messages = $conversation->messages()
+            ->orderBy('created_at')
+            ->limit(4)
+            ->get(['role', 'content'])
+            ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
+            ->toArray();
+
+        $conversationContext = "Basé sur cette conversation, génère un titre court (3-5 mots) qui résume le sujet principal:\n\n";
+        foreach ($messages as $msg) {
+            $role = $msg['role'] === 'user' ? 'Utilisateur' : 'Assistant';
+            $conversationContext .= "$role: " . substr($msg['content'], 0, 100) . "...\n";
+        }
+        $conversationContext .= "\nTitre (en français):";
+
+        try {
+            $title = $this->chatService->ask($model, $conversationContext);
+            $title = trim($title);
+
+            if (strlen($title) > 100) {
+                $title = substr($title, 0, 100);
+            }
+
+            return !empty($title) ? $title : 'Nouvelle conversation';
+        } catch (\Exception $e) {
+            return substr($messages[0]['content'] ?? 'Nouvelle conversation', 0, 50);
         }
     }
 
@@ -157,8 +191,11 @@ class MessageController extends Controller
                 ]);
 
                 if (!$conversation->title || $conversation->title === 'Nouvelle conversation') {
-                    $title = substr($request->input('content'), 0, 50);
-                    $conversation->update(['title' => $title]);
+                    $messageCount = $conversation->messages()->count();
+                    if ($messageCount >= 4) {
+                        $title = $this->generateConversationTitle($conversation, $model);
+                        $conversation->update(['title' => $title]);
+                    }
                 }
 
                 // 5. On envoie le signal de fin au front-end
