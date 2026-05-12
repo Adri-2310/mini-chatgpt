@@ -23,12 +23,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(fun
     Route::get('/email/verify', function () {
         return Inertia::render('Auth/VerifyEmail');
     })->name('verification.notice');
-
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        return redirect('/dashboard');
-    })->middleware('throttle:6,1')->name('verification.verify');
 });
+
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/login')->with('status', 'Votre email a été vérifié avec succès. Vous pouvez maintenant vous connecter.');
+})->middleware('throttle:6,1')->name('verification.verify');
 
 Route::middleware([
     'auth:sanctum',
