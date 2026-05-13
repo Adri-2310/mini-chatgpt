@@ -122,6 +122,7 @@ class MessageController extends Controller
         try {
             $result = $this->chatService->ask($model, $conversationContext);
             $title = trim($result['content']);
+            $title = trim($title, '\'"');
 
             if (strlen($title) > 100) {
                 $title = substr($title, 0, 100);

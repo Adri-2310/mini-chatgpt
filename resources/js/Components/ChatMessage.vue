@@ -27,7 +27,7 @@ const formatContent = (content) => {
 </script>
 
 <template>
-    <div :class="['flex mb-4', props.role === 'user' ? 'justify-end' : 'justify-start']">
+    <div :class="['flex flex-col mb-4', props.role === 'user' ? 'items-end' : 'items-start']">
         <div
             :class="[
                 'max-w-xs lg:max-w-md px-4 py-3 rounded-lg',
@@ -43,7 +43,7 @@ const formatContent = (content) => {
                 {{ props.content }}
             </div>
         </div>
-        <div v-if="props.role === 'assistant' && props.tokensUsed" class="text-xs text-gray-400 mt-1 text-right">
+        <div v-if="props.role === 'assistant' && props.tokensUsed" class="text-xs text-gray-400 mt-1">
             {{ props.tokensUsed }} tokens
         </div>
     </div>
