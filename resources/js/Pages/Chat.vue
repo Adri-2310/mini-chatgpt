@@ -150,6 +150,9 @@ const { isStreaming, send: sendStream } = useStream(
                 const response = await fetch(`/conversations/${activeConversationId.value}`, {});
                 if (response.ok) {
                     const data = await response.json();
+                    // Remplacer les messages avec ceux de la BD qui contiennent tokens_used
+                    messages.value = data.messages || [];
+
                     const index = conversations.value.findIndex(c => c.id === activeConversationId.value);
                     if (index > -1) {
                         conversations.value[index] = {
