@@ -80,7 +80,7 @@ const createNewConversation = async () => {
 const selectConversation = async (conversationId) => {
     try {
         activeConversationId.value = conversationId;
-        const response = await fetch(`/conversations/${conversationId}`);
+        const response = await fetch(`/conversations/${conversationId}`, {});
 
         if (response.ok) {
             const data = await response.json();
@@ -147,7 +147,7 @@ const { isStreaming, send: sendStream } = useStream(
             isConversationStarted.value = true;
 
             try {
-                const response = await fetch(`/conversations/${activeConversationId.value}`);
+                const response = await fetch(`/conversations/${activeConversationId.value}`, {});
                 if (response.ok) {
                     const data = await response.json();
                     const index = conversations.value.findIndex(c => c.id === activeConversationId.value);
