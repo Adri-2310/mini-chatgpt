@@ -16,7 +16,7 @@ class MessageControllerTest extends TestCase
     {
         $conversation = Conversation::factory()->create();
 
-        $response = $this->postJson("/api/conversations/{$conversation->id}/messages", [
+        $response = $this->postJson("/conversations/{$conversation->id}/messages", [
             'content' => 'Test',
             'model' => 'gpt-4o-mini',
         ]);
@@ -31,7 +31,7 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->for($user2)->create();
 
         $response = $this->actingAs($user1)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             [
                 'content' => 'Test',
                 'model' => 'gpt-4o-mini',
@@ -47,7 +47,7 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->for($user)->create();
 
         $response = $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             []
         );
 
@@ -65,7 +65,7 @@ class MessageControllerTest extends TestCase
         });
 
         $response = $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             [
                 'content' => str_repeat('a', 5001),
                 'model' => 'gpt-4o-mini',
@@ -91,7 +91,7 @@ class MessageControllerTest extends TestCase
         });
 
         $response = $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             [
                 'content' => 'Bonjour',
                 'model' => 'gpt-4o-mini',
@@ -128,7 +128,7 @@ class MessageControllerTest extends TestCase
         });
 
         $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             [
                 'content' => 'Test',
                 'model' => 'gpt-4',
@@ -160,7 +160,7 @@ class MessageControllerTest extends TestCase
         });
 
         $response = $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages",
+            "/conversations/{$conversation->id}/messages",
             [
                 'content' => 'Msg 2',
                 'model' => 'gpt-4',
@@ -176,7 +176,7 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->create();
 
         $response = $this->postJson(
-            "/api/conversations/{$conversation->id}/messages/stream",
+            "/conversations/{$conversation->id}/messages/stream",
             [
                 'content' => 'Test',
                 'model' => 'gpt-4o-mini',
@@ -200,7 +200,7 @@ class MessageControllerTest extends TestCase
         });
 
         $response = $this->actingAs($user)->postJson(
-            "/api/conversations/{$conversation->id}/messages/stream",
+            "/conversations/{$conversation->id}/messages/stream",
             [
                 'content' => 'Test',
                 'model' => 'gpt-4o-mini',

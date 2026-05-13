@@ -18,7 +18,7 @@ class ConversationControllerTest extends TestCase
         $conv1 = Conversation::factory()->for($user1)->create(['title' => 'Conv User 1']);
         $conv2 = Conversation::factory()->for($user2)->create(['title' => 'Conv User 2']);
 
-        $response = $this->actingAs($user1)->getJson('/api/conversations');
+        $response = $this->actingAs($user1)->getJson('/conversations');
 
         $response->assertStatus(200);
         $response->assertJsonCount(1);
@@ -30,7 +30,7 @@ class ConversationControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/conversations', [
+        $response = $this->actingAs($user)->postJson('/conversations', [
             'title' => 'Nouvelle conversation test',
         ]);
 
@@ -43,7 +43,7 @@ class ConversationControllerTest extends TestCase
 
     public function test_store_requires_authentication()
     {
-        $response = $this->postJson('/api/conversations', [
+        $response = $this->postJson('/conversations', [
             'title' => 'Test',
         ]);
 
@@ -55,7 +55,7 @@ class ConversationControllerTest extends TestCase
         $user = User::factory()->create();
         $conversation = Conversation::factory()->for($user)->create(['title' => 'Ancien titre']);
 
-        $response = $this->actingAs($user)->putJson("/api/conversations/{$conversation->id}", [
+        $response = $this->actingAs($user)->putJson("/conversations/{$conversation->id}", [
             'title' => 'Nouveau titre',
         ]);
 
@@ -69,7 +69,7 @@ class ConversationControllerTest extends TestCase
         $user2 = User::factory()->create();
         $conversation = Conversation::factory()->for($user2)->create();
 
-        $response = $this->actingAs($user1)->putJson("/api/conversations/{$conversation->id}", [
+        $response = $this->actingAs($user1)->putJson("/conversations/{$conversation->id}", [
             'title' => 'Nouveau titre',
         ]);
 
@@ -81,7 +81,7 @@ class ConversationControllerTest extends TestCase
         $user = User::factory()->create();
         $conversation = Conversation::factory()->for($user)->create();
 
-        $response = $this->actingAs($user)->deleteJson("/api/conversations/{$conversation->id}");
+        $response = $this->actingAs($user)->deleteJson("/conversations/{$conversation->id}");
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('conversations', ['id' => $conversation->id]);
@@ -93,7 +93,7 @@ class ConversationControllerTest extends TestCase
         $user2 = User::factory()->create();
         $conversation = Conversation::factory()->for($user2)->create();
 
-        $response = $this->actingAs($user1)->deleteJson("/api/conversations/{$conversation->id}");
+        $response = $this->actingAs($user1)->deleteJson("/conversations/{$conversation->id}");
 
         $response->assertStatus(403);
     }
@@ -107,7 +107,7 @@ class ConversationControllerTest extends TestCase
             ['role' => 'assistant', 'content' => 'Réponse 1', 'model' => 'gpt-4'],
         ]);
 
-        $response = $this->actingAs($user)->getJson("/api/conversations/{$conversation->id}");
+        $response = $this->actingAs($user)->getJson("/conversations/{$conversation->id}");
 
         $response->assertStatus(200);
         $response->assertJsonCount(2, 'messages');
