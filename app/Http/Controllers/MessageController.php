@@ -7,6 +7,7 @@ use App\Models\Message;
 use App\Services\ChatService;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -88,6 +89,12 @@ class MessageController extends Controller
                 'new_title' => $titleUpdated ? $conversation->title : null,
             ]);
         } catch (\Exception $e) {
+            Log::error('Message store failed', [
+                'conversation_id' => $conversation->id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),
@@ -212,8 +219,12 @@ class MessageController extends Controller
                 'X-Accel-Buffering' => 'no',
             ]);
         } catch (\Exception $e) {
-            // Note: si l'erreur se produit après le début du stream, ce JSON ne sera pas bien lu par le front, 
-            // mais c'est une protection standard.
+            Log::error('Message stream store failed', [
+                'conversation_id' => $conversation->id,
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'error' => $e->getMessage(),

@@ -33,11 +33,11 @@ class ConversationController extends Controller
     public function store(Request $request)
     {
         $conversation = auth()->user()->conversations()->create([
-            'title' => 'Nouvelle conversation',
+            'title' => $request->input('title') ?? 'Nouvelle conversation',
             'model_used' => $request->input('model') ?? config('ai_models.default'),
         ]);
 
-        return response()->json($conversation);
+        return response()->json($conversation, 201);
     }
 
     public function show(Conversation $conversation)

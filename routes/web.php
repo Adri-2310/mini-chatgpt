@@ -27,7 +27,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(fun
 
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/login')->with('status', 'Votre email a été vérifié avec succès. Vous pouvez maintenant vous connecter.');
+    return redirect(route('dashboard', absolute: false).'?verified=1');
 })->middleware('throttle:6,1')->name('verification.verify');
 
 Route::middleware([
@@ -46,8 +46,4 @@ Route::middleware([
     Route::get('/ask', [AskController::class, 'index'])->name('ask');
     Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
     Route::post('/ask/stream', [AskController::class, 'stream'])->name('ask.stream');
-
-    Route::apiResource('conversations', ConversationController::class);
-    Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])->name('messages.store');
-    Route::post('/conversations/{conversation}/messages/stream', [MessageController::class, 'streamStore'])->name('messages.stream');
 });

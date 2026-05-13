@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ChatService
 {
@@ -21,7 +22,14 @@ class ChatService
 
     public function ask(string $model, string $question, ?string $systemPrompt = null): string
     {
+        $startTime = microtime(true);
+
         try {
+            Log::channel('ai')->info('IA call started', [
+                'model' => $model,
+                'method' => 'ask',
+            ]);
+
             $messages = [];
 
             if ($systemPrompt) {
@@ -59,16 +67,35 @@ class ChatService
                 throw new \Exception('Structure de réponse invalide');
             }
 
+            $duration = round((microtime(true) - $startTime) * 1000);
+            Log::channel('ai')->info('IA call succeeded', [
+                'model' => $model,
+                'method' => 'ask',
+                'duration_ms' => $duration,
+            ]);
+
             return $data['choices'][0]['message']['content'];
         } catch (\Exception $e) {
-            \Log::error('ChatService Error: ' . $e->getMessage());
+            Log::channel('ai')->error('IA call failed', [
+                'model' => $model,
+                'method' => 'ask',
+                'error' => $e->getMessage(),
+            ]);
             throw new \Exception('Erreur lors de l\'appel à l\'API: ' . $e->getMessage());
         }
     }
 
     public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null): string
     {
+        $startTime = microtime(true);
+
         try {
+            Log::channel('ai')->info('IA call started', [
+                'model' => $model,
+                'method' => 'askWithHistory',
+                'messages_count' => count($messages),
+            ]);
+
             if ($systemPrompt) {
                 array_unshift($messages, [
                     'role' => 'system',
@@ -99,9 +126,20 @@ class ChatService
                 throw new \Exception('Structure de réponse invalide');
             }
 
+            $duration = round((microtime(true) - $startTime) * 1000);
+            Log::channel('ai')->info('IA call succeeded', [
+                'model' => $model,
+                'method' => 'askWithHistory',
+                'duration_ms' => $duration,
+            ]);
+
             return $data['choices'][0]['message']['content'];
         } catch (\Exception $e) {
-            \Log::error('ChatService Error: ' . $e->getMessage());
+            Log::channel('ai')->error('IA call failed', [
+                'model' => $model,
+                'method' => 'askWithHistory',
+                'error' => $e->getMessage(),
+            ]);
             throw new \Exception('Erreur lors de l\'appel à l\'API: ' . $e->getMessage());
         }
     }
@@ -109,6 +147,11 @@ class ChatService
     public function streamAsk(string $model, string $question, ?string $systemPrompt = null): \Generator
     {
         try {
+            Log::channel('ai')->info('IA streaming started', [
+                'model' => $model,
+                'method' => 'streamAsk',
+            ]);
+
             $messages = [];
 
             if ($systemPrompt) {
@@ -123,9 +166,13 @@ class ChatService
                 'content' => $question,
             ];
 
-            yield from $this->streamMessages($model, $messages);
+            yield from $this->streamMessages($model, $messages, 'streamAsk');
         } catch (\Exception $e) {
-            \Log::error('ChatService Stream Error: ' . $e->getMessage());
+            Log::channel('ai')->error('IA streaming failed', [
+                'model' => $model,
+                'method' => 'streamAsk',
+                'error' => $e->getMessage(),
+            ]);
             throw new \Exception('Erreur lors du streaming: ' . $e->getMessage());
         }
     }
@@ -133,6 +180,12 @@ class ChatService
     public function streamWithHistory(string $model, array $messages, ?string $systemPrompt = null): \Generator
     {
         try {
+            Log::channel('ai')->info('IA streaming started', [
+                'model' => $model,
+                'method' => 'streamWithHistory',
+                'messages_count' => count($messages),
+            ]);
+
             if ($systemPrompt) {
                 array_unshift($messages, [
                     'role' => 'system',
@@ -140,14 +193,18 @@ class ChatService
                 ]);
             }
 
-            yield from $this->streamMessages($model, $messages);
+            yield from $this->streamMessages($model, $messages, 'streamWithHistory');
         } catch (\Exception $e) {
-            \Log::error('ChatService Stream Error: ' . $e->getMessage());
+            Log::channel('ai')->error('IA streaming failed', [
+                'model' => $model,
+                'method' => 'streamWithHistory',
+                'error' => $e->getMessage(),
+            ]);
             throw new \Exception('Erreur lors du streaming: ' . $e->getMessage());
         }
     }
 
-    private function streamMessages(string $model, array $messages): \Generator
+    private function streamMessages(string $model, array $messages, string $method = 'unknown'): \Generator
     {
         try {
             $client = new \GuzzleHttp\Client();
@@ -167,15 +224,18 @@ class ChatService
                 'stream' => true,
                 'verify' => false,
                 'timeout' => 30,
-                'http_errors' => false, // <-- TRÈS IMPORTANT : Empêche Guzzle de crasher sur une erreur 4xx/5xx
+                'http_errors' => false,
             ]);
 
-            // VÉRIFICATION DE L'ERREUR HTTP ICI
             if ($response->getStatusCode() !== 200) {
                 $errorBody = (string) $response->getBody();
-                \Log::error("Erreur OpenRouter : " . $errorBody);
-                
-                // On renvoie l'erreur sous forme de texte pour la voir à l'écran
+                Log::channel('ai')->error('IA streaming HTTP error', [
+                    'model' => $model,
+                    'method' => $method,
+                    'status' => $response->getStatusCode(),
+                    'error' => $errorBody,
+                ]);
+
                 yield "Erreur de l'API : " . $errorBody;
                 return;
             }
@@ -211,9 +271,12 @@ class ChatService
 
                     $data = json_decode($jsonStr, true);
 
-                    // Vérification d'une erreur API à l'intérieur du flux
                     if ($data && isset($data['error'])) {
-                        \Log::error('Erreur OpenRouter dans le flux : ' . print_r($data['error'], true));
+                        Log::channel('ai')->error('IA streaming error in response', [
+                            'model' => $model,
+                            'method' => $method,
+                            'error' => $data['error']['message'] ?? 'Erreur inconnue',
+                        ]);
                         yield "Erreur de l'IA : " . ($data['error']['message'] ?? 'Erreur inconnue');
                         return;
                     }
@@ -239,7 +302,11 @@ class ChatService
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('ChatService Stream Error: ' . $e->getMessage());
+            Log::channel('ai')->error('IA streaming exception', [
+                'model' => $model,
+                'method' => $method,
+                'error' => $e->getMessage(),
+            ]);
             throw new \Exception('Erreur lors du streaming: ' . $e->getMessage());
         }
     }
