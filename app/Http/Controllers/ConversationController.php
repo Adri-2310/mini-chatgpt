@@ -50,7 +50,7 @@ class ConversationController extends Controller
 
         $messages = $conversation->messages()
             ->orderBy('created_at')
-            ->get(['id', 'role', 'content', 'created_at']);
+            ->get(['id', 'role', 'content', 'tokens_used', 'created_at']);
 
         return response()->json([
             'conversation' => $conversation,

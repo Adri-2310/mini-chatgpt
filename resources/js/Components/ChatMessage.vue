@@ -10,6 +10,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    tokensUsed: {
+        type: Number,
+        default: null,
+    },
 });
 
 const { render } = useMarkdown();
@@ -38,6 +42,9 @@ const formatContent = (content) => {
             <div v-else class="text-sm">
                 {{ props.content }}
             </div>
+        </div>
+        <div v-if="props.role === 'assistant' && props.tokensUsed" class="text-xs text-gray-400 mt-1 text-right">
+            {{ props.tokensUsed }} tokens
         </div>
     </div>
 </template>

@@ -55,7 +55,7 @@ class MessageController extends Controller
                 $systemPrompt = $customInstruction->instructions;
             }
 
-            $aiResponse = $this->chatService->askWithHistory(
+            $aiResult = $this->chatService->askWithHistory(
                 $request->input('model'),
                 $messageHistory,
                 $systemPrompt
@@ -63,8 +63,9 @@ class MessageController extends Controller
 
             $assistantMessage = $conversation->messages()->create([
                 'role' => 'assistant',
-                'content' => $aiResponse,
+                'content' => $aiResult['content'],
                 'model' => $request->input('model'),
+                'tokens_used' => $aiResult['tokens'],
             ]);
 
             $titleUpdated = false;
@@ -80,7 +81,7 @@ class MessageController extends Controller
 
             $messages = $conversation->messages()
                 ->orderBy('created_at')
-                ->get(['id', 'role', 'content', 'created_at']);
+                ->get(['id', 'role', 'content', 'tokens_used', 'created_at']);
 
             return response()->json([
                 'success' => true,
@@ -119,8 +120,8 @@ class MessageController extends Controller
         $conversationContext .= "\nTitre (en français):";
 
         try {
-            $title = $this->chatService->ask($model, $conversationContext);
-            $title = trim($title);
+            $result = $this->chatService->ask($model, $conversationContext);
+            $title = trim($result['content']);
 
             if (strlen($title) > 100) {
                 $title = substr($title, 0, 100);
@@ -191,10 +192,12 @@ class MessageController extends Controller
                 }
 
                 // 4. Une fois que l'IA a fini de parler, on sauvegarde en base de données
+                $tokensUsed = $this->chatService->getLastStreamTokens();
                 $conversation->messages()->create([
                     'role' => 'assistant',
                     'content' => $fullResponse,
                     'model' => $model,
+                    'tokens_used' => $tokensUsed,
                 ]);
 
                 if (!$conversation->title || $conversation->title === 'Nouvelle conversation') {
@@ -205,7 +208,16 @@ class MessageController extends Controller
                     }
                 }
 
-                // 5. On envoie le signal de fin au front-end
+                // 5. Send tokens usage to frontend before closing
+                if ($tokensUsed) {
+                    echo "data: " . json_encode(['type' => 'usage', 'tokens' => $tokensUsed]) . "\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                }
+
+                // 6. On envoie le signal de fin au front-end
                 echo "data: [DONE]\n\n";
                 if (ob_get_level() > 0) {
                     ob_flush();

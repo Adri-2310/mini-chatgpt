@@ -10,6 +10,7 @@ class ChatService
     private const API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
     private string $apiKey;
+    private ?int $lastStreamTokens = null;
 
     public function __construct()
     {
@@ -20,7 +21,12 @@ class ChatService
         }
     }
 
-    public function ask(string $model, string $question, ?string $systemPrompt = null): string
+    public function getLastStreamTokens(): ?int
+    {
+        return $this->lastStreamTokens;
+    }
+
+    public function ask(string $model, string $question, ?string $systemPrompt = null): array
     {
         $startTime = microtime(true);
 
@@ -74,7 +80,10 @@ class ChatService
                 'duration_ms' => $duration,
             ]);
 
-            return $data['choices'][0]['message']['content'];
+            return [
+                'content' => $data['choices'][0]['message']['content'],
+                'tokens'  => $data['usage']['total_tokens'] ?? null,
+            ];
         } catch (\Exception $e) {
             Log::channel('ai')->error('IA call failed', [
                 'model' => $model,
@@ -85,7 +94,7 @@ class ChatService
         }
     }
 
-    public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null): string
+    public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null): array
     {
         $startTime = microtime(true);
 
@@ -133,7 +142,10 @@ class ChatService
                 'duration_ms' => $duration,
             ]);
 
-            return $data['choices'][0]['message']['content'];
+            return [
+                'content' => $data['choices'][0]['message']['content'],
+                'tokens'  => $data['usage']['total_tokens'] ?? null,
+            ];
         } catch (\Exception $e) {
             Log::channel('ai')->error('IA call failed', [
                 'model' => $model,
@@ -281,6 +293,11 @@ class ChatService
                         return;
                     }
 
+                    // Capture tokens from usage if present
+                    if ($data && isset($data['usage']['total_tokens'])) {
+                        $this->lastStreamTokens = $data['usage']['total_tokens'];
+                    }
+
                     // On envoie le texte au fur et à mesure
                     if ($data && isset($data['choices'][0]['delta']['content'])) {
                         yield $data['choices'][0]['delta']['content'];
@@ -295,6 +312,12 @@ class ChatService
                     $jsonStr = substr($line, 6);
                     if ($jsonStr !== '[DONE]') {
                         $data = json_decode($jsonStr, true);
+
+                        // Capture tokens from usage if present
+                        if ($data && isset($data['usage']['total_tokens'])) {
+                            $this->lastStreamTokens = $data['usage']['total_tokens'];
+                        }
+
                         if ($data && isset($data['choices'][0]['delta']['content'])) {
                             yield $data['choices'][0]['delta']['content'];
                         }

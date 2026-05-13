@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, computed } from 'vue';
 import ChatMessage from './ChatMessage.vue';
 import LoadingIndicator from './LoadingIndicator.vue';
 
@@ -15,6 +15,10 @@ const props = defineProps({
 });
 
 const messageContainer = ref(null);
+
+const totalTokens = computed(() =>
+    props.messages.reduce((sum, m) => sum + (m.tokens_used || 0), 0)
+);
 
 const scrollToBottom = async () => {
     await nextTick();
@@ -48,9 +52,14 @@ watch(
                 :key="message.id"
                 :role="message.role"
                 :content="message.content"
+                :tokens-used="message.tokens_used"
             />
         </template>
 
         <LoadingIndicator v-if="loading" />
+
+        <div v-if="messages.length > 0 && totalTokens > 0" class="text-xs text-gray-400 text-center py-2 border-t border-gray-700">
+            Total conversation : {{ totalTokens.toLocaleString() }} tokens
+        </div>
     </div>
 </template>

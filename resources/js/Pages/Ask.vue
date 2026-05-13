@@ -25,6 +25,7 @@ const page = usePage();
 const selectedModel = ref('anthropic/claude-3.5-haiku');
 const response = ref('');
 const error = ref('');
+const tokensUsed = ref(null);
 
 // Création d'un buffer
 let streamBuffer = '';
@@ -51,6 +52,8 @@ const { isStreaming, send: sendStream } = useStream('/ask/stream', {
                     const data = JSON.parse(jsonStr);
                     if (data.content) {
                         response.value += data.content;
+                    } else if (data.type === 'usage') {
+                        tokensUsed.value = data.tokens;
                     }
                 } catch (e) {
                     console.error('❌ Erreur de parsing JSON :', e, "Texte qui a posé problème :", jsonStr);
@@ -75,6 +78,7 @@ const handleSubmit = async (question) => {
 
     error.value = '';
     response.value = '';
+    tokensUsed.value = null;
     streamBuffer = ''; // Réinitialisation du buffer pour la nouvelle question
 
     sendStream({
@@ -123,7 +127,7 @@ const handleSubmit = async (question) => {
                     />
                 </div>
 
-                <ResponseDisplay :content="response" />
+                <ResponseDisplay :content="response" :tokens-used="tokensUsed" />
             </div>
         </div>
 </template>

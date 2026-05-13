@@ -4,6 +4,7 @@ use App\Http\Controllers\AskController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Requests\VerifyEmailRequest;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
@@ -25,10 +26,10 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(fun
     })->name('verification.notice');
 });
 
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+Route::get('/email/verify/{id}/{hash}', function (VerifyEmailRequest $request) {
     $request->fulfill();
     return redirect(route('dashboard', absolute: false).'?verified=1');
-})->middleware('throttle:6,1')->name('verification.verify');
+})->middleware(['throttle:6,1', 'signed'])->name('verification.verify');
 
 Route::middleware([
     'auth:sanctum',

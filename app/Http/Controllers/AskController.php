@@ -36,7 +36,7 @@ class AskController extends Controller
                 $systemPrompt = $customInstruction->instructions;
             }
 
-            $response = $this->chatService->ask(
+            $result = $this->chatService->ask(
                 $request->input('model'),
                 $request->input('question'),
                 $systemPrompt
@@ -44,7 +44,8 @@ class AskController extends Controller
 
             return response()->json([
                 'success' => true,
-                'response' => $response,
+                'response' => $result['content'],
+                'tokens' => $result['tokens'],
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -80,7 +81,7 @@ class AskController extends Controller
                         // 1. Formatage strict SSE
                         // On encode en JSON pour éviter de casser le flux si le LLM génère des retours à la ligne
                         echo "data: " . json_encode(['content' => $chunk]) . "\n\n";
-                        
+
                         // 2. Vidage des buffers pour forcer l'envoi immédiat
                         if (ob_get_level() > 0) {
                             ob_flush();
@@ -89,7 +90,17 @@ class AskController extends Controller
                     }
                 }
 
-                // 3. Signal de fin
+                // 3. Send tokens usage to frontend before closing
+                $tokensUsed = $this->chatService->getLastStreamTokens();
+                if ($tokensUsed) {
+                    echo "data: " . json_encode(['type' => 'usage', 'tokens' => $tokensUsed]) . "\n\n";
+                    if (ob_get_level() > 0) {
+                        ob_flush();
+                    }
+                    flush();
+                }
+
+                // 4. Signal de fin
                 echo "data: [DONE]\n\n";
                 if (ob_get_level() > 0) {
                     ob_flush();

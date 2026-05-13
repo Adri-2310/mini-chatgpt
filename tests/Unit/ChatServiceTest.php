@@ -20,13 +20,16 @@ class ChatServiceTest extends TestCase
     {
         Http::fake([
             'https://openrouter.ai/api/v1/chat/completions' => Http::response([
-                'choices' => [['message' => ['content' => 'Réponse test']]]
+                'choices' => [['message' => ['content' => 'Réponse test']]],
+                'usage' => ['total_tokens' => 42]
             ], 200),
         ]);
 
         $result = $this->chatService->ask('gpt-4o-mini', 'Test question');
 
-        $this->assertStringContainsString('Réponse test', $result);
+        $this->assertIsArray($result);
+        $this->assertStringContainsString('Réponse test', $result['content']);
+        $this->assertEquals(42, $result['tokens']);
         Http::assertSent(function ($request) {
             return $request->url() === 'https://openrouter.ai/api/v1/chat/completions';
         });
@@ -47,7 +50,8 @@ class ChatServiceTest extends TestCase
     {
         Http::fake([
             'https://openrouter.ai/api/v1/chat/completions' => Http::response([
-                'choices' => [['message' => ['content' => 'Réponse']]]
+                'choices' => [['message' => ['content' => 'Réponse']]],
+                'usage' => ['total_tokens' => 50]
             ], 200),
         ]);
 
@@ -56,7 +60,11 @@ class ChatServiceTest extends TestCase
             ['role' => 'assistant', 'content' => 'Réponse 1'],
         ];
 
-        $this->chatService->askWithHistory('gpt-4o-mini', $history);
+        $result = $this->chatService->askWithHistory('gpt-4o-mini', $history);
+
+        $this->assertIsArray($result);
+        $this->assertEquals('Réponse', $result['content']);
+        $this->assertEquals(50, $result['tokens']);
 
         Http::assertSent(function ($request) use ($history) {
             $body = json_decode($request->body(), true);

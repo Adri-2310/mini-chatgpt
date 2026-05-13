@@ -84,7 +84,10 @@ class MessageControllerTest extends TestCase
         $this->mock(ChatService::class, function ($mock) {
             $mock->shouldReceive('askWithHistory')
                 ->once()
-                ->andReturn('Réponse IA test');
+                ->andReturn([
+                    'content' => 'Réponse IA test',
+                    'tokens' => 35
+                ]);
         });
 
         $response = $this->actingAs($user)->postJson(
@@ -108,6 +111,7 @@ class MessageControllerTest extends TestCase
             'conversation_id' => $conversation->id,
             'role' => 'assistant',
             'content' => 'Réponse IA test',
+            'tokens_used' => 35,
         ]);
     }
 
@@ -117,7 +121,10 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->for($user)->create();
 
         $this->mock(ChatService::class, function ($mock) {
-            $mock->shouldReceive('askWithHistory')->andReturn('Réponse');
+            $mock->shouldReceive('askWithHistory')->andReturn([
+                'content' => 'Réponse',
+                'tokens' => 20
+            ]);
         });
 
         $this->actingAs($user)->postJson(
@@ -142,8 +149,14 @@ class MessageControllerTest extends TestCase
         ]);
 
         $this->mock(ChatService::class, function ($mock) {
-            $mock->shouldReceive('askWithHistory')->andReturn('Resp 2');
-            $mock->shouldReceive('ask')->andReturn('Titre généré');
+            $mock->shouldReceive('askWithHistory')->andReturn([
+                'content' => 'Resp 2',
+                'tokens' => 28
+            ]);
+            $mock->shouldReceive('ask')->andReturn([
+                'content' => 'Titre généré',
+                'tokens' => 15
+            ]);
         });
 
         $response = $this->actingAs($user)->postJson(

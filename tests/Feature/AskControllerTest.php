@@ -27,7 +27,10 @@ class AskControllerTest extends TestCase
         $this->mock(ChatService::class, function ($mock) {
             $mock->shouldReceive('ask')
                 ->once()
-                ->andReturn('Réponse test de l\'IA');
+                ->andReturn([
+                    'content' => 'Réponse test de l\'IA',
+                    'tokens' => 42
+                ]);
         });
 
         $response = $this->actingAs($user)->postJson('/api/ask', [
@@ -38,6 +41,7 @@ class AskControllerTest extends TestCase
         $response->assertStatus(200);
         $response->assertJsonPath('response', 'Réponse test de l\'IA');
         $response->assertJsonPath('success', true);
+        $response->assertJsonPath('tokens', 42);
     }
 
     public function test_store_validates_required_fields()

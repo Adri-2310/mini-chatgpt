@@ -8,6 +8,10 @@ const props = defineProps({
         type: String,
         default: '',
     },
+    tokensUsed: {
+        type: Number,
+        default: null,
+    },
 });
 
 const { render } = useMarkdown();
@@ -24,6 +28,9 @@ const renderedContent = computed(() => {
             class="prose prose-invert max-w-none bg-slate-800/50 border border-slate-700 rounded-lg p-6 text-slate-300"
             v-html="renderedContent"
         ></div>
+        <div v-if="tokensUsed" class="text-xs text-gray-400 mt-2 text-right">
+            {{ tokensUsed }} tokens
+        </div>
     </div>
 </template>
 
