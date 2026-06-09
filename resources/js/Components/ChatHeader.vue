@@ -1,6 +1,5 @@
 <script setup>
 import ModelSelector from './ModelSelector.vue';
-import { useMarkdown } from '@/composables/useMarkdown';
 
 const props = defineProps({
     conversationTitle: {
@@ -25,10 +24,7 @@ const props = defineProps({
     },
 });
 
-const { render } = useMarkdown();
 const emit = defineEmits(['update:selectedModel']);
-
-const renderTitle = (title) => render(title);
 </script>
 
 <template>
@@ -36,7 +32,8 @@ const renderTitle = (title) => render(title);
         <div class="flex items-center justify-between gap-4">
             <div class="flex-1" />
             <div class="flex-1 text-center">
-                <h1 class="text-xl font-semibold text-white truncate" v-html="renderTitle(props.conversationTitle)">
+                <h1 class="text-xl font-semibold text-white truncate">
+                    {{ props.conversationTitle }}
                 </h1>
             </div>
             <div class="flex-1 flex justify-end">
