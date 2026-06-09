@@ -11,13 +11,14 @@ class SettingsController extends Controller
     {
         return Inertia::render('Settings', [
             'customInstruction' => auth()->user()->customInstruction,
+            'csrf_token' => csrf_token(),
         ]);
     }
 
     public function update(Request $request)
     {
         $request->validate([
-            'instructions' => 'required|string|max:2000',
+            'instructions' => 'nullable|string|max:2000',
             'enabled' => 'required|boolean',
         ]);
 
