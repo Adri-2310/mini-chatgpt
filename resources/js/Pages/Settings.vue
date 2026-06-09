@@ -65,11 +65,11 @@ const submit = async () => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <FormSection @submitted="submit">
                     <template #title>
-                        Instructions Personnalisées
+                        Personnalisez SaveurIA
                     </template>
 
                     <template #description>
-                        Configurez vos instructions personnalisées qui seront automatiquement appliquées à toutes vos conversations.
+                        Définissez comment SaveurIA doit vous aider en cuisine. Spécifiez vos régimes, allergies, préférences culinaires et style d'apprentissage.
                     </template>
 
                     <template #form>
@@ -80,8 +80,8 @@ const submit = async () => {
                                 v-model="form.instructions"
                                 maxlength="2000"
                                 rows="8"
-                                placeholder="Ex: Tu es un expert en développement web. Réponds toujours en français et fournis des exemples de code quand approprié."
-                                class="mt-1 block w-full px-4 py-2 border border-slate-600 bg-slate-700 text-white rounded-lg shadow-sm focus:ring-blue-400 focus:border-blue-400"
+                                placeholder="Ex: Je suis végétarien. J'aime les cuisines asiatiques et méditerranéennes. Donne-moi des recettes rapides (< 30 min), explique les techniques de base, et propose des substitutions d'ingrédients."
+                                class="mt-1 block w-full px-4 py-2 border border-slate-600 bg-slate-700 text-white rounded-lg shadow-sm focus:ring-orange-400 focus:border-orange-400"
                             ></textarea>
                             <p class="mt-2 text-sm text-slate-400">
                                 {{ form.instructions.length }} / 2000 caractères
@@ -95,7 +95,7 @@ const submit = async () => {
                                     v-model:checked="form.enabled"
                                 />
                                 <label for="enabled" class="ml-2 block text-sm text-slate-300">
-                                    Activer les instructions personnalisées
+                                    Appliquer mes préférences culinaires à toutes mes conversations
                                 </label>
                             </div>
                         </div>

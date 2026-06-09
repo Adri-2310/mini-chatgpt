@@ -21,15 +21,15 @@ onMounted(() => {
     <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32">
       <div class="text-center space-y-8">
         <h1 class="text-5xl md:text-6xl font-bold leading-tight">
-          Parlez avec
-          <span class="block bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-            GPT-4, Gemini et Claude
+          Cuisinez mieux avec
+          <span class="block bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+            SaveurIA
           </span>
         </h1>
 
         <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-          Accédez à GPT-4o, Gemini et Claude dans une seule interface.
-          Personnalisez vos instructions et conversez en temps réel.
+          Votre assistant culinaire personnel. Inspirations de recettes, conseils de cuisine,
+          et suggestions de menus adaptées à vos goûts et régimes.
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
@@ -50,16 +50,16 @@ onMounted(() => {
         <!-- Stats -->
         <div class="grid grid-cols-3 gap-8 pt-16 border-t border-slate-700">
           <div>
-            <div class="text-3xl font-bold text-blue-400">3</div>
-            <div class="text-slate-400">Modèles IA</div>
+            <div class="text-3xl font-bold text-orange-400">1000+</div>
+            <div class="text-slate-400">Recettes</div>
           </div>
           <div>
-            <div class="text-3xl font-bold text-blue-400">∞</div>
-            <div class="text-slate-400">Conversations</div>
+            <div class="text-3xl font-bold text-orange-400">3</div>
+            <div class="text-slate-400">IA Experts</div>
           </div>
           <div>
-            <div class="text-3xl font-bold text-blue-400">⚡</div>
-            <div class="text-slate-400">Temps réel</div>
+            <div class="text-3xl font-bold text-orange-400">24/7</div>
+            <div class="text-slate-400">Disponible</div>
           </div>
         </div>
       </div>
@@ -69,61 +69,61 @@ onMounted(() => {
     <section id="features" class="bg-slate-800/50 py-20 border-y border-slate-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-4xl font-bold text-center mb-16">
-          Pourquoi Mini-ChatGPT?
+          Pourquoi SaveurIA?
         </h2>
 
         <div class="grid md:grid-cols-3 gap-8">
-          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-blue-400 transition">
-            <div class="text-4xl mb-4">💬</div>
-            <h3 class="text-2xl font-bold mb-4">Conversations illimitées</h3>
+          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-orange-400 transition">
+            <div class="text-4xl mb-4">📖</div>
+            <h3 class="text-2xl font-bold mb-4">Recettes Infinies</h3>
             <p class="text-slate-400">
-              Créez autant de conversations que vous le souhaitez.
-              L'historique est sauvegardé automatiquement.
-            </p>
-          </div>
-
-          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-purple-400 transition">
-            <div class="text-4xl mb-4">🔄</div>
-            <h3 class="text-2xl font-bold mb-4">Plusieurs modèles</h3>
-            <p class="text-slate-400">
-              Basculez entre GPT-4o, Gemini et Claude.
-              Comparez les réponses pour chaque tâche.
-            </p>
-          </div>
-
-          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-green-400 transition">
-            <div class="text-4xl mb-4">⚡</div>
-            <h3 class="text-2xl font-bold mb-4">Streaming temps réel</h3>
-            <p class="text-slate-400">
-              Voyez les réponses s'afficher en direct.
-              Pas d'attente, réponses instantanées.
-            </p>
-          </div>
-
-          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-yellow-400 transition">
-            <div class="text-4xl mb-4">⚙️</div>
-            <h3 class="text-2xl font-bold mb-4">Instructions personnalisées</h3>
-            <p class="text-slate-400">
-              Configurez le comportement de l'IA.
-              Définissez le style et le domaine d'expertise.
+              Découvrez des milliers de recettes adaptées à vos ingrédients.
+              Des classiques aux innovations culinaires.
             </p>
           </div>
 
           <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-red-400 transition">
-            <div class="text-4xl mb-4">🎨</div>
-            <h3 class="text-2xl font-bold mb-4">Interface moderne</h3>
+            <div class="text-4xl mb-4">👨‍🍳</div>
+            <h3 class="text-2xl font-bold mb-4">Conseils d'Expert</h3>
             <p class="text-slate-400">
-              Design épuré avec Vue.js 3 et TailwindCSS.
-              Responsive sur tous les appareils.
+              Techniques de cuisson, astuces de chef, et trucs pour réussir.
+              Améliorez votre savoir-faire culinaire.
             </p>
           </div>
 
-          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-indigo-400 transition">
-            <div class="text-4xl mb-4">🔒</div>
-            <h3 class="text-2xl font-bold mb-4">Sécurisé</h3>
+          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-yellow-400 transition">
+            <div class="text-4xl mb-4">⚡</div>
+            <h3 class="text-2xl font-bold mb-4">Inspirations Rapides</h3>
             <p class="text-slate-400">
-              Vos données sont privées et sécurisées.
-              Authentification robuste.
+              Idées de menus en temps réel basées sur vos préférences.
+              Pas d'inspiration? SaveurIA vous aide!
+            </p>
+          </div>
+
+          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-green-400 transition">
+            <div class="text-4xl mb-4">🥗</div>
+            <h3 class="text-2xl font-bold mb-4">Régimes & Allergies</h3>
+            <p class="text-slate-400">
+              Végétalien, sans gluten, sans lactose...
+              SaveurIA respecte vos contraintes alimentaires.
+            </p>
+          </div>
+
+          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-blue-400 transition">
+            <div class="text-4xl mb-4">🛒</div>
+            <h3 class="text-2xl font-bold mb-4">Liste de Courses</h3>
+            <p class="text-slate-400">
+              Générez automatiquement votre liste d'ingrédients.
+              Partagez, modifiez et cochez facilement.
+            </p>
+          </div>
+
+          <div class="bg-slate-700/30 border border-slate-600 rounded-xl p-8 hover:border-pink-400 transition">
+            <div class="text-4xl mb-4">💾</div>
+            <h3 class="text-2xl font-bold mb-4">Vos Recettes Sauvegardées</h3>
+            <p class="text-slate-400">
+              Gardez vos recettes préférées et historique.
+              Accédez-y n'importe quand, n'importe où.
             </p>
           </div>
         </div>
@@ -131,14 +131,14 @@ onMounted(() => {
     </section>
 
     <!-- CTA Section -->
-    <section class="bg-gradient-to-r from-blue-600 to-purple-600 py-20">
+    <section class="bg-gradient-to-r from-orange-600 to-red-600 py-20">
       <div class="max-w-4xl mx-auto text-center px-4">
         <h2 class="text-4xl font-bold mb-8">
-          Prêt à commencer?
+          Prêt à cuisiner?
         </h2>
-        <p class="text-xl mb-8 text-blue-50">
-          Rejoignez des utilisateurs qui discutent
-          avec les meilleures IA du marché.
+        <p class="text-xl mb-8 text-orange-50">
+          Rejoignez les passionnés de cuisine qui font confiance à SaveurIA
+          pour leurs inspirations culinaires.
         </p>
         <Link
           :href="route('register')"

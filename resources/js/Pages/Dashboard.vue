@@ -16,10 +16,10 @@ defineOptions({
     <!-- Hero Section -->
     <div class="mb-16 text-center">
         <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Bienvenue, {{ $page.props.auth.user.name }}!
+            Bienvenue sur SaveurIA, {{ $page.props.auth.user.name }}!
         </h1>
         <p class="text-slate-300 text-lg max-w-2xl mx-auto">
-            Explorez les capacités de l'IA avec notre assistant polyvalent. Posez une question ou lancez une conversation.
+            Besoin d'inspiration culinaire? Cherchez une recette? SaveurIA est là pour transformer vos idées en délicieux repas!
         </p>
     </div>
 
@@ -27,13 +27,13 @@ defineOptions({
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Parler Card -->
         <Link :href="route('ask')" class="group">
-            <div class="h-full p-8 rounded-lg border-2 border-blue-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
-                <div class="text-4xl mb-4">📝</div>
-                <h2 class="text-xl font-bold text-white mb-2">Parler</h2>
+            <div class="h-full p-8 rounded-lg border-2 border-orange-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
+                <div class="text-4xl mb-4">👨‍🍳</div>
+                <h2 class="text-xl font-bold text-white mb-2">Recette Rapide</h2>
                 <p class="text-slate-300 mb-4">
-                    Posez une question à l'IA et obtenez une réponse instantanée.
+                    Posez votre question culinaire et obtenez une recette ou conseil instantanément.
                 </p>
-                <div class="inline-flex items-center text-blue-400 font-medium group-hover:translate-x-2 transition">
+                <div class="inline-flex items-center text-orange-400 font-medium group-hover:translate-x-2 transition">
                     Commencer →
                 </div>
             </div>
@@ -41,13 +41,13 @@ defineOptions({
 
         <!-- Conversations Card -->
         <Link :href="route('chat')" class="group">
-            <div class="h-full p-8 rounded-lg border-2 border-purple-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
-                <div class="text-4xl mb-4">💬</div>
-                <h2 class="text-xl font-bold text-white mb-2">Conversations</h2>
+            <div class="h-full p-8 rounded-lg border-2 border-red-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
+                <div class="text-4xl mb-4">📚</div>
+                <h2 class="text-xl font-bold text-white mb-2">Mes Recettes</h2>
                 <p class="text-slate-300 mb-4">
-                    Maintenez des conversations multi-tours avec historique persistant.
+                    Continuez vos explorations culinaires avec l'historique de vos conversations.
                 </p>
-                <div class="inline-flex items-center text-purple-400 font-medium group-hover:translate-x-2 transition">
+                <div class="inline-flex items-center text-red-400 font-medium group-hover:translate-x-2 transition">
                     Explorer →
                 </div>
             </div>
@@ -55,13 +55,13 @@ defineOptions({
 
         <!-- Paramètres Card -->
         <Link :href="route('settings')" class="group">
-            <div class="h-full p-8 rounded-lg border-2 border-green-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
-                <div class="text-4xl mb-4">⚙️</div>
-                <h2 class="text-xl font-bold text-white mb-2">Paramètres</h2>
+            <div class="h-full p-8 rounded-lg border-2 border-yellow-400 bg-slate-800/50 hover:bg-slate-800 transition transform hover:scale-105">
+                <div class="text-4xl mb-4">🌶️</div>
+                <h2 class="text-xl font-bold text-white mb-2">Personnaliser SaveurIA</h2>
                 <p class="text-slate-300 mb-4">
-                    Personnalisez vos instructions et préférences d'IA.
+                    Définissez vos préférences culinaires, allergies et style de cuisine.
                 </p>
-                <div class="inline-flex items-center text-green-400 font-medium group-hover:translate-x-2 transition">
+                <div class="inline-flex items-center text-yellow-400 font-medium group-hover:translate-x-2 transition">
                     Configurer →
                 </div>
             </div>

@@ -23,8 +23,8 @@ const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome'
                 <!-- Logo -->
                 <div class="flex items-center">
                     <Link :href="route(homeRoute)" class="flex items-center space-x-2 hover:opacity-80 transition">
-                        <span class="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">
-                            🤖 Mini-ChatGPT
+                        <span class="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
+                            🌶️ SaveurIA
                         </span>
                     </Link>
                 </div>
