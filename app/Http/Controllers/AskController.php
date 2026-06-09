@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\LlmModel;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -18,7 +19,9 @@ class AskController extends Controller
     public function index()
     {
         return Inertia::render('Ask', [
-            'models' => config('ai_models.available'),
+            'models' => LlmModel::where('enabled', true)
+                ->select(['id', 'name', 'provider'])
+                ->get(),
         ]);
     }
 

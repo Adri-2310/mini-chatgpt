@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\LlmModel;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -17,7 +18,9 @@ class ConversationController extends Controller
 
         return Inertia::render('Chat', [
             'conversations' => $conversations,
-            'models' => config('ai_models.available'),
+            'models' => LlmModel::where('enabled', true)
+                ->select(['id', 'name', 'provider'])
+                ->get(),
         ]);
     }
 
@@ -85,7 +88,6 @@ class ConversationController extends Controller
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
-        $conversation->messages()->delete();
         $conversation->delete();
 
         return response()->json(['success' => true]);
