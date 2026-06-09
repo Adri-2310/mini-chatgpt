@@ -49,10 +49,10 @@ class MessageController extends Controller
                 ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
                 ->toArray();
 
-            $systemPrompt = null;
+            $systemPrompt = config('saveurial.default_system_prompt');
             $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled) {
-                $systemPrompt = $customInstruction->instructions;
+            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+                $systemPrompt .= "\n\n" . $customInstruction->instructions;
             }
 
             $aiResult = $this->chatService->askWithHistory(
@@ -165,10 +165,10 @@ class MessageController extends Controller
                 ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
                 ->toArray();
 
-            $systemPrompt = null;
+            $systemPrompt = config('saveurial.default_system_prompt');
             $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled) {
-                $systemPrompt = $customInstruction->instructions;
+            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+                $systemPrompt .= "\n\n" . $customInstruction->instructions;
             }
 
             return response()->stream(function () use ($conversation, $messageHistory, $systemPrompt, $model, $request) {

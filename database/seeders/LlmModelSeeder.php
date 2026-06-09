@@ -21,10 +21,10 @@ class LlmModelSeeder extends Seeder
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Gemini 3 Flash Preview',
+                'name' => 'Gemini 2.5 Flash',
                 'provider' => 'Google',
-                'model_id' => 'google/gemini-3-flash-preview',
-                'description' => 'Modèle Gemini 3 Flash optimisé pour la vitesse.',
+                'model_id' => 'google/gemini-2.5-flash',
+                'description' => 'Modèle Gemini 2.5 Flash optimisé pour la vitesse.',
                 'enabled' => true,
                 'max_tokens' => 8000,
                 'created_at' => now(),

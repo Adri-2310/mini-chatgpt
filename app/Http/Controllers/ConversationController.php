@@ -19,7 +19,7 @@ class ConversationController extends Controller
         return Inertia::render('Chat', [
             'conversations' => $conversations,
             'models' => LlmModel::where('enabled', true)
-                ->select(['id', 'name', 'provider'])
+                ->select(['id', 'model_id', 'name', 'provider'])
                 ->get(),
         ]);
     }

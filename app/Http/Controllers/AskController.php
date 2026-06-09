@@ -20,7 +20,7 @@ class AskController extends Controller
     {
         return Inertia::render('Ask', [
             'models' => LlmModel::where('enabled', true)
-                ->select(['id', 'name', 'provider'])
+                ->select(['id', 'model_id', 'name', 'provider'])
                 ->get(),
         ]);
     }
@@ -33,10 +33,10 @@ class AskController extends Controller
         ]);
 
         try {
-            $systemPrompt = null;
+            $systemPrompt = config('saveurial.default_system_prompt');
             $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled) {
-                $systemPrompt = $customInstruction->instructions;
+            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+                $systemPrompt .= "\n\n" . $customInstruction->instructions;
             }
 
             $result = $this->chatService->ask(
@@ -66,10 +66,10 @@ class AskController extends Controller
         ]);
 
         try {
-            $systemPrompt = null;
+            $systemPrompt = config('saveurial.default_system_prompt');
             $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled) {
-                $systemPrompt = $customInstruction->instructions;
+            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+                $systemPrompt .= "\n\n" . $customInstruction->instructions;
             }
 
             return response()->stream(function () use ($request, $systemPrompt) {

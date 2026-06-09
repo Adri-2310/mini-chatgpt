@@ -33,7 +33,7 @@ defineEmits(['update:modelValue']);
             ]"
         >
             <option value="">-- Choisir un modèle --</option>
-            <option v-for="model in models" :key="model.id" :value="model.id">
+            <option v-for="model in models" :key="model.id" :value="model.model_id">
                 {{ model.name }} ({{ model.provider }})
             </option>
         </select>
