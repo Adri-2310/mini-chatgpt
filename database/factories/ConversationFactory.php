@@ -13,6 +13,8 @@ class ConversationFactory extends Factory
 {
     protected $model = Conversation::class;
 
+    // Crée une conversation avec un user automatique
+    // Utile pour les tests qui ont besoin de relations
     public function definition(): array
     {
         return [

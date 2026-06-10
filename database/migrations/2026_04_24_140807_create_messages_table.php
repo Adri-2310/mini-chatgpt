@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Table des messages : chaque conversation contient plusieurs messages
+        // role : 'user' ou 'assistant' pour identifier qui a écrit le message
+        // cascadeOnDelete : si la conversation est supprimée, tous ses messages le sont aussi
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->foreignId('conversation_id')->constrained()->cascadeOnDelete();

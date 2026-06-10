@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 
 class LlmModelSeeder extends Seeder
 {
+    // Données de base : modèles LLM disponibles
+    // À exécuter en production également (ne pas commenter)
+    // Contient : OpenAI (GPT), Google (Gemini), Anthropic (Claude)
     public function run(): void
     {
         DB::table('llm_models')->insert([

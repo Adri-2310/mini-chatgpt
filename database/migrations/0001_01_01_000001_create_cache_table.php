@@ -6,27 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    // Table de cache Laravel (SESSION_DRIVER=database)
     public function up(): void
     {
         Schema::create('cache', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->mediumText('value');
-            $table->integer('expiration')->index();
+            $table->integer('expiration');
+            $table->index('expiration');
         });
 
         Schema::create('cache_locks', function (Blueprint $table) {
             $table->string('key')->primary();
             $table->string('owner');
-            $table->integer('expiration')->index();
+            $table->integer('expiration');
+            $table->index('expiration');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('cache');

@@ -2,26 +2,25 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
+    // Permet aux model events (boot hooks) de s'exécuter pendant le seeding
+    // Nécessaire pour que User::boot() crée automatiquement CustomInstruction
 
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-
+        // 1. Données essentielles (même en production via Coolify)
         $this->call(LlmModelSeeder::class);
+
+        // 2. Données de test et développement (local uniquement)
+        // À ne pas exécuter en production
+        $this->call(UserSeeder::class);
+        $this->call(ConversationSeeder::class);
+        $this->call(MessageSeeder::class);
     }
 }

@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Table des modèles LLM disponibles (GPT, Claude, Gemini, etc.)
+        // Remplie par LlmModelSeeder - données de base qui ne changent pas
+        // enabled : permet de désactiver un modèle sans le supprimer de la BD
         Schema::create('llm_models', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();

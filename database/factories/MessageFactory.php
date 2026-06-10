@@ -13,6 +13,9 @@ class MessageFactory extends Factory
 {
     protected $model = Message::class;
 
+    // Crée un message avec une conversation automatique
+    // Role aléatoire : user ou assistant
+    // Contenu généré aléatoirement
     public function definition(): array
     {
         return [
