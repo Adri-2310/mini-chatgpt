@@ -1,13 +1,12 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { inject } from 'vue';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
 
 defineProps({
@@ -47,66 +46,73 @@ const submit = () => {
 
     <ToastNotification :status="$page.props.flash?.status" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-400">
-            {{ status }}
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-background transition-colors">
+        <div class="absolute top-4 right-4">
+            <ThemeToggle />
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    placeholder="votre@email.com"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+        <div class="mb-8">
+            <span class="text-2xl font-bold text-foreground">
+                🌶️ SaveurIA
+            </span>
+        </div>
 
-            <div class="mt-4">
-                <InputLabel for="password" value="Mot de passe" />
-                <TextInput
-                    id="password"
-                    v-model="form.password"
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    autocomplete="current-password"
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+        <div class="w-full sm:max-w-md px-8 py-8 bg-card border border-border rounded-xl shadow-lg">
+            <h1 class="text-2xl font-bold text-foreground mb-2">Connexion</h1>
+            <p class="text-muted-foreground text-sm mb-6">Accédez à votre compte SaveurIA</p>
 
-            <div class="block mt-4">
-                <label class="flex items-center">
+            <form @submit.prevent="submit" class="space-y-5">
+                <div v-if="status" class="rounded-lg bg-green-100 dark:bg-green-950 p-4 border border-green-200 dark:border-green-800">
+                    <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ status }}</p>
+                </div>
+
+                <div>
+                    <InputLabel for="email" value="Email" />
+                    <TextInput
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        placeholder="votre@email.com"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <div>
+                    <InputLabel for="password" value="Mot de passe" />
+                    <TextInput
+                        id="password"
+                        v-model="form.password"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+
+                <div class="flex items-center">
                     <Checkbox v-model:checked="form.remember" name="remember" />
-                    <span class="ms-2 text-sm text-slate-400">Se souvenir de moi</span>
-                </label>
-            </div>
+                    <span class="ms-2 text-sm text-muted-foreground">Se souvenir de moi</span>
+                </div>
 
-            <div class="flex items-center justify-between mt-6">
-                <Link v-if="canResetPassword" :href="route('password.request')" class="text-sm text-blue-400 hover:text-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition">
+                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
+                    {{ form.processing ? 'Connexion...' : 'Se connecter' }}
+                </PrimaryButton>
+
+                <Link v-if="canResetPassword" :href="route('password.request')" class="block text-sm text-center text-primary hover:underline">
                     Mot de passe oublié ?
                 </Link>
 
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Se connecter
-                </PrimaryButton>
-            </div>
-
-            <div class="mt-4 text-center text-sm text-slate-400">
-                Pas encore de compte ?
-                <Link :href="route('register')" class="text-blue-400 hover:text-blue-300 font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition">
-                    S'inscrire
-                </Link>
-            </div>
-        </form>
-    </AuthenticationCard>
+                <div class="pt-4 border-t border-border text-center text-sm text-muted-foreground">
+                    Pas encore de compte ?
+                    <Link :href="route('register')" class="text-primary hover:underline font-semibold">
+                        Créer un compte
+                    </Link>
+                </div>
+            </form>
+        </div>
+    </div>
 </template>
