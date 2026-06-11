@@ -1,32 +1,32 @@
 <template>
-  <footer class="bg-slate-900 border-t border-slate-700 py-12">
+  <footer class="bg-background border-t border-border py-12 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid md:grid-cols-3 gap-8">
         <!-- Brand -->
         <div>
-          <h3 class="font-bold text-lg text-white mb-2">🤖 Mini-ChatGPT</h3>
-          <p class="text-slate-400 text-sm">
-            La plateforme tout-en-un pour discuter
-            avec les meilleures IA.
+          <h3 class="font-bold text-lg text-foreground mb-2">🌶️ SaveurIA</h3>
+          <p class="text-muted-foreground text-sm">
+            La plateforme pour transformer vos idées
+            en délicieux repas avec l'IA.
           </p>
         </div>
 
         <!-- Quick Links -->
         <div>
-          <h4 class="font-semibold text-white mb-4">Navigation</h4>
-          <ul class="space-y-2 text-slate-400 text-sm">
+          <h4 class="font-semibold text-foreground mb-4">Navigation</h4>
+          <ul class="space-y-2 text-muted-foreground text-sm">
             <li>
-              <a href="#features" class="hover:text-white transition">
+              <a href="#features" class="hover:text-foreground transition">
                 Fonctionnalités
               </a>
             </li>
             <li>
-              <a href="#" class="hover:text-white transition">
+              <a href="#" class="hover:text-foreground transition">
                 À propos
               </a>
             </li>
             <li>
-              <a href="#" class="hover:text-white transition">
+              <a href="#" class="hover:text-foreground transition">
                 Contact
               </a>
             </li>
@@ -35,11 +35,8 @@
 
         <!-- Legal -->
         <div class="text-right">
-          <p class="text-slate-400 text-sm">
-            © 2026 Mini-ChatGPT<br>
-            Examen SGBD
-          </p>
-          <p class="text-slate-500 text-xs mt-4">
+          <p class="text-muted-foreground text-sm">
+            © 2026 SaveurIA<br>
             Tous droits réservés
           </p>
         </div>

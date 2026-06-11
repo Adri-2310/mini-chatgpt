@@ -52,7 +52,7 @@ const error = computed(() => errorDetails[props.status] || {
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex flex-col">
+    <div class="min-h-screen bg-background flex flex-col transition-colors">
         <Head :title="`${props.status} - ${error.title}`" />
 
         <ErrorNav />
@@ -61,28 +61,28 @@ const error = computed(() => errorDetails[props.status] || {
             <div class="text-center max-w-md">
                 <div class="text-6xl mb-6">{{ error.emoji }}</div>
 
-                <div class="text-7xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent mb-4">
+                <div class="text-7xl font-bold text-primary mb-4">
                     {{ props.status }}
                 </div>
 
-                <h1 class="text-3xl font-bold text-white mb-3">
+                <h1 class="text-3xl font-bold text-foreground mb-3">
                     {{ error.title }}
                 </h1>
 
-                <p class="text-slate-300 text-lg mb-8">
+                <p class="text-muted-foreground text-lg mb-8">
                     {{ error.description }}
                 </p>
 
                 <div class="flex gap-4 justify-center">
                     <Link
                         :href="route(error.link)"
-                        class="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition font-semibold"
+                        class="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-semibold"
                     >
                         Retour à l'accueil
                     </Link>
                     <Link
                         :href="route('chat')"
-                        class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition font-semibold"
+                        class="px-6 py-3 bg-secondary text-foreground hover:bg-secondary/80 rounded-lg transition font-semibold border border-border"
                     >
                         Conversations
                     </Link>

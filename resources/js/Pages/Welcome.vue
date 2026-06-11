@@ -27,7 +27,7 @@ onMounted(() => {
           </span>
         </h1>
 
-        <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+        <p class="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
           Votre assistant culinaire personnel. Inspirations de recettes, conseils de cuisine,
           et suggestions de menus adaptées à vos goûts et régimes.
         </p>

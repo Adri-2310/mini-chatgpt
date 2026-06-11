@@ -1,12 +1,11 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 defineProps({
     status: String,
@@ -26,36 +25,40 @@ const submit = () => {
 
     <ToastNotification :status="status" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div class="mb-4 text-sm text-slate-400">
-            Vous avez oublié votre mot de passe ? Aucun problème. Indiquez-nous simplement votre adresse email et nous vous enverrons un lien de réinitialisation du mot de passe qui vous permettra d'en choisir un nouveau.
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-background transition-colors">
+        <div class="absolute top-4 right-4">
+            <ThemeToggle />
         </div>
 
+        <div class="mb-8">
+            <span class="text-2xl font-bold text-foreground">
+                🌶️ SaveurIA
+            </span>
+        </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    placeholder="votre@email.com"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
+        <div class="w-full sm:max-w-md px-8 py-8 bg-card border border-border rounded-xl shadow-lg">
+            <h1 class="text-2xl font-bold text-foreground mb-2">Mot de passe oublié</h1>
+            <p class="text-muted-foreground text-sm mb-6">Vous avez oublié votre mot de passe ? Indiquez-nous votre adresse email et nous vous enverrons un lien de réinitialisation.</p>
 
-            <div class="flex items-center justify-end mt-6">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Envoyer le lien de réinitialisation
+            <form @submit.prevent="submit" class="space-y-5">
+                <div>
+                    <InputLabel for="email" value="Email" />
+                    <TextInput
+                        id="email"
+                        v-model="form.email"
+                        type="email"
+                        placeholder="votre@email.com"
+                        required
+                        autofocus
+                        autocomplete="username"
+                    />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
+                    {{ form.processing ? 'Envoi...' : 'Envoyer le lien de réinitialisation' }}
                 </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+            </form>
+        </div>
+    </div>
 </template>

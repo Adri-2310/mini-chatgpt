@@ -17,11 +17,11 @@ defineProps({
 
         <Banner />
 
-        <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+        <div class="min-h-screen bg-background transition-colors">
             <Nav />
 
             <!-- Page Heading -->
-            <header v-if="$slots.header" class="bg-slate-800/50 border-b border-slate-700">
+            <header v-if="$slots.header" class="bg-card/50 border-b border-border">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

@@ -245,7 +245,7 @@ const deleteConversation = async (conversationId) => {
 </script>
 
 <template>
-    <div class="flex h-full bg-slate-900">
+    <div class="flex h-full bg-background">
             <ConversationList
                 :conversations="conversations"
                 :active-conversation-id="activeConversationId"
@@ -264,7 +264,7 @@ const deleteConversation = async (conversationId) => {
                     @update:selected-model="selectedModel = $event"
                 />
 
-                <div v-if="error" class="px-4 py-3 bg-red-900/30 border border-red-500/50 text-red-300 text-sm mx-4 mt-4 rounded">
+                <div v-if="error" class="px-4 py-3 bg-destructive/10 border border-destructive text-destructive text-sm mx-4 mt-4 rounded">
                     {{ error }}
                 </div>
 
@@ -272,13 +272,13 @@ const deleteConversation = async (conversationId) => {
                     <div class="flex-1 flex flex-col items-center justify-center">
                         <div class="text-center max-w-md px-8">
                             <div class="text-5xl mb-6">👋</div>
-                            <h2 class="text-3xl font-bold text-white mb-4">Bienvenue!</h2>
-                            <p class="text-slate-300 text-lg mb-8">
+                            <h2 class="text-3xl font-bold text-foreground mb-4">Bienvenue!</h2>
+                            <p class="text-muted-foreground text-lg mb-8">
                                 Commencez une nouvelle conversation ou sélectionnez-en une existante pour continuer.
                             </p>
                             <button
                                 @click="createNewConversation"
-                                class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition font-semibold"
+                                class="px-8 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-semibold"
                             >
                                 + Créer une conversation
                             </button>

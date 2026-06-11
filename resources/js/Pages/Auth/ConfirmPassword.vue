@@ -1,12 +1,11 @@
 <script setup>
 import { ref } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import AuthenticationCard from '@/Components/AuthenticationCard.vue';
-import AuthenticationCardLogo from '@/Components/AuthenticationCardLogo.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 const form = useForm({
     password: '',
@@ -28,36 +27,41 @@ const submit = () => {
 <template>
     <Head title="Zone Sécurisée" />
 
-    <AuthenticationCard>
-        <template #logo>
-            <AuthenticationCardLogo />
-        </template>
-
-        <div class="mb-4 text-sm text-slate-400">
-            Ceci est une zone sécurisée de l'application. Veuillez confirmer votre mot de passe avant de continuer.
+    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-background transition-colors">
+        <div class="absolute top-4 right-4">
+            <ThemeToggle />
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="password" value="Mot de passe" />
-                <TextInput
-                    id="password"
-                    ref="passwordInput"
-                    v-model="form.password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    required
-                    autocomplete="current-password"
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
+        <div class="mb-8">
+            <span class="text-2xl font-bold text-foreground">
+                🌶️ SaveurIA
+            </span>
+        </div>
 
-            <div class="flex justify-end mt-4">
-                <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Confirmer
+        <div class="w-full sm:max-w-md px-8 py-8 bg-card border border-border rounded-xl shadow-lg">
+            <h1 class="text-2xl font-bold text-foreground mb-2">Zone Sécurisée</h1>
+            <p class="text-muted-foreground text-sm mb-6">Veuillez confirmer votre mot de passe avant de continuer.</p>
+
+            <form @submit.prevent="submit" class="space-y-5">
+                <div>
+                    <InputLabel for="password" value="Mot de passe" />
+                    <TextInput
+                        id="password"
+                        ref="passwordInput"
+                        v-model="form.password"
+                        type="password"
+                        placeholder="••••••••"
+                        required
+                        autocomplete="current-password"
+                        autofocus
+                    />
+                    <InputError class="mt-2" :message="form.errors.password" />
+                </div>
+
+                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
+                    {{ form.processing ? 'Confirmation...' : 'Confirmer' }}
                 </PrimaryButton>
-            </div>
-        </form>
-    </AuthenticationCard>
+            </form>
+        </div>
+    </div>
 </template>
