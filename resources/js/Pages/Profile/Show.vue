@@ -16,12 +16,12 @@ defineProps({
 <template>
     <AppLayout title="Profile">
         <template #header>
-            <h2 class="font-semibold text-xl text-white leading-tight">
+            <h2 class="font-semibold text-xl text-foreground leading-tight">
                 Mon Profil
             </h2>
         </template>
 
-        <div class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen">
+        <div class="bg-background min-h-screen transition-colors">
             <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
                 <div v-if="$page.props.jetstream.canUpdateProfileInformation">
                     <UpdateProfileInformationForm :user="$page.props.auth.user" />

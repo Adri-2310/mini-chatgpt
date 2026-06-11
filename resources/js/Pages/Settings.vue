@@ -60,7 +60,7 @@ const submit = async () => {
 <template>
     <Head title="Paramètres" />
 
-    <div class="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 min-h-screen">
+    <div class="bg-background min-h-screen transition-colors">
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <FormSection @submitted="submit">
@@ -81,9 +81,9 @@ const submit = async () => {
                                 maxlength="2000"
                                 rows="8"
                                 placeholder="Ex: Je suis végétarien. J'aime les cuisines asiatiques et méditerranéennes. Donne-moi des recettes rapides (< 30 min), explique les techniques de base, et propose des substitutions d'ingrédients."
-                                class="mt-1 block w-full px-4 py-2 border border-slate-600 bg-slate-700 text-white rounded-lg shadow-sm focus:ring-orange-400 focus:border-orange-400"
+                                class="mt-1 block w-full px-4 py-2 border border-border bg-input text-foreground rounded-lg shadow-sm focus:ring-primary focus:border-primary"
                             ></textarea>
-                            <p class="mt-2 text-sm text-slate-400">
+                            <p class="mt-2 text-sm text-muted-foreground">
                                 {{ form.instructions.length }} / 2000 caractères
                             </p>
                         </div>
@@ -94,7 +94,7 @@ const submit = async () => {
                                     id="enabled"
                                     v-model:checked="form.enabled"
                                 />
-                                <label for="enabled" class="ml-2 block text-sm text-slate-300">
+                                <label for="enabled" class="ml-2 block text-sm text-foreground">
                                     Appliquer mes préférences culinaires à toutes mes conversations
                                 </label>
                             </div>
