@@ -29,7 +29,7 @@ const handleSubmit = () => {
 <template>
     <form @submit.prevent="handleSubmit" class="space-y-4">
         <div>
-            <label for="question" class="block text-sm font-medium text-slate-300 mb-2">
+            <label for="question" class="block text-sm font-medium text-muted-foreground mb-2">
                 Votre question
             </label>
             <textarea
@@ -38,15 +38,15 @@ const handleSubmit = () => {
                 placeholder="Posez votre question ici..."
                 :disabled="disabled"
                 rows="4"
-                class="w-full px-4 py-3 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                class="w-full px-4 py-3 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed"
             ></textarea>
         </div>
 
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div v-if="question.trim() && !isValid()" class="text-sm text-amber-400">
+            <div v-if="question.trim() && !isValid()" class="text-sm text-accent-foreground">
                 {{ question.trim().length < 5 ? 'Minimum 5 caractères' : 'Maximum 2000 caractères' }}
             </div>
-            <div v-else class="text-sm text-slate-500">
+            <div v-else class="text-sm text-muted-foreground">
                 {{ question.trim().length }} / 2000
             </div>
             <PrimaryButton
