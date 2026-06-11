@@ -48,7 +48,8 @@ Une application ChatGPT-like fonctionnelle et moderne, permettant d'interagir av
 | **Backend** | Laravel 12 | API, authentification, gestion données |
 | **Frontend** | Vue.js 3 | Interface réactive (Composition API) |
 | **Bridge** | Inertia.js | Liaison Laravel ↔ Vue.js |
-| **Styling** | TailwindCSS 4 | Design système + responsive |
+| **Styling** | TailwindCSS 4 + Tweakcn | Design système + variables CSS personnalisées |
+| **Thème** | CSS Variables | Système de thème clair/sombre avec tweakcn |
 | **Temps réel** | WebSockets/SSE | Streaming des réponses IA |
 | **BD** | PostgreSQL/MySQL | Persistance des données |
 | **Auth** | Jetstream Breeze | Authentification sécurisée |
@@ -352,6 +353,186 @@ Toutes les notifications sont **100% en français** :
 
 ---
 
+## 🎨 Système de Thème Tweakcn
+
+### Vue d'ensemble
+
+**Tweakcn** est un système de variables CSS personnalisées inspiré de **shadcn/ui**, intégré à TailwindCSS 4. Il fournit une palette de couleurs cohérente, un support natif du mode sombre, et des tokens de design réutilisables pour une interface harmonieuse et maintenable.
+
+**Fichier principal** : `resources/css/theme.css`
+
+### Variables CSS disponibles
+
+#### 🎯 Couleurs principales
+
+| Variable | Light | Dark | Utilisation |
+|----------|-------|------|-------------|
+| `--background` | `#e8ebed` | `#1c2433` | Fond général de l'app |
+| `--foreground` | `#333333` | `#e5e5e5` | Texte principal |
+| `--card` | `#ffffff` | `#2a3040` | Arrière-plan des cartes |
+| `--card-foreground` | `#333333` | `#e5e5e5` | Texte sur les cartes |
+| `--primary` | `#e05d38` | `#e05d38` | Boutons, liens principaux |
+| `--primary-foreground` | `#ffffff` | `#ffffff` | Texte sur fond primaire |
+| `--secondary` | `#f3f4f6` | `#2a303e` | Éléments secondaires |
+| `--secondary-foreground` | `#4b5563` | `#e5e5e5` | Texte secondaire |
+| `--accent` | `#d6e4f0` | `#2a3656` | Accents et highlights |
+| `--accent-foreground` | `#1e3a8a` | `#bfdbfe` | Texte sur accent |
+| `--destructive` | `#ef4444` | `#ef4444` | Boutons de suppression |
+| `--destructive-foreground` | `#ffffff` | `#ffffff` | Texte destructif |
+| `--muted` | `#f9fafb` | `#2a303e` | Éléments estompés |
+| `--muted-foreground` | `#6b7280` | `#a3a3a3` | Texte estompé |
+| `--border` | `#dcdfe2` | `#3d4354` | Bordures |
+| `--input` | `#f4f5f7` | `#3d4354` | Inputs et textareas |
+| `--ring` | `#e05d38` | `#e05d38` | Focus rings |
+
+#### 🎨 Sidebar (optionnel)
+
+```css
+--sidebar: #dddfe2;                    /* Fond sidebar */
+--sidebar-foreground: #333333;         /* Texte sidebar */
+--sidebar-primary: #e05d38;            /* Éléments primaires sidebar */
+--sidebar-primary-foreground: #ffffff; /* Texte sur primaire sidebar */
+--sidebar-accent: #d6e4f0;             /* Accents sidebar */
+--sidebar-accent-foreground: #1e3a8a;  /* Texte sur accent sidebar */
+--sidebar-border: #e5e7eb;             /* Bordures sidebar */
+--sidebar-ring: #e05d38;               /* Focus sidebar */
+```
+
+#### 📊 Graphiques & Charts
+
+```css
+--chart-1: #86a7c8;  /* Couleur dataset 1 */
+--chart-2: #eea591;  /* Couleur dataset 2 */
+--chart-3: #5a7ca6;  /* Couleur dataset 3 */
+--chart-4: #466494;  /* Couleur dataset 4 */
+--chart-5: #334c82;  /* Couleur dataset 5 */
+```
+
+#### 🔤 Typographie
+
+```css
+--font-sans: Inter, sans-serif;           /* Police sans-serif (par défaut) */
+--font-serif: Source Serif 4, serif;      /* Police serif */
+--font-mono: JetBrains Mono, monospace;   /* Police monospace */
+--radius: 0.75rem;                        /* Rayon de bordure (rounded) */
+```
+
+#### 🌑 Ombres
+
+```css
+--shadow-2xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);        /* Extra petite */
+--shadow-xs: 0px 1px 3px 0px hsl(0 0% 0% / 0.05);         /* Petite */
+--shadow-sm: 0px 1px 3px 0px ..;                          /* Petit */
+--shadow: 0px 1px 3px 0px ..;                             /* Normal */
+--shadow-md: 0px 1px 3px 0px ...;                         /* Moyen */
+```
+
+### Structure du système
+
+```
+resources/css/
+├── theme.css           # Variables CSS personnalisées (tweakcn)
+├── app.css             # Import du thème + @tailwind directives
+└── (composants Vue utilisent les variables via Tailwind)
+```
+
+### Utilisation dans les composants
+
+Utiliser les classes Tailwind générées à partir des variables CSS (ex: `bg-background`, `text-foreground`, `bg-card`, `bg-primary`, etc.).
+
+Pour des cas spécifiques, il est possible d'accéder aux variables CSS directement via `var(--variable-name)`.
+
+### Mode sombre
+
+Le mode sombre est contrôlé via la classe `.dark` sur l'élément `<html>`. Les variables CSS changent automatiquement en fonction du mode actif.
+
+Voir la documentation détaillée dans `docs/styling/THEME_TWEAKCN.md` pour l'implémentation d'un switch de thème.
+
+### Personnalisation
+
+#### Modifier les couleurs
+
+Éditer `resources/css/theme.css` et mettre à jour les variables dans `:root` et `.dark` :
+
+```css
+:root {
+  --primary: #ff6b35;              /* Changer couleur primaire */
+  --background: #f5f5f5;           /* Changer fond clair */
+  /* ... */
+}
+
+.dark {
+  --background: #1a1a1a;           /* Changer fond sombre */
+  /* ... */
+}
+```
+
+**Après modification**, les changements s'appliquent instantanément à tous les composants utilisant les variables.
+
+#### Ajouter une nouvelle variable
+
+1. Ajouter dans `:root` et `.dark` :
+```css
+:root {
+  --new-color: #abc123;
+}
+.dark {
+  --new-color: #def456;
+}
+```
+
+2. Ajouter dans `tailwind.config.js` pour utiliser via Tailwind :
+```javascript
+colors: {
+  'new-color': 'var(--new-color)',
+}
+```
+
+3. Utiliser dans les composants :
+```vue
+<div class="bg-new-color">...</div>
+```
+
+### Intégration TailwindCSS
+
+Le système tweakcn est entièrement intégré dans `tailwind.config.js` :
+
+```javascript
+theme: {
+  extend: {
+    colors: {
+      background: 'var(--background)',
+      foreground: 'var(--foreground)',
+      primary: 'var(--primary)',
+      /* ... autres variables ... */
+    },
+  },
+}
+```
+
+Cela permet d'utiliser les classes Tailwind standards avec les couleurs tweakcn :
+
+```vue
+<div class="bg-primary text-primary-foreground hover:bg-primary/90">
+  Bouton personnalisé
+</div>
+```
+
+### Bonnes pratiques
+
+✅ **À faire:**
+- Utiliser les classes Tailwind (`bg-card`, `text-foreground`) pour la cohérence
+- Personnaliser via `theme.css` pour un changement global
+- Tester en mode clair et sombre
+- Utiliser `opacity` pour les variations : `bg-primary/80`
+
+❌ **À éviter:**
+- Utiliser des couleurs en dur (`bg-[#ff0000]`)
+- Ajouter des couleurs dans `tailwind.config.js` hors du système
+- Oublier les transitions lors du changement de thème
+
+---
+
 ## 🧪 Tests
 
 ### Tests automatisés
@@ -483,7 +664,7 @@ L'application est **entièrement localisée en français** :
 - TailwindCSS 4
 - Toastr.js
 
-**Dernière mise à jour:** Mai 2026
+**Dernière mise à jour:** Juin 2026 (Documentation système de thème tweakcn ajoutée)
 
 ---
 

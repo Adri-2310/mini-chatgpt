@@ -50,6 +50,18 @@ Tests automatisés et système de logs.
 
 ---
 
+### 🎨 [Styling](./styling/)
+Documentation du système de design et du thème.
+
+- **[THEME_TWEAKCN.md](./styling/THEME_TWEAKCN.md)** - Système de thème Tweakcn
+  - Vue d'ensemble du système CSS personnalisé
+  - Catalogue complet des variables CSS
+  - Utilisation dans les composants Vue
+  - Guide de personnalisation et mode sombre
+  - Bonnes pratiques et troubleshooting
+
+---
+
 ### 📖 [Guides](./guides/)
 Guides pratiques et documentation technique.
 

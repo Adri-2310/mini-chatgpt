@@ -192,7 +192,7 @@ id, name (gpt-4o, gemini-2.5-flash, claude-3.5), provider, config_json
 | Backend | Laravel | 12.x |
 | Frontend | Vue.js | 3.5+ |
 | Bridge | Inertia.js | 2.0+ |
-| Styling | TailwindCSS | 4.x |
+| Styling | TailwindCSS 4 + Tweakcn | 4.x + CSS Variables |
 | Build | Vite | 7.x |
 | Database | PostgreSQL/MySQL | 14+/8+ |
 | Realtime | Laravel Reverb | Latest |
@@ -215,6 +215,75 @@ Backend: php artisan serve (port 8000)
 Frontend: npm run dev (Vite HMR)
 Database: PostgreSQL local
 ```
+
+---
+
+## 🎨 Système de Design (Tweakcn)
+
+### Vue d'ensemble
+
+Le système de design Tweakcn est un ensemble de variables CSS personnalisées inspiré de shadcn/ui :
+
+- **Palette de couleurs** : Clair et sombre avec contraste WCAG AA
+- **Variables CSS** : 40+ tokens pour colors, typography, shadows
+- **Mode sombre natif** : Classe `.dark` appliquée à `<html>`
+- **Intégration Tailwind** : Toutes les variables utilisables comme classes Tailwind
+
+### Architecture
+
+```
+resources/css/
+├── theme.css              # Variables CSS (~85 variables)
+├── app.css                # @tailwind directives
+└── theme integration:
+    └── tailwind.config.js  # Mappage variables → classes Tailwind
+```
+
+### Variables principales
+
+**Couleurs**
+- `--background`, `--foreground` : Fond et texte principaux
+- `--primary`, `--primary-foreground` : Boutons CTA
+- `--secondary`, `--accent`, `--destructive` : États différents
+- `--card`, `--input`, `--border` : Composants UI
+- `--sidebar-*` : Éléments sidebar (optionnel)
+- `--chart-1` à `--chart-5` : Graphiques
+
+**Typographie**
+- `--font-sans`, `--font-serif`, `--font-mono` : Familles de polices
+- `--radius` : Rayon de bordure global (0.75rem)
+
+**Ombres**
+- `--shadow-2xs` à `--shadow-md` : Niveaux d'ombre
+
+### Mode sombre
+
+Le mode sombre utilise le modèle `darkMode: 'class'` de TailwindCSS. La classe `.dark` est appliquée à l'élément `<html>` pour activer automatiquement toutes les variables CSS du mode sombre.
+
+### Utilisation
+
+Tous les composants Vue utilisent les classes Tailwind générées à partir des variables CSS tweakcn.
+
+### Personnalisation
+
+Pour personnaliser le thème :
+
+1. **Modifier les couleurs** → Éditer `:root` et `.dark` dans `resources/css/theme.css`
+2. **Ajouter des variables** → Ajouter aussi dans `tailwind.config.js`
+3. **Créer un thème alternatif** → Ajouter une classe CSS au `<html>`
+
+### Bonnes pratiques
+
+✅ Utiliser les classes Tailwind (cohérence, maintenance)
+✅ Tester en mode clair et sombre
+✅ Respecter le contraste WCAG AA
+✅ Ajouter des transitions de couleur sur les changements de thème
+
+❌ Éviter les couleurs en dur (#rgb)
+❌ Créer des couleurs hors du système tweakcn
+❌ Oublier le dark mode lors du développement
+
+**Documentation détaillée** : [`docs/styling/THEME_TWEAKCN.md`](../styling/THEME_TWEAKCN.md)
 
 ---
 
