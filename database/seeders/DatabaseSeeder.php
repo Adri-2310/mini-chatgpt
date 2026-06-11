@@ -14,10 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Données essentielles (même en production via Coolify)
-        $this->call(LlmModelSeeder::class);
+        // Les modèles LLM sont maintenant insérés par migration (2026_06_11_000001_populate_llm_models_table)
 
-        // 2. Données de test et développement (local uniquement)
+        // Données de test et développement (local uniquement)
         // À ne pas exécuter en production
         $this->call(UserSeeder::class);
         $this->call(ConversationSeeder::class);
