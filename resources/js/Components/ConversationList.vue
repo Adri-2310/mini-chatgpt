@@ -95,12 +95,12 @@ const updateConversationTitle = async () => {
 </script>
 
 <template>
-    <div class="h-full w-80 bg-slate-900 border-r border-slate-700 flex flex-col">
+    <div class="h-full w-80 bg-card border-r border-border flex flex-col transition-colors">
         <!-- Header avec bouton nouveau -->
-        <div class="p-4 border-b border-slate-700 space-y-3">
+        <div class="p-4 border-b border-border space-y-3">
             <button
                 @click="emit('new')"
-                class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-500 hover:to-purple-500 transition font-medium text-sm"
+                class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-medium text-sm"
             >
                 + Nouvelle conversation
             </button>
@@ -111,9 +111,9 @@ const updateConversationTitle = async () => {
                     v-model="searchQuery"
                     type="text"
                     placeholder="Rechercher..."
-                    class="w-full px-3 py-2 bg-slate-800 border border-slate-700 text-white placeholder-slate-500 rounded-lg text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-offset-0 transition"
+                    class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:ring-offset-0 transition"
                 />
-                <svg v-if="!searchQuery" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg v-if="!searchQuery" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
             </div>
@@ -122,13 +122,13 @@ const updateConversationTitle = async () => {
         <!-- Liste des conversations -->
         <div class="flex-1 overflow-y-auto">
             <template v-if="conversations.length === 0">
-                <div class="p-4 text-center text-slate-400 text-sm">
+                <div class="p-4 text-center text-muted-foreground text-sm">
                     Aucune conversation
                 </div>
             </template>
 
             <template v-else-if="filteredConversations.length === 0">
-                <div class="p-4 text-center text-slate-400 text-sm">
+                <div class="p-4 text-center text-muted-foreground text-sm">
                     Aucune conversation trouvée
                 </div>
             </template>
@@ -138,18 +138,18 @@ const updateConversationTitle = async () => {
                     v-for="conversation in filteredConversations"
                     :key="conversation.id"
                     :class="[
-                        'group flex items-center justify-between px-4 py-3 border-b border-slate-800 hover:bg-slate-800 transition cursor-pointer',
+                        'group flex items-center justify-between px-4 py-3 border-b border-border hover:bg-secondary transition cursor-pointer',
                         activeConversationId === conversation.id
-                            ? 'bg-slate-700 border-l-4 border-l-blue-600'
+                            ? 'bg-secondary border-l-4 border-l-primary'
                             : ''
                     ]"
                     @click="emit('select', conversation.id)"
                 >
                     <div class="flex-1 min-w-0">
-                        <div class="font-medium text-white text-sm truncate">
+                        <div class="font-medium text-foreground text-sm truncate">
                             {{ conversation.title }}
                         </div>
-                        <div class="text-xs text-slate-400 mt-1">
+                        <div class="text-xs text-muted-foreground mt-1">
                             {{ formatDate(conversation.updated_at) }}
                         </div>
                     </div>
@@ -157,7 +157,7 @@ const updateConversationTitle = async () => {
                     <!-- Boutons d'édition et suppression -->
                     <button
                         @click.stop="startEditConversation(conversation)"
-                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-slate-600 rounded text-slate-400 hover:text-blue-400"
+                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-card rounded text-muted-foreground hover:text-primary"
                         title="Éditer"
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -167,7 +167,7 @@ const updateConversationTitle = async () => {
 
                     <button
                         @click.stop="confirmDelete(conversation)"
-                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-slate-600 rounded text-slate-400 hover:text-red-400"
+                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-card rounded text-muted-foreground hover:text-destructive"
                         title="Supprimer"
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -181,27 +181,27 @@ const updateConversationTitle = async () => {
 
     <!-- Modal d'édition -->
     <div v-if="showEditModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-sm mx-4 space-y-4">
-            <h3 class="text-lg font-medium text-white">
+        <div class="bg-card border border-border rounded-lg p-6 max-w-sm mx-4 space-y-4">
+            <h3 class="text-lg font-medium text-foreground">
                 Éditer la conversation
             </h3>
             <input
                 v-model="editTitle"
                 type="text"
-                class="w-full px-3 py-2 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:ring-offset-0 transition text-sm"
+                class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-1 focus:ring-primary focus:ring-offset-0 transition text-sm"
                 placeholder="Titre de la conversation"
                 autofocus
             />
             <div class="flex gap-3 justify-end">
                 <button
                     @click="showEditModal = false"
-                    class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition text-sm"
+                    class="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition text-sm"
                 >
                     Annuler
                 </button>
                 <button
                     @click="updateConversationTitle"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition text-sm"
+                    class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition text-sm"
                 >
                     Enregistrer
                 </button>
@@ -211,23 +211,23 @@ const updateConversationTitle = async () => {
 
     <!-- Modal de confirmation de suppression -->
     <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-slate-800 border border-slate-700 rounded-lg p-6 max-w-sm mx-4 space-y-4">
-            <h3 class="text-lg font-medium text-white">
+        <div class="bg-card border border-border rounded-lg p-6 max-w-sm mx-4 space-y-4">
+            <h3 class="text-lg font-medium text-foreground">
                 Supprimer la conversation
             </h3>
-            <p class="text-slate-400 text-sm">
+            <p class="text-muted-foreground text-sm">
                 Êtes-vous sûr de vouloir supprimer "<strong>{{ conversationToDelete?.title }}</strong>" ? Cette action est irréversible.
             </p>
             <div class="flex gap-3 justify-end">
                 <button
                     @click="showDeleteConfirm = false"
-                    class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition text-sm"
+                    class="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition text-sm"
                 >
                     Annuler
                 </button>
                 <button
                     @click="deleteConversation"
-                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition text-sm"
+                    class="px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg transition text-sm"
                 >
                     Supprimer
                 </button>

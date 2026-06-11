@@ -33,7 +33,7 @@ const handleInput = () => {
 </script>
 
 <template>
-    <div class="border-t border-slate-600 bg-slate-800/50 p-4">
+    <div class="border-t border-border bg-card/50 p-4 transition-colors">
         <form @submit.prevent="handleSubmit" class="space-y-3">
             <textarea
                 ref="textarea"
@@ -42,7 +42,7 @@ const handleInput = () => {
                 :disabled="disabled"
                 @input="handleInput"
                 rows="1"
-                class="w-full px-4 py-3 bg-slate-700 border border-slate-600 text-white placeholder-slate-400 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed resize-none max-h-48"
+                class="w-full px-4 py-3 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed resize-none max-h-48"
             ></textarea>
 
             <div class="flex justify-end">

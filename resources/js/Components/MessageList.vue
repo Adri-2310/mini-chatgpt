@@ -41,7 +41,7 @@ watch(
         :style="{ scrollBehavior: 'smooth' }"
     >
         <template v-if="messages.length === 0">
-            <div class="h-full flex items-center justify-center text-slate-400">
+            <div class="h-full flex items-center justify-center text-muted-foreground">
                 <p>Aucun message. Commencez une conversation!</p>
             </div>
         </template>
@@ -58,7 +58,7 @@ watch(
 
         <LoadingIndicator v-if="loading" />
 
-        <div v-if="messages.length > 0 && totalTokens > 0" class="text-xs text-gray-400 text-center py-2 border-t border-gray-700">
+        <div v-if="messages.length > 0 && totalTokens > 0" class="text-xs text-muted-foreground text-center py-2 border-t border-border">
             Total conversation : {{ totalTokens.toLocaleString() }} tokens
         </div>
     </div>

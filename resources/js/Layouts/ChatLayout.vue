@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+    <div class="min-h-screen bg-background transition-colors">
         <Head :title="title" />
 
         <Banner />
