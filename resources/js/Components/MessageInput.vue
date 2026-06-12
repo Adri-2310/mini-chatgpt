@@ -34,7 +34,7 @@ const handleInput = () => {
 
 <template>
     <div class="border-t border-border bg-card/50 p-4 transition-colors">
-        <form @submit.prevent="handleSubmit" class="space-y-3">
+        <form @submit.prevent="handleSubmit" class="flex gap-3 items-end max-w-4xl mx-auto">
             <textarea
                 ref="textarea"
                 v-model="content"
@@ -42,17 +42,15 @@ const handleInput = () => {
                 :disabled="disabled"
                 @input="handleInput"
                 rows="1"
-                class="w-full px-4 py-3 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed resize-none max-h-48"
+                class="flex-1 px-4 py-3 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-2 focus:ring-primary focus:ring-offset-0 transition disabled:opacity-50 disabled:cursor-not-allowed resize-none max-h-48"
             ></textarea>
 
-            <div class="flex justify-end">
-                <PrimaryButton
-                    type="submit"
-                    :disabled="disabled || !content.trim()"
-                >
-                    {{ disabled ? 'Envoi...' : 'Envoyer' }}
-                </PrimaryButton>
-            </div>
+            <PrimaryButton
+                type="submit"
+                :disabled="disabled || !content.trim()"
+            >
+                {{ disabled ? 'Envoi...' : 'Envoyer' }}
+            </PrimaryButton>
         </form>
     </div>
 </template>

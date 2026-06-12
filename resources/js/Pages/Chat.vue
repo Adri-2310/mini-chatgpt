@@ -7,8 +7,6 @@ import ConversationList from '../Components/ConversationList.vue';
 import ChatHeader from '../Components/ChatHeader.vue';
 import MessageList from '../Components/MessageList.vue';
 import MessageInput from '../Components/MessageInput.vue';
-import ConversationStats from '../Components/ConversationStats.vue';
-import SearchMessages from '../Components/SearchMessages.vue';
 
 defineOptions({
   layout: ChatLayout,
@@ -42,7 +40,7 @@ const scrollToBottom = () => {
     }
 };
 
-const statsRef = ref(null);
+const chatHeaderRef = ref(null);
 
 const activeConversation = computed(() => {
     return conversations.value.find((c) => c.id === activeConversationId.value);
@@ -72,6 +70,11 @@ const createNewConversation = async () => {
             messages.value = [];
             isConversationStarted.value = false;
             error.value = null;
+
+            // Refetch stats pour la nouvelle conversation
+            if (chatHeaderRef.value?.fetchStats) {
+                await chatHeaderRef.value.fetchStats();
+            }
         } else {
             error.value = data.error || 'Une erreur est survenue';
         }
@@ -94,6 +97,11 @@ const selectConversation = async (conversationId) => {
             // Restaurer le modèle utilisé pour cette conversation
             if (data.conversation?.model_used) {
                 selectedModel.value = data.conversation.model_used;
+            }
+
+            // Refetch stats
+            if (chatHeaderRef.value?.fetchStats) {
+                await chatHeaderRef.value.fetchStats();
             }
 
             error.value = null;
@@ -171,8 +179,8 @@ const { isStreaming, send: sendStream } = useStream(
             }
 
             // Refetch les stats après le streaming
-            if (statsRef.value && statsRef.value.fetchStats) {
-                await statsRef.value.fetchStats();
+            if (chatHeaderRef.value && chatHeaderRef.value.fetchStats) {
+                await chatHeaderRef.value.fetchStats();
             }
 
             conversations.value.sort(
@@ -265,6 +273,7 @@ const deleteConversation = async (conversationId) => {
 
             <div class="flex-1 flex flex-col">
                 <ChatHeader
+                    ref="chatHeaderRef"
                     v-if="activeConversationId"
                     :conversation-id="activeConversationId"
                     :conversation-title="conversationTitle"
@@ -297,8 +306,6 @@ const deleteConversation = async (conversationId) => {
                 </template>
 
                 <template v-else>
-                    <SearchMessages :conversation-id="activeConversationId" />
-
                     <div ref="messageListContainer" class="flex-1 overflow-y-auto">
                         <MessageList :messages="messages" :loading="isStreaming" />
                     </div>
@@ -307,8 +314,6 @@ const deleteConversation = async (conversationId) => {
                         :disabled="!activeConversationId || isStreaming"
                         @submit="handleMessageSubmit"
                     />
-
-                    <ConversationStats ref="statsRef" :conversation-id="activeConversationId" />
                 </template>
             </div>
         </div>
