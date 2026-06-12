@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\ChatService;
+use App\Traits\CalculateCosts;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
+    use CalculateCosts;
+
     private ChatService $chatService;
 
     public function __construct(ChatService $chatService)
@@ -61,6 +64,16 @@ class MessageController extends Controller
                 $systemPrompt
             );
 
+            $inputTokens = $aiResult['input_tokens'] ?? 0;
+            $outputTokens = $aiResult['output_tokens'] ?? 0;
+            $cost = $this->calculateMessageCost(
+                $request->input('model'),
+                $inputTokens,
+                $outputTokens
+            );
+
+            // Sauvegarder juste tokens_used (l'API le retourne correctement)
+            // Le coût sera calculé dynamiquement depuis les stats
             $assistantMessage = $conversation->messages()->create([
                 'role' => 'assistant',
                 'content' => $aiResult['content'],
@@ -192,8 +205,10 @@ class MessageController extends Controller
                     }
                 }
 
-                // 4. Une fois que l'IA a fini de parler, on sauvegarde en base de données
+                // 4. Sauvegarder le message avec les tokens du streaming
+                // Note: tokens_used vient de getLastStreamTokens() qui capture total_tokens de l'API
                 $tokensUsed = $this->chatService->getLastStreamTokens();
+
                 $conversation->messages()->create([
                     'role' => 'assistant',
                     'content' => $fullResponse,

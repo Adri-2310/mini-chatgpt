@@ -49,6 +49,9 @@ Route::middleware([
     Route::post('/ask/stream', [AskController::class, 'stream'])->name('ask.stream');
 
     Route::apiResource('conversations', ConversationController::class);
+    Route::get('/conversations/{conversation}/stats', [ConversationController::class, 'stats'])->name('conversations.stats');
+    Route::get('/conversations/{conversation}/search', [ConversationController::class, 'search'])->name('conversations.search');
+    Route::get('/conversations/{conversation}/export', [ConversationController::class, 'export'])->name('conversations.export');
     Route::post('/conversations/{conversation}/messages', [MessageController::class, 'store'])->name('messages.store');
     Route::post('/conversations/{conversation}/messages/stream', [MessageController::class, 'streamStore'])->name('messages.stream');
 });

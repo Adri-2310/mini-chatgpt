@@ -1,7 +1,9 @@
 <script setup>
 import ModelSelector from './ModelSelector.vue';
+import ExportButtons from './ExportButtons.vue';
 
 const props = defineProps({
+    conversationId: Number,
     conversationTitle: {
         type: String,
         default: 'Nouvelle conversation',
@@ -30,7 +32,9 @@ const emit = defineEmits(['update:selectedModel']);
 <template>
     <div class="border-b border-border bg-card/50 p-4 transition-colors">
         <div class="flex items-center justify-between gap-4">
-            <div class="flex-1" />
+            <div class="flex-1 flex justify-start">
+                <ExportButtons :conversation-id="conversationId" :conversation-title="conversationTitle" />
+            </div>
             <div class="flex-1 text-center">
                 <h1 class="text-xl font-semibold text-foreground truncate">
                     {{ props.conversationTitle }}

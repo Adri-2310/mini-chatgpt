@@ -7,6 +7,8 @@ import ConversationList from '../Components/ConversationList.vue';
 import ChatHeader from '../Components/ChatHeader.vue';
 import MessageList from '../Components/MessageList.vue';
 import MessageInput from '../Components/MessageInput.vue';
+import ConversationStats from '../Components/ConversationStats.vue';
+import SearchMessages from '../Components/SearchMessages.vue';
 
 defineOptions({
   layout: ChatLayout,
@@ -39,6 +41,8 @@ const scrollToBottom = () => {
         }, 0);
     }
 };
+
+const statsRef = ref(null);
 
 const activeConversation = computed(() => {
     return conversations.value.find((c) => c.id === activeConversationId.value);
@@ -166,6 +170,11 @@ const { isStreaming, send: sendStream } = useStream(
                 console.error('Erreur lors de la mise à jour de la conversation:', err);
             }
 
+            // Refetch les stats après le streaming
+            if (statsRef.value && statsRef.value.fetchStats) {
+                await statsRef.value.fetchStats();
+            }
+
             conversations.value.sort(
                 (a, b) => new Date(b.updated_at) - new Date(a.updated_at)
             );
@@ -257,6 +266,7 @@ const deleteConversation = async (conversationId) => {
             <div class="flex-1 flex flex-col">
                 <ChatHeader
                     v-if="activeConversationId"
+                    :conversation-id="activeConversationId"
                     :conversation-title="conversationTitle"
                     :selected-model="selectedModel"
                     :models="models"
@@ -287,6 +297,8 @@ const deleteConversation = async (conversationId) => {
                 </template>
 
                 <template v-else>
+                    <SearchMessages :conversation-id="activeConversationId" />
+
                     <div ref="messageListContainer" class="flex-1 overflow-y-auto">
                         <MessageList :messages="messages" :loading="isStreaming" />
                     </div>
@@ -295,6 +307,8 @@ const deleteConversation = async (conversationId) => {
                         :disabled="!activeConversationId || isStreaming"
                         @submit="handleMessageSubmit"
                     />
+
+                    <ConversationStats ref="statsRef" :conversation-id="activeConversationId" />
                 </template>
             </div>
         </div>

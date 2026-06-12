@@ -316,6 +316,8 @@ class ChatService
                         // Capture tokens from usage if present
                         if ($data && isset($data['usage']['total_tokens'])) {
                             $this->lastStreamTokens = $data['usage']['total_tokens'];
+                            $this->lastStreamInputTokens = $data['usage']['prompt_tokens'] ?? null;
+                            $this->lastStreamOutputTokens = $data['usage']['completion_tokens'] ?? null;
                         }
 
                         if ($data && isset($data['choices'][0]['delta']['content'])) {
