@@ -43,15 +43,36 @@ watch(
         </template>
 
         <template v-else>
-            <ChatMessage
+            <div
                 v-for="message in messages"
                 :key="message.id"
-                :role="message.role"
-                :content="message.content"
-                :tokens-used="message.tokens_used"
-            />
+                class="animate-fade-in"
+            >
+                <ChatMessage
+                    :role="message.role"
+                    :content="message.content"
+                    :tokens-used="message.tokens_used"
+                />
+            </div>
         </template>
 
         <LoadingIndicator v-if="loading" />
     </div>
 </template>
+
+<style scoped>
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+</style>

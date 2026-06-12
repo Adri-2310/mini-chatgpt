@@ -28,6 +28,7 @@ const selectedModel = ref('openai/gpt-4o-mini');
 const error = ref(null);
 const isConversationStarted = ref(false);
 const messageListContainer = ref(null);
+const sidebarOpen = ref(true);
 
 // Création du buffer pour le streaming
 let streamBuffer = '';
@@ -263,20 +264,30 @@ const deleteConversation = async (conversationId) => {
 
 <template>
     <div class="flex h-full bg-background">
+        <!-- Sidebar -->
+        <div
+            :class="[
+                'transition-all duration-300 border-r border-border bg-sidebar',
+                sidebarOpen ? 'w-60' : 'w-[70px]'
+            ]"
+        >
             <ConversationList
                 :conversations="conversations"
                 :active-conversation-id="activeConversationId"
+                :sidebar-open="sidebarOpen"
                 @select="selectConversation"
                 @new="createNewConversation"
                 @delete="deleteConversation"
+                @toggle-sidebar="sidebarOpen = !sidebarOpen"
             />
+        </div>
 
-            <div class="flex-1 flex flex-col">
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
                 <ChatHeader
                     ref="chatHeaderRef"
                     v-if="activeConversationId"
                     :conversation-id="activeConversationId"
-                    :conversation-title="conversationTitle"
                     :selected-model="selectedModel"
                     :models="models"
                     :model-disabled="isConversationStarted"

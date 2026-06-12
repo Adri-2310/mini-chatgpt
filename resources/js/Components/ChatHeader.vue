@@ -6,10 +6,6 @@ import ExportButtons from './ExportButtons.vue';
 
 const props = defineProps({
     conversationId: Number,
-    conversationTitle: {
-        type: String,
-        default: 'Nouvelle conversation',
-    },
     selectedModel: {
         type: String,
         default: 'openai/gpt-4o-mini',
@@ -62,56 +58,37 @@ defineExpose({
 </script>
 
 <template>
-    <div class="border-b border-border bg-gradient-to-r from-card to-card/80 transition-colors shadow-sm">
-        <!-- Ligne 1: Titre centré en haut -->
-        <div class="text-center py-3 px-6 border-b border-border">
-            <h1 class="text-sm font-semibold text-foreground truncate">
-                {{ props.conversationTitle }}
-            </h1>
-        </div>
+    <div class="border-b border-border bg-card/50 transition-colors">
+        <!-- Info Panel: Exports + Stats + ModelSelector en une ligne -->
+        <div class="flex items-center justify-between gap-6 px-6 py-3 max-w-full">
+            <!-- Gauche: Boutons (Exports) -->
+            <div class="flex gap-2">
+                <ExportButtons :conversation-id="conversationId" :conversation-title="`Conversation`" />
+            </div>
 
-        <!-- Ligne 2: Boutons + Stats + ModelSelector -->
-        <div class="flex items-center justify-between gap-6 px-6 py-3 max-w-4xl mx-auto w-full">
-            <!-- Gauche: Boutons + Stats -->
-            <div class="flex items-center gap-4">
-                <!-- Boutons (Exports) -->
-                <div class="flex gap-2">
-                    <ExportButtons :conversation-id="conversationId" :conversation-title="conversationTitle" />
+            <!-- Centre-Gauche: Stats -->
+            <div v-if="conversationId" class="flex items-center gap-6">
+                <!-- Messages -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-foreground">💬</span>
+                    <span class="text-sm font-medium text-foreground">{{ stats.total_messages }}</span>
                 </div>
 
-                <!-- Stats -->
-                <div v-if="conversationId" class="flex items-center gap-6 border-l border-border pl-4">
-                    <!-- Messages -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">💬</span>
-                        <div>
-                            <div class="text-xs font-semibold text-foreground">{{ stats.total_messages }}</div>
-                            <div class="text-xs text-muted-foreground">Messages</div>
-                        </div>
-                    </div>
+                <!-- Tokens -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-foreground">⚡</span>
+                    <span class="text-sm font-medium text-foreground">{{ stats.total_tokens.toLocaleString() }}</span>
+                </div>
 
-                    <!-- Tokens -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">⚡</span>
-                        <div>
-                            <div class="text-xs font-semibold text-foreground">{{ stats.total_tokens.toLocaleString() }}</div>
-                            <div class="text-xs text-muted-foreground">Tokens</div>
-                        </div>
-                    </div>
-
-                    <!-- Coût -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-base">💵</span>
-                        <div>
-                            <div class="text-xs font-semibold text-foreground">${{ stats.total_cost_usd.toFixed(4) }}</div>
-                            <div class="text-xs text-muted-foreground">Coût</div>
-                        </div>
-                    </div>
+                <!-- Coût -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-foreground">💵</span>
+                    <span class="text-sm font-medium text-foreground">${{ stats.total_cost_usd.toFixed(4) }}</span>
                 </div>
             </div>
 
             <!-- Droite: ModelSelector -->
-            <div class="w-48">
+            <div class="ml-auto">
                 <ModelSelector
                     :model-value="selectedModel"
                     :models="models"

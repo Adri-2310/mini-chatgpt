@@ -11,9 +11,13 @@ const props = defineProps({
         type: [Number, null],
         default: null,
     },
+    sidebarOpen: {
+        type: Boolean,
+        default: true,
+    },
 });
 
-const emit = defineEmits(['select', 'new', 'delete']);
+const emit = defineEmits(['select', 'new', 'delete', 'toggle-sidebar']);
 
 const page = usePage();
 const searchQuery = ref('');
@@ -95,23 +99,30 @@ const updateConversationTitle = async () => {
 </script>
 
 <template>
-    <div class="h-full w-80 bg-card border-r border-border flex flex-col transition-colors">
+    <div class="h-full bg-sidebar border-r border-sidebar-border flex flex-col transition-colors">
         <!-- Header avec bouton nouveau -->
-        <div class="p-4 border-b border-border space-y-3">
+        <div :class="['p-3 border-b border-sidebar-border space-y-3', sidebarOpen ? '' : 'flex justify-center']">
             <button
                 @click="emit('new')"
-                class="w-full px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-medium text-sm"
+                :class="[
+                    'px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-medium text-sm',
+                    sidebarOpen ? 'w-full' : 'p-2'
+                ]"
+                :title="sidebarOpen ? '' : 'Nouvelle conversation'"
             >
-                + Nouvelle conversation
+                <span v-if="sidebarOpen">+ Nouvelle conversation</span>
+                <svg v-else class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
             </button>
 
-            <!-- Barre de recherche -->
-            <div class="relative">
+            <!-- Barre de recherche (visible seulement quand ouvert) -->
+            <div v-if="sidebarOpen" class="relative">
                 <input
                     v-model="searchQuery"
                     type="text"
                     placeholder="Rechercher..."
-                    class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg text-sm focus:border-primary focus:ring-1 focus:ring-primary focus:ring-offset-0 transition"
+                    class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg text-sm focus:border-sidebar-primary focus:ring-1 focus:ring-sidebar-primary focus:ring-offset-0 transition"
                 />
                 <svg v-if="!searchQuery" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -119,16 +130,16 @@ const updateConversationTitle = async () => {
             </div>
         </div>
 
-        <!-- Liste des conversations -->
-        <div class="flex-1 overflow-y-auto">
+        <!-- Liste des conversations (visible seulement quand ouvert) -->
+        <div v-if="sidebarOpen" class="flex-1 overflow-y-auto">
             <template v-if="conversations.length === 0">
-                <div class="p-4 text-center text-muted-foreground text-sm">
+                <div class="p-4 text-center text-sidebar-foreground text-sm">
                     Aucune conversation
                 </div>
             </template>
 
             <template v-else-if="filteredConversations.length === 0">
-                <div class="p-4 text-center text-muted-foreground text-sm">
+                <div class="p-4 text-center text-sidebar-foreground text-sm">
                     Aucune conversation trouvée
                 </div>
             </template>
@@ -138,15 +149,15 @@ const updateConversationTitle = async () => {
                     v-for="conversation in filteredConversations"
                     :key="conversation.id"
                     :class="[
-                        'group flex items-center justify-between px-4 py-3 border-b border-border hover:bg-secondary transition cursor-pointer',
+                        'group flex items-center justify-between px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-accent transition cursor-pointer',
                         activeConversationId === conversation.id
-                            ? 'bg-secondary border-l-4 border-l-primary'
+                            ? 'bg-sidebar-accent border-l-4 border-l-sidebar-primary'
                             : ''
                     ]"
                     @click="emit('select', conversation.id)"
                 >
                     <div class="flex-1 min-w-0">
-                        <div class="font-medium text-foreground text-sm truncate">
+                        <div class="font-medium text-sidebar-foreground text-sm truncate">
                             {{ conversation.title }}
                         </div>
                         <div class="text-xs text-muted-foreground mt-1">
@@ -157,7 +168,7 @@ const updateConversationTitle = async () => {
                     <!-- Boutons d'édition et suppression -->
                     <button
                         @click.stop="startEditConversation(conversation)"
-                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-card rounded text-muted-foreground hover:text-primary"
+                        class="opacity-0 group-hover:opacity-100 transition ml-2 p-1 hover:bg-card rounded text-muted-foreground hover:text-sidebar-primary"
                         title="Éditer"
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -176,6 +187,22 @@ const updateConversationTitle = async () => {
                     </button>
                 </div>
             </template>
+        </div>
+
+        <!-- Toggle Button (bas de la sidebar) -->
+        <div class="border-t border-sidebar-border p-2">
+            <button
+                @click="emit('toggle-sidebar')"
+                class="w-full p-2 hover:bg-sidebar-accent rounded transition text-sidebar-foreground hover:text-sidebar-primary flex items-center justify-center"
+                :title="sidebarOpen ? 'Fermer la sidebar' : 'Ouvrir la sidebar'"
+            >
+                <svg v-if="sidebarOpen" class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <svg v-else class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
         </div>
     </div>
 
