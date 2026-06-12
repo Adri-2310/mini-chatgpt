@@ -45,8 +45,8 @@ const insertEmoji = (emoji) => {
 </script>
 
 <template>
-    <div class="border-t border-border bg-card/50 p-4 transition-colors">
-        <form @submit.prevent="handleSubmit" class="flex gap-3 items-end max-w-4xl mx-auto">
+    <div class="border-t border-border bg-card/50 p-2 md:p-4 transition-colors">
+        <form @submit.prevent="handleSubmit" class="flex gap-2 md:gap-3 items-end max-w-4xl mx-auto">
             <!-- Emoji Button -->
             <div class="relative">
                 <button

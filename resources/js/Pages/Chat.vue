@@ -267,7 +267,7 @@ const deleteConversation = async (conversationId) => {
         <!-- Sidebar -->
         <div
             :class="[
-                'transition-all duration-300 border-r border-border bg-sidebar',
+                'transition-all duration-300 border-r border-border bg-sidebar hidden md:flex flex-col',
                 sidebarOpen ? 'w-60' : 'w-[70px]'
             ]"
         >

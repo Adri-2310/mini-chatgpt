@@ -30,7 +30,7 @@ const formatContent = (content) => {
     <div :class="['flex flex-col mb-6 gap-1', props.role === 'user' ? 'items-end' : 'items-start']">
         <div
             :class="[
-                'max-w-2xl lg:max-w-3xl px-5 py-3 rounded-lg shadow-sm transition-colors',
+                'max-w-sm md:max-w-2xl lg:max-w-3xl px-4 md:px-5 py-3 rounded-lg shadow-sm transition-colors',
                 props.role === 'user'
                     ? 'bg-accent text-accent-foreground'
                     : 'bg-card text-card-foreground border border-border'

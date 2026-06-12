@@ -60,7 +60,7 @@ defineExpose({
 <template>
     <div class="border-b border-border bg-card/50 transition-colors">
         <!-- Info Panel: Exports + Stats + ModelSelector en une ligne -->
-        <div class="flex items-center justify-between gap-6 px-6 py-3 max-w-full">
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-6 px-3 md:px-6 py-3 max-w-full overflow-x-auto">
             <!-- Gauche: Boutons (Exports) -->
             <div class="flex gap-2">
                 <ExportButtons :conversation-id="conversationId" :conversation-title="`Conversation`" />
