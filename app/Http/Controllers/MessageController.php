@@ -21,6 +21,13 @@ class MessageController extends Controller
         $this->chatService = $chatService;
     }
 
+    /**
+     * Crée un message utilisateur et génère une réponse IA (non-streaming)
+     *
+     * @param Request $request Contient 'content' et 'model'
+     * @param Conversation $conversation La conversation cible
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request, Conversation $conversation)
     {
         try {
@@ -35,28 +42,19 @@ class MessageController extends Controller
         ]);
 
         try {
+            $model = $request->input('model');
+
             $userMessage = $conversation->messages()->create([
                 'role' => 'user',
                 'content' => $request->input('content'),
-                'model' => $request->input('model'),
+                'model' => $model,
             ]);
 
-            $model = $request->input('model');
             if ($conversation->messages()->count() === 1) {
                 $conversation->update(['model_used' => $model]);
             }
 
-            $messageHistory = $conversation->messages()
-                ->orderBy('created_at')
-                ->get(['role', 'content'])
-                ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
-                ->toArray();
-
-            $systemPrompt = config('saveurial.default_system_prompt');
-            $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-                $systemPrompt .= "\n\n" . $customInstruction->instructions;
-            }
+            ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt] = $this->prepareMessageContext($conversation);
 
             $aiResult = $this->chatService->askWithHistory(
                 $request->input('model'),
@@ -147,6 +145,36 @@ class MessageController extends Controller
         }
     }
 
+    /**
+     * Prépare le contexte du message (historique + system prompt)
+     *
+     * @param Conversation $conversation
+     * @return array ['messageHistory' => array, 'systemPrompt' => string]
+     */
+    private function prepareMessageContext(Conversation $conversation): array
+    {
+        $messageHistory = $conversation->messages()
+            ->orderBy('created_at')
+            ->get(['role', 'content'])
+            ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
+            ->toArray();
+
+        $systemPrompt = config('saveurial.default_system_prompt');
+        $customInstruction = auth()->user()->customInstruction;
+        if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+            $systemPrompt .= "\n\n" . $customInstruction->instructions;
+        }
+
+        return ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt];
+    }
+
+    /**
+     * Crée un message utilisateur et génère une réponse IA avec streaming SSE
+     *
+     * @param Request $request Contient 'content' et 'model'
+     * @param Conversation $conversation La conversation cible
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
     public function streamStore(Request $request, Conversation $conversation)
     {
         try {
@@ -161,28 +189,19 @@ class MessageController extends Controller
         ]);
 
         try {
+            $model = $request->input('model');
+
             $userMessage = $conversation->messages()->create([
                 'role' => 'user',
                 'content' => $request->input('content'),
-                'model' => $request->input('model'),
+                'model' => $model,
             ]);
 
-            $model = $request->input('model');
             if ($conversation->messages()->count() === 1) {
                 $conversation->update(['model_used' => $model]);
             }
 
-            $messageHistory = $conversation->messages()
-                ->orderBy('created_at')
-                ->get(['role', 'content'])
-                ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
-                ->toArray();
-
-            $systemPrompt = config('saveurial.default_system_prompt');
-            $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-                $systemPrompt .= "\n\n" . $customInstruction->instructions;
-            }
+            ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt] = $this->prepareMessageContext($conversation);
 
             return response()->stream(function () use ($conversation, $messageHistory, $systemPrompt, $model, $request) {
                 $fullResponse = '';
