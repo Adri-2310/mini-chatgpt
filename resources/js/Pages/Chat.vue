@@ -288,6 +288,8 @@ const deleteConversation = async (conversationId) => {
                     ref="chatHeaderRef"
                     v-if="activeConversationId"
                     :conversation-id="activeConversationId"
+                    :conversation-title="conversationTitle"
+                    :sidebar-open="sidebarOpen"
                     :selected-model="selectedModel"
                     :models="models"
                     :model-disabled="isConversationStarted"

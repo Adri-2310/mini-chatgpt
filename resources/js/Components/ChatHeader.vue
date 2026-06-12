@@ -6,6 +6,14 @@ import ExportButtons from './ExportButtons.vue';
 
 const props = defineProps({
     conversationId: Number,
+    conversationTitle: {
+        type: String,
+        default: 'Nouvelle conversation',
+    },
+    sidebarOpen: {
+        type: Boolean,
+        default: true,
+    },
     selectedModel: {
         type: String,
         default: 'openai/gpt-4o-mini',
@@ -59,15 +67,15 @@ defineExpose({
 
 <template>
     <div class="border-b border-border bg-card/50 transition-colors">
-        <!-- Info Panel: Exports + Stats + ModelSelector en une ligne -->
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-6 px-3 md:px-6 py-3 max-w-full overflow-x-auto">
+        <!-- Info Panel: Exports + Stats + Titre + ModelSelector en une ligne -->
+        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 px-3 md:px-6 py-3 max-w-full">
             <!-- Gauche: Boutons (Exports) -->
             <div class="flex gap-2">
-                <ExportButtons :conversation-id="conversationId" :conversation-title="`Conversation`" />
+                <ExportButtons :conversation-id="conversationId" :conversation-title="props.conversationTitle" />
             </div>
 
-            <!-- Centre-Gauche: Stats -->
-            <div v-if="conversationId" class="flex items-center gap-6">
+            <!-- Centre-Gauche: Stats + Titre -->
+            <div v-if="conversationId" class="flex items-center gap-4 md:gap-6">
                 <!-- Messages -->
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-semibold text-foreground">💬</span>
@@ -84,6 +92,11 @@ defineExpose({
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-semibold text-foreground">💵</span>
                     <span class="text-sm font-medium text-foreground">${{ stats.total_cost_usd.toFixed(4) }}</span>
+                </div>
+
+                <!-- Titre (visible seulement quand sidebar est fermée) -->
+                <div v-if="!props.sidebarOpen" class="text-xs font-medium text-muted-foreground">
+                    {{ props.conversationTitle }}
                 </div>
             </div>
 

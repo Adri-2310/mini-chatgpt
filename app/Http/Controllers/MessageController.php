@@ -114,6 +114,13 @@ class MessageController extends Controller
         }
     }
 
+    /**
+     * Génère un titre court pour la conversation basé sur les 4 premiers messages
+     *
+     * @param Conversation $conversation
+     * @param string $model
+     * @return string Titre généré (2-4 mots, max 50 caractères)
+     */
     private function generateConversationTitle(Conversation $conversation, string $model): string
     {
         $messages = $conversation->messages()
@@ -123,25 +130,26 @@ class MessageController extends Controller
             ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
             ->toArray();
 
-        $conversationContext = "Basé sur cette conversation, génère un titre court (3-5 mots) qui résume le sujet principal:\n\n";
+        $conversationContext = "Réponds UNIQUEMENT par le titre, rien d'autre.\nGénère un titre logique et court (3-5 mots, max 40 caractères) basé sur cette conversation.\nIdentifie l'action/intention ET l'objet principal.\n\nExemples de réponses attendues:\n- Recette Poulet Rapide\n- Recette Ingrédients Frigo\n- Configuration Docker Laravel\n\nConversation:\n";
+
         foreach ($messages as $msg) {
-            $role = $msg['role'] === 'user' ? 'Utilisateur' : 'Assistant';
-            $conversationContext .= "$role: " . substr($msg['content'], 0, 100) . "...\n";
+            $role = $msg['role'] === 'user' ? 'User' : 'AI';
+            $conversationContext .= "$role: " . substr($msg['content'], 0, 100) . "\n";
         }
-        $conversationContext .= "\nTitre (en français):";
+        $conversationContext .= "\nRéponse (TITRE UNIQUEMENT):";
 
         try {
             $result = $this->chatService->ask($model, $conversationContext);
             $title = trim($result['content']);
             $title = trim($title, '\'"');
 
-            if (strlen($title) > 100) {
-                $title = substr($title, 0, 100);
+            if (strlen($title) > 50) {
+                $title = substr($title, 0, 50);
             }
 
-            return !empty($title) ? $title : 'Nouvelle conversation';
+            return !empty($title) ? $title : 'Conversation';
         } catch (\Exception $e) {
-            return substr($messages[0]['content'] ?? 'Nouvelle conversation', 0, 50);
+            return substr($messages[0]['content'] ?? 'Conversation', 0, 40);
         }
     }
 
