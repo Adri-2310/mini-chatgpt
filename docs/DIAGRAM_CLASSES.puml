@@ -1,0 +1,176 @@
+@startuml SaveurIA_ClassDiagram
+title SaveurIA - Diagramme de Classes 
+
+!theme plain
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #000000
+skinparam classArrowThickness 2
+skinparam arrowColor #000000
+skinparam attributeIconSize 0
+
+' ==================== MODELS ====================
+
+class User {
+    - id: int
+    - name: string
+    - email: string
+    - password: string
+    - email_verified_at: datetime
+    - two_factor_secret: string
+    - two_factor_recovery_codes: string
+    - created_at: datetime
+    - updated_at: datetime
+    ---
+    + getConversations(): Collection
+    + getCustomInstruction(): CustomInstruction
+}
+
+class Conversation {
+    - id: int
+    - user_id: int
+    - title: string
+    - model_used: string
+    - created_at: datetime
+    - updated_at: datetime
+    ---
+    + getUser(): User
+    + getMessages(): Collection
+    + getTotalTokens(): int
+}
+
+class Message {
+    - id: int
+    - conversation_id: int
+    - role: string {user, assistant}
+    - content: text
+    - model: string
+    - tokens_used: int
+    - created_at: datetime
+    - updated_at: datetime
+    ---
+    + getConversation(): Conversation
+}
+
+class CustomInstruction {
+    - id: int
+    - user_id: int
+    - instructions: text
+    - enabled: boolean
+    - created_at: datetime
+    - updated_at: datetime
+    ---
+    + getUser(): User
+    + isEnabled(): boolean
+}
+
+class LlmModel {
+    - id: int
+    - name: string
+    - api_id: string
+    - input_cost_per_1m: decimal
+    - output_cost_per_1m: decimal
+    - created_at: datetime
+    ---
+    + getInputCost(): decimal
+    + getOutputCost(): decimal
+}
+
+' ==================== CONTROLLERS ====================
+
+abstract class Controller {
+    # middleware(string): void
+    # authorize(string): void
+}
+
+class ConversationController extends Controller {
+    + index(): Response
+    + store(Request): Response
+    + show(Conversation): Response
+    + update(Request, Conversation): Response
+    + destroy(Conversation): Response
+    + search(Request): Response
+    + stats(Conversation): Response
+    + export(Conversation, string): Response
+}
+
+class MessageController extends Controller {
+    - chatService: ChatService
+    + store(Request, Conversation): Response
+    + streamStore(Request, Conversation): Response
+    - prepareMessageContext(Conversation): array
+    - generateConversationTitle(Conversation, string): string
+}
+
+class AskController extends Controller {
+    - chatService: ChatService
+    + index(Request): Response
+    + stream(Request): Response
+}
+
+class SettingsController extends Controller {
+    + index(Request): Response
+    + update(Request): Response
+}
+
+' ==================== SERVICES ====================
+
+class ChatService {
+    - apiKey: string
+    - apiUrl: string
+    - lastStreamTokens: int
+    ---
+    + ask(string, string): array
+    + askWithHistory(string, array, string): array
+    + stream(string, string): Generator
+    + streamWithHistory(string, array, string): Generator
+    - sendRequest(array, string): array
+    - processStreamChunk(string): array
+    + getLastStreamTokens(): int
+}
+
+' ==================== INTERFACES ====================
+
+interface CalculateCosts {
+    + calculateMessageCost(string, int, int): float
+    + getConversationStats(Conversation): array
+}
+
+interface ConversationPolicy {
+    + view(User, Conversation): boolean
+    + create(User): boolean
+    + update(User, Conversation): boolean
+    + delete(User, Conversation): boolean
+    + addMessage(User, Conversation): boolean
+}
+
+' ==================== RELATIONS ====================
+
+' Héritage
+Controller <|-- ConversationController
+Controller <|-- MessageController
+Controller <|-- AskController
+Controller <|-- SettingsController
+
+' Implémentation de traits
+ConversationController ..|> CalculateCosts
+MessageController ..|> CalculateCosts
+
+' Associations
+User "1" -- "0..*" Conversation : owns
+User "1" -- "0..1" CustomInstruction : has
+Conversation "1" -- "1" User : belongsTo
+Conversation "1" -- "0..*" Message : contains
+Message "0..*" -- "1" Conversation : belongsTo
+CustomInstruction "0..1" -- "1" User : belongsTo
+
+' Dépendances
+ConversationController ..> Conversation : uses
+ConversationController ..> ConversationPolicy : uses
+MessageController ..> Message : uses
+MessageController ..> ChatService : uses
+MessageController ..> Conversation : uses
+AskController ..> ChatService : uses
+SettingsController ..> CustomInstruction : uses
+ChatService ..> LlmModel : queries
+
+@enduml
