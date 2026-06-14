@@ -1,5 +1,5 @@
 <script setup>
-import { Button } from '@/components/ui/ui/button'
+import { Button } from '@/Components/ui/ui/button'
 
 defineProps({
     type: {

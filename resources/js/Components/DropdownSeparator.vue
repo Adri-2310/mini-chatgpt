@@ -1,5 +1,5 @@
 <script setup>
-import { DropdownMenuSeparator } from '@/components/ui/ui/dropdown-menu';
+import { DropdownMenuSeparator } from '@/Components/ui/ui/dropdown-menu';
 </script>
 
 <template>

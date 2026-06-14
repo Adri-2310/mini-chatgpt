@@ -1,5 +1,5 @@
 <script setup>
-import { Dialog, DialogContent } from '@/components/ui/ui/dialog';
+import { Dialog, DialogContent } from '@/Components/ui/ui/dialog';
 import { computed } from 'vue';
 
 const props = defineProps({

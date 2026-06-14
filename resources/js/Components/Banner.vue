@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watchEffect, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
-import { Alert, AlertTitle, AlertDescription } from '@/components/ui/ui/alert';
-import { Button } from '@/components/ui/ui/button';
+import { Alert, AlertTitle, AlertDescription } from '@/Components/ui/ui/alert';
+import { Button } from '@/Components/ui/ui/button';
 
 const page = usePage();
 const show = ref(true);

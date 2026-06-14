@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PrimaryButton from './PrimaryButton.vue';
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/ui/popover';
+import { Popover, PopoverTrigger, PopoverContent } from '@/Components/ui/ui/popover';
 
 defineProps({
     disabled: {

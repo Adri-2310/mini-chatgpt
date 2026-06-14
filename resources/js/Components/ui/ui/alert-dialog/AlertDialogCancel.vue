@@ -2,7 +2,7 @@
 import { reactiveOmit } from "@vueuse/core";
 import { AlertDialogCancel } from "reka-ui";
 import { cn } from "@/lib/utils";
-import { buttonVariants } from '@/components/ui/ui/button';
+import { buttonVariants } from '@/Components/ui/ui/button';
 
 const props = defineProps({
   asChild: { type: Boolean, required: false },

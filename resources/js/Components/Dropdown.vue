@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from '@/components/ui/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent } from '@/Components/ui/ui/dropdown-menu';
 
 defineProps({
     align: {

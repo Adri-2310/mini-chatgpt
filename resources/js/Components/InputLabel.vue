@@ -1,5 +1,5 @@
 <script setup>
-import { Label } from '@/components/ui/ui/label'
+import { Label } from '@/Components/ui/ui/label'
 
 defineProps({
     value: String,

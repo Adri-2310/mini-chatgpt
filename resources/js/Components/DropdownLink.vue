@@ -1,6 +1,6 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
-import { DropdownMenuItem } from '@/components/ui/ui/dropdown-menu';
+import { DropdownMenuItem } from '@/Components/ui/ui/dropdown-menu';
 
 const props = defineProps({
     href: String,

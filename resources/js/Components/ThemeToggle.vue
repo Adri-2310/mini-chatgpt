@@ -1,6 +1,6 @@
 <script setup>
 import { useThemeToggle } from '@/composables/useThemeToggle';
-import { Button } from '@/components/ui/ui/button';
+import { Button } from '@/Components/ui/ui/button';
 
 const { isDark, toggleTheme } = useThemeToggle();
 </script>

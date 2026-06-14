@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue';
-import { Input } from '@/components/ui/ui/input';
-import { Button } from '@/components/ui/ui/button';
+import { Input } from '@/Components/ui/ui/input';
+import { Button } from '@/Components/ui/ui/button';
 
 const props = defineProps({
     conversationId: Number,

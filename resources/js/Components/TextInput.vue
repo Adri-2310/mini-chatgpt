@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue';
-import { Input } from '@/components/ui/ui/input'
+import { Input } from '@/Components/ui/ui/input'
 
 const props = defineProps({
     modelValue: String,
