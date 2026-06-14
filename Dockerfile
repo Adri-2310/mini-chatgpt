@@ -76,9 +76,6 @@ RUN mkdir -p bootstrap/cache storage/logs storage/framework/{cache,sessions,view
 # Set proper ownership for Laravel
 RUN chown -R www-data:www-data /app
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost:9000 || exit 1
-
 EXPOSE 9000
 
 CMD ["php-fpm"]
