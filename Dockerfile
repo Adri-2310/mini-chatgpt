@@ -1,51 +1,61 @@
-# Build arguments
+# syntax=docker/dockerfile:1
+
+###############################################################################
+# SaveurIA - Laravel 12 + Vue 3 + Tailwind
+# Image de production : Nginx + PHP-FPM + Supervisor (conteneur unique)
+# Cible : Coolify (Traefik route le HTTP vers le port 80 expose)
+###############################################################################
+
 ARG PHP_VERSION=8.2
 
-# Use the appropriate base image
-FROM php:${PHP_VERSION}-fpm-alpine AS base
-
-# Install required extensions and tools
-RUN apk add --no-cache \
-    curl \
-    git \
-    unzip \
-    libzip-dev \
-    icu-dev \
-    oniguruma-dev \
-    freetype-dev \
-    libjpeg-turbo-dev \
-    libpng-dev \
-    && docker-php-ext-install -j$(nproc) \
-    zip \
-    intl \
-    mbstring \
-    pdo_mysql \
-    gd
-
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+###############################################################################
+# Stage 1 : Dependances PHP (vendor) avec Composer
+###############################################################################
+FROM composer:2 AS vendor
 
 WORKDIR /app
 
-# Create bootstrap/cache directory BEFORE copying anything
-RUN mkdir -p bootstrap/cache && chmod 755 bootstrap/cache
+# Copie uniquement les fichiers necessaires a l'install pour profiter du cache
+COPY composer.json composer.lock ./
 
-# Copy application files
+# Installe les deps de prod uniquement, sans scripts (artisan pas encore dispo)
+RUN composer install \
+    --no-dev \
+    --no-scripts \
+    --no-autoloader \
+    --ignore-platform-reqs \
+    --prefer-dist \
+    --no-interaction
+
+# Copie le reste du code et genere l'autoloader optimise
 COPY . .
+RUN composer dump-autoload --optimize --no-dev --classmap-authoritative
 
-# Install PHP dependencies
-RUN composer install --ignore-platform-reqs --no-interaction --prefer-dist
-
-# Install Node.js and build assets (if needed)
+###############################################################################
+# Stage 2 : Build des assets front (Vue/Vite)
+###############################################################################
 FROM node:20-alpine AS node-build
+
 WORKDIR /app
-COPY --from=base /app .
-RUN npm ci && npm run build
 
-# Final stage
-FROM php:${PHP_VERSION}-fpm-alpine
+COPY package.json package-lock.json ./
+RUN npm ci
 
+# On a besoin du code source + du vendor (ziggy genere les routes au build)
+COPY . .
+COPY --from=vendor /app/vendor ./vendor
+
+RUN npm run build
+
+###############################################################################
+# Stage 3 : Image finale de production
+###############################################################################
+FROM php:${PHP_VERSION}-fpm-alpine AS production
+
+# --- Paquets systeme + serveur web + superviseur ---
 RUN apk add --no-cache \
+    nginx \
+    supervisor \
     curl \
     libzip-dev \
     icu-dev \
@@ -53,29 +63,60 @@ RUN apk add --no-cache \
     freetype-dev \
     libjpeg-turbo-dev \
     libpng-dev \
-    && docker-php-ext-install -j$(nproc) \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j"$(nproc)" \
     zip \
     intl \
     mbstring \
     pdo_mysql \
-    gd
+    gd \
+    opcache \
+    bcmath
 
-WORKDIR /app
+# --- Config OPcache pour la prod ---
+RUN { \
+    echo 'opcache.enable=1'; \
+    echo 'opcache.enable_cli=0'; \
+    echo 'opcache.memory_consumption=128'; \
+    echo 'opcache.interned_strings_buffer=16'; \
+    echo 'opcache.max_accelerated_files=20000'; \
+    echo 'opcache.validate_timestamps=0'; \
+    echo 'opcache.revalidate_freq=0'; \
+    } > /usr/local/etc/php/conf.d/opcache.ini
 
-# Copy from build stage
-COPY --from=node-build /app .
+WORKDIR /var/www/html
 
-# Ensure bootstrap/cache exists with correct permissions
-RUN mkdir -p bootstrap/cache storage/logs storage/framework/{cache,sessions,views} && \
-    chmod 755 bootstrap/cache && \
-    chmod 777 storage/logs && \
-    chmod 777 storage/framework/cache && \
-    chmod 777 storage/framework/sessions && \
-    chmod 777 storage/framework/views
+# --- Code applicatif + vendor + assets compiles ---
+COPY --chown=www-data:www-data . .
+COPY --from=vendor --chown=www-data:www-data /app/vendor ./vendor
+COPY --from=node-build --chown=www-data:www-data /app/public/build ./public/build
 
-# Set proper ownership for Laravel
-RUN chown -R www-data:www-data /app
+# --- Nettoyage : retire le marqueur Vite dev (sinon assets casses en prod) ---
+RUN rm -f public/hot
 
-EXPOSE 9000
+# --- Arborescence storage + permissions correctes (pas de 777) ---
+RUN mkdir -p \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
-CMD ["php-fpm"]
+# --- Configs Nginx / PHP-FPM / Supervisor / Entrypoint ---
+COPY docker/nginx.conf      /etc/nginx/nginx.conf
+COPY docker/php-fpm.conf    /usr/local/etc/php-fpm.d/zz-saveuria.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/entrypoint.sh   /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Coolify/Traefik route le HTTP vers ce port
+EXPOSE 80
+
+# Health check : Nginx repond a /up (route sante native de Laravel 11+)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
+    CMD curl -fsS http://127.0.0.1/up || exit 1
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
