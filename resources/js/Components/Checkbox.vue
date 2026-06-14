@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue';
-import { Checkbox } from '@/components/ui/ui/checkbox'
+import { Checkbox } from '@/components/ui/checkbox'
 
 const props = defineProps({
     checked: {
