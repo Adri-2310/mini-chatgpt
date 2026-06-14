@@ -76,27 +76,9 @@ RUN mkdir -p bootstrap/cache storage/logs storage/framework/{cache,sessions,view
 # Set proper ownership for Laravel
 RUN chown -R www-data:www-data /app
 
-# Create entrypoint script for migrations and cache
-RUN echo '#!/bin/sh\n\
-set -e\n\
-\n\
-if [ "$APP_ENV" = "production" ]; then\n\
-  echo "Running migrations..."\n\
-  php artisan migrate --force\n\
-fi\n\
-\n\
-echo "Clearing cache..."\n\
-php artisan cache:clear\n\
-php artisan config:clear\n\
-php artisan view:clear\n\
-\n\
-echo "Starting PHP-FPM..."\n\
-exec php-fpm\n\
-' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
-
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD php -r "exit(file_exists('/app/storage/logs/laravel.log') ? 0 : 1);"
+    CMD wget --quiet --tries=1 --spider http://localhost:9000 || exit 1
 
 EXPOSE 9000
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]
