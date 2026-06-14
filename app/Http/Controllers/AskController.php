@@ -93,7 +93,7 @@ class AskController extends Controller
                     }
                 }
 
-                // 3. Send tokens usage to frontend before closing
+                // 3. Envoyer l'utilisation des tokens au frontend avant de fermer
                 $tokensUsed = $this->chatService->getLastStreamTokens();
                 if ($tokensUsed) {
                     echo "data: " . json_encode(['type' => 'usage', 'tokens' => $tokensUsed]) . "\n\n";

@@ -252,11 +252,11 @@ class ChatService
                 return;
             }
 
-            // LECTURE CORRECTE DU FLUX
+            // Lecture du flux
             $body = $response->getBody();
             $buffer = '';
 
-            // On utilise eof() et read() car Guzzle retourne un Stream PSR-7 (non itérable directement avec foreach)
+            // Utilisation de eof() et read() car Guzzle retourne un Stream PSR-7 (non itérable avec foreach)
             while (!$body->eof()) {
                 $chunk = $body->read(1024);
                 
