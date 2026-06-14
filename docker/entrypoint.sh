@@ -34,6 +34,9 @@ php artisan event:cache || true
 # Lien symbolique du storage (si FILESYSTEM_DISK public utilise)
 php artisan storage:link 2>/dev/null || true
 
+# Permissions pour les logs
+chmod 777 /var/www/html/storage/logs 2>/dev/null || true
+
 echo "==> Initialisation terminee. Demarrage de Supervisor (Nginx + PHP-FPM + workers)."
 
 exec "$@"
