@@ -6,7 +6,7 @@
 # Cible : Coolify (Traefik route le HTTP vers le port 80 expose)
 ###############################################################################
 
-ARG PHP_VERSION=8.2
+ARG PHP_VERSION=8.4
 
 ###############################################################################
 # Stage 1 : Dependances PHP (vendor) avec Composer
