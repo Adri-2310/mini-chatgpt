@@ -15,7 +15,7 @@ Thumbs.db
 
 # PHP / Laravel
 /vendor/
-composer.lock
+# composer.lock est commité pour reproducibilité Docker en production
 
 # Node / NPM / Vite
 /node_modules/
