@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import PrimaryButton from './PrimaryButton.vue';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/ui/popover';
 
 defineProps({
     disabled: {
@@ -47,27 +48,21 @@ const insertEmoji = (emoji) => {
 <template>
     <div class="border-t border-border bg-card/50 p-2 md:p-4 transition-colors">
         <form @submit.prevent="handleSubmit" class="flex gap-2 md:gap-3 items-end max-w-4xl mx-auto">
-            <!-- Emoji Button -->
-            <div class="relative">
-                <button
-                    type="button"
-                    @click="showEmojiPicker = !showEmojiPicker"
-                    :disabled="disabled"
-                    class="p-3 hover:bg-secondary rounded-lg transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Ajouter un emoji"
-                >
-                    😊
-                </button>
-
-                <!-- Emoji Picker -->
-                <Transition
-                    enter-active-class="animate-fade-in-up"
-                    leave-active-class="animate-fade-out-down"
-                >
-                    <div
-                        v-if="showEmojiPicker"
-                        class="absolute bottom-full left-0 mb-2 bg-card border border-border rounded-lg shadow-lg p-3 grid grid-cols-4 gap-2 w-48 z-50"
+            <!-- Emoji Picker with Popover -->
+            <Popover v-model:open="showEmojiPicker">
+                <PopoverTrigger as-child>
+                    <button
+                        type="button"
+                        :disabled="disabled"
+                        class="p-3 hover:bg-secondary rounded-lg transition text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                        title="Ajouter un emoji"
                     >
+                        😊
+                    </button>
+                </PopoverTrigger>
+
+                <PopoverContent class="w-48 p-3">
+                    <div class="grid grid-cols-4 gap-2">
                         <button
                             v-for="emoji in emojis"
                             :key="emoji"
@@ -78,8 +73,8 @@ const insertEmoji = (emoji) => {
                             {{ emoji }}
                         </button>
                     </div>
-                </Transition>
-            </div>
+                </PopoverContent>
+            </Popover>
 
             <textarea
                 ref="textarea"
@@ -100,35 +95,3 @@ const insertEmoji = (emoji) => {
         </form>
     </div>
 </template>
-
-<style scoped>
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes fadeOutDown {
-    from {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    to {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-}
-
-.animate-fade-in-up {
-    animation: fadeInUp 0.2s ease-out;
-}
-
-.animate-fade-out-down {
-    animation: fadeOutDown 0.2s ease-in;
-}
-</style>

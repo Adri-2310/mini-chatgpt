@@ -1,7 +1,6 @@
 <script setup>
 import { computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
-import ErrorNav from '@/Components/ErrorNav.vue';
 
 const props = defineProps({
     status: {
@@ -52,12 +51,8 @@ const error = computed(() => errorDetails[props.status] || {
 </script>
 
 <template>
-    <div class="min-h-screen bg-background flex flex-col transition-colors">
+    <div class="min-h-screen bg-background flex items-center justify-center px-4 transition-colors">
         <Head :title="`${props.status} - ${error.title}`" />
-
-        <ErrorNav />
-
-        <div class="flex-1 flex items-center justify-center px-4">
             <div class="text-center max-w-md">
                 <div class="text-6xl mb-6">{{ error.emoji }}</div>
 
@@ -73,21 +68,14 @@ const error = computed(() => errorDetails[props.status] || {
                     {{ error.description }}
                 </p>
 
-                <div class="flex gap-4 justify-center">
+                <div>
                     <Link
                         :href="route(error.link)"
-                        class="px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-semibold"
+                        class="inline-block px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition font-semibold"
                     >
                         Retour à l'accueil
                     </Link>
-                    <Link
-                        :href="route('chat')"
-                        class="px-6 py-3 bg-secondary text-foreground hover:bg-secondary/80 rounded-lg transition font-semibold border border-border"
-                    >
-                        Conversations
-                    </Link>
                 </div>
             </div>
-        </div>
     </div>
 </template>

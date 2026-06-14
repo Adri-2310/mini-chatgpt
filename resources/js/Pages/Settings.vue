@@ -20,7 +20,7 @@ const props = defineProps({
 
 const form = ref({
     instructions: props.customInstruction?.instructions || '',
-    enabled: props.customInstruction?.enabled ?? true,
+    enabled: Boolean(props.customInstruction?.enabled ?? true),
 });
 
 const page = usePage();

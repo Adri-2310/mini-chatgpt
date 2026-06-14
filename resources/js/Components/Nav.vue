@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import DropdownSeparator from '@/Components/DropdownSeparator.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 const page = usePage();
@@ -75,7 +76,7 @@ const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome'
                         </template>
 
                         <template #content>
-                            <div class="block px-4 py-2 text-xs text-muted-foreground">
+                            <div class="block px-4 py-2 text-xs font-medium text-popover-foreground">
                                 Gérer le compte
                             </div>
 
@@ -87,13 +88,11 @@ const homeRoute = computed(() => isAuthenticated.value ? 'dashboard' : 'welcome'
                                 Paramètres
                             </DropdownLink>
 
-                            <div class="border-t border-gray-200" />
+                            <DropdownSeparator />
 
-                            <form @submit.prevent="logout">
-                                <DropdownLink as="button">
-                                    Déconnexion
-                                </DropdownLink>
-                            </form>
+                            <DropdownLink as="button" @action="logout">
+                                Déconnexion
+                            </DropdownLink>
                         </template>
                     </Dropdown>
                 </div>
