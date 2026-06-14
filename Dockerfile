@@ -112,11 +112,11 @@ COPY docker/entrypoint.sh   /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Coolify/Traefik route le HTTP vers ce port
-EXPOSE 80
+EXPOSE 8080
 
 # Health check : Nginx repond a /up (route sante native de Laravel 11+)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
-    CMD curl -fsS http://127.0.0.1/up || exit 1
+    CMD curl -fsS http://127.0.0.1:8080/up || exit 1
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
