@@ -53,6 +53,7 @@
             "@php artisan test"
         ],
         "post-autoload-dump": [
+            "@php scripts/create-bootstrap-cache-dir.php",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
