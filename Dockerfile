@@ -84,6 +84,12 @@ RUN { \
     echo 'opcache.revalidate_freq=0'; \
     } > /usr/local/etc/php/conf.d/opcache.ini
 
+# --- Config timeouts pour les appels IA longs ---
+RUN { \
+    echo 'max_execution_time=120'; \
+    echo 'default_socket_timeout=120'; \
+    } > /usr/local/etc/php/conf.d/timeouts.ini
+
 WORKDIR /var/www/html
 
 # --- Code applicatif + vendor + assets compiles ---
