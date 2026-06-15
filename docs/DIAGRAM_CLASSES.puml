@@ -11,7 +11,6 @@ skinparam attributeIconSize 0
 ' ==================== MODELS ====================
 
 class User {
-    - id: int
     - name: string
     - email: string
     - password: string
@@ -26,8 +25,6 @@ class User {
 }
 
 class Conversation {
-    - id: int
-    - user_id: int
     - title: string
     - model_used: string
     - created_at: datetime
@@ -39,8 +36,6 @@ class Conversation {
 }
 
 class Message {
-    - id: int
-    - conversation_id: int
     - role: string {user, assistant}
     - content: text
     - model: string
@@ -52,8 +47,6 @@ class Message {
 }
 
 class CustomInstruction {
-    - id: int
-    - user_id: int
     - instructions: text
     - enabled: boolean
     - created_at: datetime
@@ -64,7 +57,6 @@ class CustomInstruction {
 }
 
 class LlmModel {
-    - id: int
     - name: string
     - api_id: string
     - input_cost_per_1m: decimal
@@ -73,59 +65,6 @@ class LlmModel {
     ---
     + getInputCost(): decimal
     + getOutputCost(): decimal
-}
-
-' ==================== CONTROLLERS ====================
-
-abstract class Controller {
-    # middleware(string): void
-    # authorize(string): void
-}
-
-class ConversationController extends Controller {
-    + index(): Response
-    + store(Request): Response
-    + show(Conversation): Response
-    + update(Request, Conversation): Response
-    + destroy(Conversation): Response
-    + search(Request): Response
-    + stats(Conversation): Response
-    + export(Conversation, string): Response
-}
-
-class MessageController extends Controller {
-    - chatService: ChatService
-    + store(Request, Conversation): Response
-    + streamStore(Request, Conversation): Response
-    - prepareMessageContext(Conversation): array
-    - generateConversationTitle(Conversation, string): string
-}
-
-class AskController extends Controller {
-    - chatService: ChatService
-    + index(Request): Response
-    + stream(Request): Response
-}
-
-class SettingsController extends Controller {
-    + index(Request): Response
-    + update(Request): Response
-}
-
-' ==================== SERVICES ====================
-
-class ChatService {
-    - apiKey: string
-    - apiUrl: string
-    - lastStreamTokens: int
-    ---
-    + ask(string, string): array
-    + askWithHistory(string, array, string): array
-    + stream(string, string): Generator
-    + streamWithHistory(string, array, string): Generator
-    - sendRequest(array, string): array
-    - processStreamChunk(string): array
-    + getLastStreamTokens(): int
 }
 
 ' ==================== INTERFACES ====================
@@ -145,32 +84,15 @@ interface ConversationPolicy {
 
 ' ==================== RELATIONS ====================
 
-' Héritage
-Controller <|-- ConversationController
-Controller <|-- MessageController
-Controller <|-- AskController
-Controller <|-- SettingsController
-
-' Implémentation de traits
-ConversationController ..|> CalculateCosts
-MessageController ..|> CalculateCosts
-
 ' Associations
 User "1" -- "0..*" Conversation : owns
 User "1" -- "0..1" CustomInstruction : has
-Conversation "1" -- "1" User : belongsTo
 Conversation "1" -- "0..*" Message : contains
-Message "0..*" -- "1" Conversation : belongsTo
-CustomInstruction "0..1" -- "1" User : belongsTo
+Message "0..*" -- "1" LlmModel : uses
 
-' Dépendances
-ConversationController ..> Conversation : uses
-ConversationController ..> ConversationPolicy : uses
-MessageController ..> Message : uses
-MessageController ..> ChatService : uses
-MessageController ..> Conversation : uses
-AskController ..> ChatService : uses
-SettingsController ..> CustomInstruction : uses
-ChatService ..> LlmModel : queries
+' Implementations
+Conversation ..|> CalculateCosts
+Conversation ..|> ConversationPolicy
+Message ..|> CalculateCosts
 
 @enduml
