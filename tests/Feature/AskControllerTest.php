@@ -2,13 +2,32 @@
 
 namespace Tests\Feature;
 
+use App\Models\LlmModel;
 use App\Services\ChatService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class AskControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Cache::forget('llm_models_enabled');
+        LlmModel::truncate();
+
+        LlmModel::create([
+            'model_id' => 'gpt-4o-mini',
+            'name' => 'GPT-4o mini',
+            'provider' => 'OpenAI',
+            'enabled' => true,
+        ]);
+
+        Cache::forget('llm_models_enabled');
+    }
 
     public function test_store_requires_authentication()
     {
@@ -25,6 +44,7 @@ class AskControllerTest extends TestCase
         $user = $this->createUser();
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('ask')
                 ->once()
                 ->andReturn([
@@ -86,11 +106,13 @@ class AskControllerTest extends TestCase
         $user = $this->createUser();
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('streamAsk')
                 ->andReturn((function () {
                     yield 'chunk1';
                     yield 'chunk2';
                 })());
+            $mock->shouldReceive('getLastStreamTokens')->andReturn(100);
         });
 
         $response = $this->actingAs($user)->postJson('/api/ask/stream', [

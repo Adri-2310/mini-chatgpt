@@ -3,14 +3,40 @@
 namespace Tests\Feature;
 
 use App\Models\Conversation;
+use App\Models\LlmModel;
 use App\Models\User;
 use App\Services\ChatService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 class MessageControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Cache::forget('llm_models_enabled');
+        LlmModel::truncate();
+
+        LlmModel::create([
+            'model_id' => 'gpt-4o-mini',
+            'name' => 'GPT-4o mini',
+            'provider' => 'OpenAI',
+            'enabled' => true,
+        ]);
+
+        LlmModel::create([
+            'model_id' => 'gpt-4',
+            'name' => 'GPT-4',
+            'provider' => 'OpenAI',
+            'enabled' => true,
+        ]);
+
+        Cache::forget('llm_models_enabled');
+    }
 
     public function test_store_requires_authentication()
     {
@@ -76,12 +102,30 @@ class MessageControllerTest extends TestCase
         $response->assertJsonValidationErrors(['content']);
     }
 
+    public function test_store_validates_model_is_enabled()
+    {
+        $user = User::factory()->create();
+        $conversation = Conversation::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->postJson(
+            "/conversations/{$conversation->id}/messages",
+            [
+                'content' => 'Test',
+                'model' => 'invalid-model-xyz',
+            ]
+        );
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['model']);
+    }
+
     public function test_store_creates_user_and_assistant_messages()
     {
         $user = User::factory()->create();
         $conversation = Conversation::factory()->for($user)->create();
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('askWithHistory')
                 ->once()
                 ->andReturn([
@@ -121,6 +165,7 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->for($user)->create();
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('askWithHistory')->andReturn([
                 'content' => 'Réponse',
                 'tokens' => 20
@@ -149,6 +194,7 @@ class MessageControllerTest extends TestCase
         ]);
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('askWithHistory')->andReturn([
                 'content' => 'Resp 2',
                 'tokens' => 28
@@ -192,11 +238,13 @@ class MessageControllerTest extends TestCase
         $conversation = Conversation::factory()->for($user)->create();
 
         $this->mock(ChatService::class, function ($mock) {
+            $mock->shouldReceive('buildSystemPrompt')->andReturn('System prompt');
             $mock->shouldReceive('streamWithHistory')
                 ->andReturn((function () {
                     yield 'chunk1';
                     yield 'chunk2';
                 })());
+            $mock->shouldReceive('getLastStreamTokens')->andReturn(100);
         });
 
         $response = $this->actingAs($user)->postJson(
@@ -209,5 +257,22 @@ class MessageControllerTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertStringStartsWith('text/event-stream', $response->headers->get('Content-Type'));
+    }
+
+    public function test_stream_store_validates_model_is_enabled()
+    {
+        $user = User::factory()->create();
+        $conversation = Conversation::factory()->for($user)->create();
+
+        $response = $this->actingAs($user)->postJson(
+            "/conversations/{$conversation->id}/messages/stream",
+            [
+                'content' => 'Test',
+                'model' => 'invalid-model-xyz',
+            ]
+        );
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['model']);
     }
 }
