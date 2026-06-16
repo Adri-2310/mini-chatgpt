@@ -24,7 +24,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['conversation_id', 'role', 'content', 'model', 'tokens_used'];
+    protected $fillable = ['conversation_id', 'llm_model_id', 'role', 'content', 'model', 'tokens_used'];
     protected $touches = ['conversation'];
 
     /**
@@ -35,5 +35,15 @@ class Message extends Model
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class);
+    }
+
+    /**
+     * Relation: Le modèle LLM utilisé
+     *
+     * @return BelongsTo
+     */
+    public function llmModel(): BelongsTo
+    {
+        return $this->belongsTo(LlmModel::class);
     }
 }

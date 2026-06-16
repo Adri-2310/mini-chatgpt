@@ -15,13 +15,16 @@ class User {
     - email: string
     - password: string
     - email_verified_at: datetime
+    - profile_photo_path: string
     - two_factor_secret: string
     - two_factor_recovery_codes: string
     - created_at: datetime
     - updated_at: datetime
     ---
-    + getConversations(): Collection
-    + getCustomInstruction(): CustomInstruction
+    + conversations(): HasMany
+    + customInstruction(): HasOne
+    + sendEmailVerificationNotification()
+    + sendPasswordResetNotification(token)
 }
 
 class Conversation {
@@ -30,20 +33,23 @@ class Conversation {
     - created_at: datetime
     - updated_at: datetime
     ---
-    + getUser(): User
-    + getMessages(): Collection
-    + getTotalTokens(): int
+    + user(): BelongsTo
+    + messages(): HasMany
+    + calculateCostByTokens(model, tokens): float [trait]
+    + getConversationStats(): array [trait]
 }
 
 class Message {
-    - role: string {user, assistant}
+    - role: string {user|assistant}
     - content: text
     - model: string
     - tokens_used: int
     - created_at: datetime
     - updated_at: datetime
     ---
-    + getConversation(): Conversation
+    + conversation(): BelongsTo
+    + calculateCostByTokens(model, tokens): float [trait]
+    + getConversationStats(): array [trait]
 }
 
 class CustomInstruction {
@@ -52,31 +58,33 @@ class CustomInstruction {
     - created_at: datetime
     - updated_at: datetime
     ---
-    + getUser(): User
-    + isEnabled(): boolean
+    + user(): BelongsTo
 }
 
 class LlmModel {
     - name: string
-    - api_id: string
-    - input_cost_per_1m: decimal
-    - output_cost_per_1m: decimal
+    - provider: string
+    - model_id: string
+    - description: string
+    - enabled: boolean
+    - max_tokens: int
+    - config: array (JSON)
     - created_at: datetime
     ---
-    + getInputCost(): decimal
-    + getOutputCost(): decimal
+    + getEnabled(): Collection [static, cached]
 }
 
-' ==================== INTERFACES ====================
+' ==================== TRAITS ====================
 
-interface CalculateCosts {
-    + calculateMessageCost(string, int, int): float
-    + getConversationStats(Conversation): array
+class CalculateCosts <<trait>> {
+    {abstract} + calculateCostByTokens(model: string, tokensUsed: int): float
+    {abstract} + getConversationStats(conversation): array
 }
 
-interface ConversationPolicy {
+' ==================== POLICIES ====================
+
+class ConversationPolicy {
     + view(User, Conversation): boolean
-    + create(User): boolean
     + update(User, Conversation): boolean
     + delete(User, Conversation): boolean
     + addMessage(User, Conversation): boolean
@@ -84,15 +92,15 @@ interface ConversationPolicy {
 
 ' ==================== RELATIONS ====================
 
-' Associations
+' Associations (Eloquent Relations - Une seule flèche par relation)
 User "1" -- "0..*" Conversation : owns
-User "1" -- "0..1" CustomInstruction : has
 Conversation "1" -- "0..*" Message : contains
 Message "0..*" -- "1" LlmModel : uses
+User "1" -- "0..1" CustomInstruction : has
+ConversationPolicy "1" -- "0..*" Conversation : protects
 
-' Implementations
-Conversation ..|> CalculateCosts
-Conversation ..|> ConversationPolicy
-Message ..|> CalculateCosts
+' Trait Implementation
+Conversation "1" -- "1" CalculateCosts : implements
+Message "0..*" -- "1" CalculateCosts : implements
 
 @enduml

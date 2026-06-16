@@ -45,11 +45,13 @@ class MessageController extends Controller
 
         try {
             $model = $request->input('model');
+            $llmModel = LlmModel::where('model_id', $model)->first();
 
             $userMessage = $conversation->messages()->create([
                 'role' => 'user',
                 'content' => $request->input('content'),
                 'model' => $model,
+                'llm_model_id' => $llmModel?->id,
             ]);
 
             $messages = $conversation->messages()
@@ -74,6 +76,7 @@ class MessageController extends Controller
                 'content' => $aiResult['content'],
                 'model' => $request->input('model'),
                 'tokens_used' => $aiResult['tokens'],
+                'llm_model_id' => $llmModel?->id,
             ]);
             $messages->push($assistantMessage);
 
@@ -195,11 +198,13 @@ class MessageController extends Controller
 
         try {
             $model = $request->input('model');
+            $llmModel = LlmModel::where('model_id', $model)->first();
 
             $userMessage = $conversation->messages()->create([
                 'role' => 'user',
                 'content' => $request->input('content'),
                 'model' => $model,
+                'llm_model_id' => $llmModel?->id,
             ]);
 
             if ($conversation->messages()->count() === 1) {
@@ -208,7 +213,7 @@ class MessageController extends Controller
 
             ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt] = $this->prepareMessageContext($conversation);
 
-            return response()->stream(function () use ($conversation, $messageHistory, $systemPrompt, $model, $request) {
+            return response()->stream(function () use ($conversation, $messageHistory, $systemPrompt, $model, $request, $llmModel) {
                 $fullResponse = '';
 
                 // 1. Lecture du flux depuis le ChatService
@@ -217,10 +222,10 @@ class MessageController extends Controller
                 foreach ($stream as $chunk) {
                     if (!empty($chunk)) {
                         $fullResponse .= $chunk;
-                        
+
                         // 2. Formatage SSE avec echo (et encodage JSON pour la sécurité des caractères)
                         echo "data: " . json_encode(['content' => $chunk]) . "\n\n";
-                        
+
                         // 3. Vidage du buffer pour forcer l'envoi immédiat au navigateur
                         if (ob_get_level() > 0) {
                             ob_flush();
@@ -238,6 +243,7 @@ class MessageController extends Controller
                     'content' => $fullResponse,
                     'model' => $model,
                     'tokens_used' => $tokensUsed,
+                    'llm_model_id' => $llmModel?->id,
                 ]);
 
                 if (!$conversation->title || $conversation->title === 'Nouvelle conversation') {
