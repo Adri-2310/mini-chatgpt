@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Conversation;
 use App\Models\LlmModel;
+use App\Traits\CalculateCosts;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -11,6 +12,7 @@ use Inertia\Inertia;
 
 class ConversationController extends Controller
 {
+    use CalculateCosts;
     public function chat()
     {
         $conversations = auth()->user()->conversations()
@@ -19,9 +21,8 @@ class ConversationController extends Controller
 
         return Inertia::render('Chat', [
             'conversations' => $conversations,
-            'models' => LlmModel::where('enabled', true)
-                ->select(['id', 'model_id', 'name', 'provider'])
-                ->get(),
+            'models' => LlmModel::getEnabled()
+                ->map(fn($m) => ['id' => $m->id, 'model_id' => $m->model_id, 'name' => $m->name, 'provider' => $m->provider]),
         ]);
     }
 
@@ -102,33 +103,9 @@ class ConversationController extends Controller
             return response()->json(['error' => 'Non autorisé'], 403);
         }
 
-        $allMessages = $conversation->messages()->get();
-        $assistantMessages = $conversation->messages()->where('role', 'assistant')->get();
+        $stats = $this->getConversationStats($conversation);
 
-        $totalTokens = $allMessages->sum('tokens_used') ?? 0;
-        $totalCost = 0;
-
-        // Calculer le coût pour chaque message assistant
-        foreach ($assistantMessages as $msg) {
-            if ($msg->tokens_used) {
-                // Coût moyen par million de tokens
-                $costPer1M = [
-                    'openai/gpt-4o-mini' => 0.75,
-                    'google/gemini-2.5-flash' => 0.20,
-                    'anthropic/claude-3.5-haiku' => 2.40,
-                    'anthropic/claude-3.5-sonnet' => 3.00,
-                ];
-                $modelCost = $costPer1M[$msg->model ?? $conversation->model_used] ?? 1.50;
-                $messageCost = ($msg->tokens_used / 1_000_000) * $modelCost;
-                $totalCost += $messageCost;
-            }
-        }
-
-        return response()->json([
-            'total_messages' => $allMessages->count(),
-            'total_tokens' => $totalTokens,
-            'total_cost_usd' => round($totalCost, 6),
-        ]);
+        return response()->json($stats);
     }
 
     public function search(Conversation $conversation, \Illuminate\Http\Request $request)

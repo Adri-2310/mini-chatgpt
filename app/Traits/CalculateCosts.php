@@ -8,21 +8,21 @@ trait CalculateCosts
 {
     /**
      * Calculer le coût basé sur le nombre total de tokens
-     * Formule: (tokens_used / 1M) * price_per_1M_tokens
+     * Utilise la tarification depuis config/ai_models.php
+     * Formule: (tokens / 1M) * ((input_price + output_price) / 2)
      */
     public function calculateCostByTokens(string $model, int $tokensUsed): float
     {
-        // Coût moyen par million de tokens (prix approximatif)
-        $avgCostPer1M = [
-            'openai/gpt-4o-mini' => 0.75,          // ~$0,75 pour 1M tokens (moyenne entrée+sortie)
-            'google/gemini-2.5-flash' => 0.20,     // ~$0,20 pour 1M tokens
-            'anthropic/claude-3.5-haiku' => 2.40,  // ~$2,40 pour 1M tokens
-            'anthropic/claude-3.5-sonnet' => 3.00, // ~$3,00 pour 1M tokens
-        ];
+        $pricing = Config::get('ai_models.pricing.' . $model);
 
-        $costPer1M = $avgCostPer1M[$model] ?? 1.50; // Fallback si modèle inconnu
+        if (!$pricing) {
+            return 0;
+        }
 
-        return round(($tokensUsed / 1_000_000) * $costPer1M, 6);
+        // Calcul du coût moyen (input + output) / 2
+        $avgCostPer1M = ($pricing['input'] + $pricing['output']) / 2;
+
+        return round(($tokensUsed / 1_000_000) * $avgCostPer1M, 6);
     }
 
     /**

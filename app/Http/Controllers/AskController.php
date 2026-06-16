@@ -19,9 +19,8 @@ class AskController extends Controller
     public function index()
     {
         return Inertia::render('Ask', [
-            'models' => LlmModel::where('enabled', true)
-                ->select(['id', 'model_id', 'name', 'provider'])
-                ->get(),
+            'models' => LlmModel::getEnabled()
+                ->map(fn($m) => ['id' => $m->id, 'model_id' => $m->model_id, 'name' => $m->name, 'provider' => $m->provider]),
         ]);
     }
 
