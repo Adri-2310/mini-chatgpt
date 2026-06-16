@@ -7,7 +7,45 @@ Une application ChatGPT-like fonctionnelle et moderne, permettant d'interagir av
 **Mini-ChatGPT** est une application web complète développée pour démontrer une architecture solide et scalable. L'application offre une interface intuitive pour discuter avec plusieurs LLMs (Gemini, GPT-4o, Claude) avec streaming en temps réel, historique auto-sauvegardé et instructions personnalisées.
 
 **Projet**: Examen SGBD - Juin 2026  
-**Stack**: Laravel 12 + Vue.js 3 + Inertia.js + TailwindCSS 4
+**Stack**: Laravel 12 + Vue.js 3 + Inertia.js + TailwindCSS 4  
+**Status**: ✅ Phase d'optimisation complétée (v2.0)
+
+---
+
+## 🎯 Optimisations Récentes (v2.0)
+
+### 🔧 Améliorations de Performance
+- **N+1 Queries**: Consolidé le chargement des messages avec une requête unique
+- **Caching**: Implémentation du cache 1h pour `LlmModel::getEnabled()`
+- **Timeout API**: Augmenté de 30s à 120s pour les appels OpenRouter
+- **Pricing centralisé**: Source unique de vérité dans `config/ai_models.php`
+
+### 🗄️ Relation Base de Données
+- **FK llm_model_id**: Nouvelle relation entre `Message` et `LlmModel`
+  - Chaque message référence le modèle LLM utilisé
+  - Intégrité référentielle garantie par FK
+  - Requêtes plus rapides sur Message-LlmModel
+
+### 🔐 Sécurité
+- **TLS Verification**: Activée pour tous les appels API (remplacé `withoutVerifying()`)
+- **Input Validation**: Validation stricte du modèle sélectionné via `Rule::in()`
+- **.env.production**: Supprimé (sensible)
+- **Timestamp Auto-Update**: Conversation mise à jour lors de chaque message
+
+### 🎨 Interface Utilisateur
+- **Barres de recherche**: Supprimées (fonctionnalité non prioritaire)
+  - Sidebar: Suppression du champ "Rechercher..."
+  - Contenu: Suppression du composant SearchMessages.vue
+
+### 📊 Documentation
+- **Schéma SQL**: Fichier `docs/DATABASE_SCHEMA.sql` créé
+- **Diagramme UML**: Simplifié avec une relation par table, cardinalités complètes
+- **Architecture**: Documentation détaillée des entités et relations
+
+### ✅ Tests
+- **Coverage**: 55 tests passant, 0 échoués
+- **FK Handling**: TestCase configuré pour gérer les contraintes FK
+- **Test Isolation**: setUp() avec LlmModel.truncate() et Cache.forget()
 
 ---
 
@@ -609,15 +647,41 @@ Docs: https://render.com/docs/deploy-laravel
 
 ## 📊 Schéma Base de Données
 
-```sql
--- Tables principales
-users                    -- Utilisateurs authentifiés
-conversations           -- Conversations de l'utilisateur
-messages                -- Messages (utilisateur + IA)
-custom_instructions     -- Instructions personnalisées
-llm_models             -- Modèles disponibles
-api_credentials        -- Clés API par modèle
+### Hiérarchie des entités
+
 ```
+User (1) ─────owns────────┐
+  │ (1)  ──has───┐        │ (0..*)
+  │             │        │
+  │      CustomInstruction │
+  │             │        Conversation (1) ──contains─ Message (0..*)
+  │             │                                        │ (0..*)
+  │             │                                        │
+  └─────────────┴─────────────────────────────────uses──┘
+                                                        │
+                                                    LlmModel (1)
+```
+
+### Relations et Cardinalités
+
+| Relation | Cardinalité | Type | Description |
+|----------|-------------|------|-------------|
+| User → Conversation | 1:0..* | hasMany | Un user a plusieurs conversations |
+| User → CustomInstruction | 1:0..1 | hasOne | Un user a une instruction personnalisée |
+| Conversation → Message | 1:0..* | hasMany | Une conversation contient plusieurs messages |
+| Message → LlmModel | 0..*:1 | BelongsTo | Plusieurs messages utilisent un modèle |
+
+### Tables principales
+
+| Table | Colonnes clés | Relations |
+|-------|---------------|-----------|
+| `users` | id, name, email, password, ... | owns Conversation, has CustomInstruction |
+| `conversations` | id, user_id, title, model_used | belongs to User, contains Message |
+| `messages` | id, conversation_id, llm_model_id, role, content, tokens_used | belongs to Conversation, LlmModel |
+| `custom_instructions` | id, user_id, instructions, enabled | belongs to User |
+| `llm_models` | id, name, provider, model_id, config, enabled | used by Message |
+
+**Voir aussi:** `docs/DATABASE_SCHEMA.sql` pour le script de création complet.
 
 ---
 
@@ -664,7 +728,7 @@ L'application est **entièrement localisée en français** :
 - TailwindCSS 4
 - Toastr.js
 
-**Dernière mise à jour:** Juin 2026 (Documentation système de thème tweakcn ajoutée)
+**Dernière mise à jour:** 16 Juin 2026 (Phase d'optimisation v2.0 complétée - FK llm_model_id, Caching, Performance, Sécurité)
 
 ---
 
