@@ -20,15 +20,6 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
-// Routes de test pour les pages d'erreur (à supprimer en production)
-if (app()->isLocal()) {
-    Route::get('/test/404', function () { abort(404); });
-    Route::get('/test/403', function () { abort(403); });
-    Route::get('/test/500', function () { abort(500); });
-    Route::get('/test/419', function () { abort(419); });
-    Route::get('/test/429', function () { abort(429); });
-}
-
 Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
     Route::get('/email/verify', function () {
         return Inertia::render('Auth/VerifyEmail');
