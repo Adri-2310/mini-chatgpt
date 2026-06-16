@@ -44,6 +44,7 @@ yarn.lock
 .env.*.local
 .env.backup
 .env.*.backup
+.env.production
 
 # Testing & Coverage
 /coverage/

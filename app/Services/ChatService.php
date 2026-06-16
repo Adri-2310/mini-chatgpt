@@ -54,7 +54,7 @@ class ChatService
                 'Authorization' => "Bearer {$this->apiKey}",
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
-            ])->timeout(30)->withoutVerifying()->post(self::API_URL, [
+            ])->timeout(30)->post(self::API_URL, [
                 'model' => $model,
                 'messages' => $messages,
                 'temperature' => 0.7,
@@ -116,7 +116,7 @@ class ChatService
                 'Authorization' => "Bearer {$this->apiKey}",
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
-            ])->timeout(30)->withoutVerifying()->post(self::API_URL, [
+            ])->timeout(30)->post(self::API_URL, [
                 'model' => $model,
                 'messages' => $messages,
                 'temperature' => 0.7,
@@ -234,7 +234,6 @@ class ChatService
                     'stream' => true,
                 ],
                 'stream' => true,
-                'verify' => false,
                 'timeout' => 30,
                 'http_errors' => false,
             ]);

@@ -11,14 +11,6 @@ class SettingsController extends Controller
     {
         $customInstruction = auth()->user()->customInstruction;
 
-        \Log::info('SettingsController index', [
-            'user_id' => auth()->id(),
-            'has_custom_instruction' => $customInstruction ? true : false,
-            'enabled_value' => $customInstruction?->enabled,
-            'enabled_type' => gettype($customInstruction?->enabled),
-            'raw_data' => $customInstruction ? json_encode($customInstruction->toArray()) : null,
-        ]);
-
         return Inertia::render('Settings', [
             'customInstruction' => $customInstruction,
             'csrf_token' => csrf_token(),
@@ -34,13 +26,6 @@ class SettingsController extends Controller
 
         $enabled = filter_var($request->input('enabled'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
-        \Log::info('SettingsController update', [
-            'received_enabled' => $request->input('enabled'),
-            'type_received' => gettype($request->input('enabled')),
-            'filtered_enabled' => $enabled,
-            'type_filtered' => gettype($enabled),
-        ]);
-
         $result = auth()->user()->customInstruction()->updateOrCreate(
             ['user_id' => auth()->id()],
             [
@@ -49,15 +34,7 @@ class SettingsController extends Controller
             ]
         );
 
-        // Recharger depuis la BD pour vérifier
         $fresh = $result->fresh();
-
-        \Log::info('After save', [
-            'saved_enabled' => $result->enabled,
-            'type_saved' => gettype($result->enabled),
-            'fresh_enabled' => $fresh->enabled,
-            'fresh_type' => gettype($fresh->enabled),
-        ]);
 
         return response()->json([
             'success' => true,
