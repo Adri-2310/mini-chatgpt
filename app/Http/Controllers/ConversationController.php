@@ -200,9 +200,6 @@ class ConversationController extends Controller
                     'role' => $msg->role,
                     'content' => $msg->content,
                     'tokens' => $msg->tokens_used,
-                    'input_tokens' => $msg->input_tokens,
-                    'output_tokens' => $msg->output_tokens,
-                    'cost_usd' => $msg->cost_usd,
                     'created_at' => $msg->created_at,
                 ]),
             ];

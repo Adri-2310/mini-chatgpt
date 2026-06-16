@@ -50,11 +50,20 @@ class MessageController extends Controller
                 'model' => $model,
             ]);
 
-            if ($conversation->messages()->count() === 1) {
+            $messages = $conversation->messages()
+                ->orderBy('created_at')
+                ->get(['id', 'role', 'content', 'tokens_used', 'created_at']);
+
+            if ($messages->count() === 1) {
                 $conversation->update(['model_used' => $model]);
             }
 
-            ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt] = $this->prepareMessageContext($conversation);
+            $messageHistory = $messages->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])->toArray();
+            $systemPrompt = config('saveurial.default_system_prompt');
+            $customInstruction = auth()->user()->customInstruction;
+            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+                $systemPrompt .= "\n\n" . $customInstruction->instructions;
+            }
 
             $aiResult = $this->chatService->askWithHistory(
                 $request->input('model'),
@@ -62,37 +71,30 @@ class MessageController extends Controller
                 $systemPrompt
             );
 
-            $inputTokens = $aiResult['input_tokens'] ?? 0;
-            $outputTokens = $aiResult['output_tokens'] ?? 0;
-            $cost = $this->calculateMessageCost(
-                $request->input('model'),
-                $inputTokens,
-                $outputTokens
-            );
-
-            // Sauvegarder juste tokens_used (l'API le retourne correctement)
-            // Le coût sera calculé dynamiquement depuis les stats
             $assistantMessage = $conversation->messages()->create([
                 'role' => 'assistant',
                 'content' => $aiResult['content'],
                 'model' => $request->input('model'),
                 'tokens_used' => $aiResult['tokens'],
             ]);
+            $messages->push($assistantMessage);
 
             $titleUpdated = false;
             if (!$conversation->title || $conversation->title === 'Nouvelle conversation') {
-                $messageCount = $conversation->messages()->count();
-
-                if ($messageCount >= 4) {
+                if ($messages->count() >= 4) {
                     $title = $this->generateConversationTitle($conversation, $request->input('model'));
                     $conversation->update(['title' => $title]);
                     $titleUpdated = true;
                 }
             }
 
-            $messages = $conversation->messages()
-                ->orderBy('created_at')
-                ->get(['id', 'role', 'content', 'tokens_used', 'created_at']);
+            $messages = $messages->map(fn($msg) => [
+                'id' => $msg->id,
+                'role' => $msg->role,
+                'content' => $msg->content,
+                'tokens_used' => $msg->tokens_used,
+                'created_at' => $msg->created_at,
+            ]);
 
             return response()->json([
                 'success' => true,

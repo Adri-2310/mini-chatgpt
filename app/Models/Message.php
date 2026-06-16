@@ -25,6 +25,7 @@ class Message extends Model
     use HasFactory;
 
     protected $fillable = ['conversation_id', 'role', 'content', 'model', 'tokens_used'];
+    protected $touches = ['conversation'];
 
     /**
      * Relation: La conversation parent
