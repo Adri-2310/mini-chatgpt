@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Conversation;
+use App\Models\LlmModel;
 use App\Models\Message;
 use App\Services\ChatService;
 use App\Traits\CalculateCosts;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class MessageController extends Controller
 {
@@ -38,7 +40,7 @@ class MessageController extends Controller
 
         $request->validate([
             'content' => 'required|string|min:1|max:5000',
-            'model' => 'required|string',
+            'model' => ['required', 'string', Rule::in(LlmModel::getEnabled()->pluck('model_id'))],
         ]);
 
         try {
@@ -59,11 +61,7 @@ class MessageController extends Controller
             }
 
             $messageHistory = $messages->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])->toArray();
-            $systemPrompt = config('saveurial.default_system_prompt');
-            $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-                $systemPrompt .= "\n\n" . $customInstruction->instructions;
-            }
+            $systemPrompt = $this->chatService->buildSystemPrompt();
 
             $aiResult = $this->chatService->askWithHistory(
                 $request->input('model'),
@@ -169,13 +167,10 @@ class MessageController extends Controller
             ->map(fn($msg) => ['role' => $msg->role, 'content' => $msg->content])
             ->toArray();
 
-        $systemPrompt = config('saveurial.default_system_prompt');
-        $customInstruction = auth()->user()->customInstruction;
-        if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-            $systemPrompt .= "\n\n" . $customInstruction->instructions;
-        }
-
-        return ['messageHistory' => $messageHistory, 'systemPrompt' => $systemPrompt];
+        return [
+            'messageHistory' => $messageHistory,
+            'systemPrompt' => $this->chatService->buildSystemPrompt(),
+        ];
     }
 
     /**
@@ -195,7 +190,7 @@ class MessageController extends Controller
 
         $request->validate([
             'content' => 'required|string|min:1|max:5000',
-            'model' => 'required|string',
+            'model' => ['required', 'string', Rule::in(LlmModel::getEnabled()->pluck('model_id'))],
         ]);
 
         try {

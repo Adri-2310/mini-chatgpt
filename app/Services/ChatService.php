@@ -26,6 +26,16 @@ class ChatService
         return $this->lastStreamTokens;
     }
 
+    public function buildSystemPrompt(): string
+    {
+        $systemPrompt = config('saveurial.default_system_prompt');
+        $customInstruction = auth()->user()?->customInstruction;
+        if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
+            $systemPrompt .= "\n\n" . $customInstruction->instructions;
+        }
+        return $systemPrompt;
+    }
+
     public function ask(string $model, string $question, ?string $systemPrompt = null): array
     {
         $startTime = microtime(true);

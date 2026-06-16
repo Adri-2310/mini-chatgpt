@@ -10,7 +10,6 @@
         "@inertiajs/vue3": "^2.0",
         "@tailwindcss/forms": "^0.5.7",
         "@tailwindcss/typography": "^0.5.10",
-        "@tailwindcss/vite": "^4.0.0",
         "@vitejs/plugin-vue": "^6.0.4",
         "autoprefixer": "^10.4.16",
         "concurrently": "^9.0.1",
@@ -22,7 +21,6 @@
     },
     "dependencies": {
         "@laravel/stream-vue": "^0.3.13",
-        "@lucide/vue": "^1.18.0",
         "@vee-validate/zod": "^4.15.1",
         "@vueuse/core": "^14.3.0",
         "class-variance-authority": "^0.7.1",

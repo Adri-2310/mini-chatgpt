@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LlmModel;
 use App\Services\ChatService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class AskController extends Controller
@@ -28,15 +29,11 @@ class AskController extends Controller
     {
         $request->validate([
             'question' => 'required|string|min:5|max:2000',
-            'model' => 'required|string',
+            'model' => ['required', 'string', Rule::in(LlmModel::getEnabled()->pluck('model_id'))],
         ]);
 
         try {
-            $systemPrompt = config('saveurial.default_system_prompt');
-            $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-                $systemPrompt .= "\n\n" . $customInstruction->instructions;
-            }
+            $systemPrompt = $this->chatService->buildSystemPrompt();
 
             $result = $this->chatService->ask(
                 $request->input('model'),
@@ -61,15 +58,11 @@ class AskController extends Controller
     {
         $request->validate([
             'question' => 'required|string|min:5|max:2000',
-            'model' => 'required|string',
+            'model' => ['required', 'string', Rule::in(LlmModel::getEnabled()->pluck('model_id'))],
         ]);
 
         try {
-            $systemPrompt = config('saveurial.default_system_prompt');
-            $customInstruction = auth()->user()->customInstruction;
-            if ($customInstruction && $customInstruction->enabled && $customInstruction->instructions) {
-                $systemPrompt .= "\n\n" . $customInstruction->instructions;
-            }
+            $systemPrompt = $this->chatService->buildSystemPrompt();
 
             return response()->stream(function () use ($request, $systemPrompt) {
                 $stream = $this->chatService->streamAsk(
