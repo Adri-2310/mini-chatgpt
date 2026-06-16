@@ -24,21 +24,12 @@ const props = defineProps({
 const emit = defineEmits(['select', 'new', 'delete', 'toggle-sidebar']);
 
 const page = usePage();
-const searchQuery = ref('');
 const conversationToDelete = ref(null);
 const showDeleteConfirm = ref(false);
 const conversationToEdit = ref(null);
 const editTitle = ref('');
 const showEditModal = ref(false);
 
-const filteredConversations = computed(() => {
-    if (!searchQuery.value.trim()) {
-        return props.conversations;
-    }
-    return props.conversations.filter(conv =>
-        conv.title.toLowerCase().includes(searchQuery.value.toLowerCase())
-    );
-});
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -119,19 +110,6 @@ const updateConversationTitle = async () => {
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
             </button>
-
-            <!-- Barre de recherche (visible seulement quand ouvert) -->
-            <div v-if="sidebarOpen" class="relative">
-                <input
-                    v-model="searchQuery"
-                    type="text"
-                    placeholder="Rechercher..."
-                    class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg text-sm focus:border-sidebar-primary focus:ring-1 focus:ring-sidebar-primary focus:ring-offset-0 transition"
-                />
-                <svg v-if="!searchQuery" class="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-            </div>
         </div>
 
         <!-- Liste des conversations (visible seulement quand ouvert) -->
@@ -142,7 +120,7 @@ const updateConversationTitle = async () => {
                 </div>
             </template>
 
-            <template v-else-if="filteredConversations.length === 0">
+            <template v-else-if="conversations.length === 0">
                 <div class="p-4 text-center text-sidebar-foreground text-sm">
                     Aucune conversation trouvée
                 </div>
@@ -150,7 +128,7 @@ const updateConversationTitle = async () => {
 
             <template v-else>
                 <div
-                    v-for="conversation in filteredConversations"
+                    v-for="conversation in conversations"
                     :key="conversation.id"
                     :class="[
                         'group flex items-center justify-between px-4 py-3 border-b border-sidebar-border hover:bg-sidebar-accent transition cursor-pointer',
