@@ -1,24 +1,31 @@
 <script setup>
 import { Link } from '@inertiajs/vue3';
+import { DropdownMenuItem } from '@/Components/ui/ui/dropdown-menu';
 
-defineProps({
+const props = defineProps({
     href: String,
     as: String,
 });
+
+const emit = defineEmits(['action']);
+
+const handleButtonClick = () => {
+    emit('action');
+};
 </script>
 
 <template>
-    <div>
-        <button v-if="as == 'button'" type="submit" class="block w-full px-4 py-2 text-start text-sm leading-5 text-foreground hover:bg-secondary focus:outline-none focus:bg-secondary transition duration-150 ease-in-out">
+    <DropdownMenuItem as-child>
+        <button v-if="as == 'button'" type="button" class="w-full text-left px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm" @click="handleButtonClick">
             <slot />
         </button>
 
-        <a v-else-if="as =='a'" :href="href" class="block px-4 py-2 text-sm leading-5 text-foreground hover:bg-secondary focus:outline-none focus:bg-secondary transition duration-150 ease-in-out">
+        <a v-else-if="as =='a'" :href="href" class="block w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
             <slot />
         </a>
 
-        <Link v-else :href="href" class="block px-4 py-2 text-sm leading-5 text-foreground hover:bg-secondary focus:outline-none focus:bg-secondary transition duration-150 ease-in-out">
+        <Link v-else :href="href" as="div" class="block w-full px-2 py-1.5 text-sm cursor-pointer hover:bg-accent rounded-sm">
             <slot />
         </Link>
-    </div>
+    </DropdownMenuItem>
 </template>

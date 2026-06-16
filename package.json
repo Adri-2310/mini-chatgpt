@@ -22,8 +22,19 @@
     },
     "dependencies": {
         "@laravel/stream-vue": "^0.3.13",
+        "@lucide/vue": "^1.18.0",
+        "@vee-validate/zod": "^4.15.1",
+        "@vueuse/core": "^14.3.0",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
         "highlight.js": "^11.11.1",
+        "lucide-vue-next": "^1.0.0",
         "markdown-it": "^14.1.1",
-        "toastr": "^2.1.4"
+        "reka-ui": "^2.9.10",
+        "shadcn-vue": "^2.7.4",
+        "tailwind-merge": "^3.6.0",
+        "toastr": "^2.1.4",
+        "vee-validate": "^4.15.1",
+        "zod": "^3.25.76"
     }
 }

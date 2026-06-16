@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue';
+import { Input } from '@/Components/ui/ui/input';
+import { Button } from '@/Components/ui/ui/button';
 
 const props = defineProps({
     conversationId: Number,
@@ -51,19 +53,19 @@ const clear = () => {
 <template>
     <div v-if="conversationId" class="px-4 py-3 bg-card border-b border-border">
         <div class="flex items-center gap-2">
-            <input
+            <Input
                 v-model="query"
                 type="text"
                 placeholder="🔍 Chercher dans la conversation..."
-                class="flex-1 px-3 py-2 bg-input border border-border rounded-lg text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <button
+            <Button
                 v-if="query"
+                variant="ghost"
+                size="sm"
                 @click="clear"
-                class="px-3 py-2 text-muted-foreground hover:text-foreground transition"
             >
                 ✕
-            </button>
+            </Button>
         </div>
         <div v-if="resultCount > 0" class="mt-2 text-xs text-muted-foreground">
             {{ resultCount }} résultat(s) trouvé(s)

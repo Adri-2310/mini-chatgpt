@@ -251,7 +251,7 @@ class MessageController extends Controller
                     }
                 }
 
-                // 5. Send tokens usage to frontend before closing
+                // 5. Envoyer l'utilisation des tokens au frontend avant de fermer
                 if ($tokensUsed) {
                     echo "data: " . json_encode(['type' => 'usage', 'tokens' => $tokensUsed]) . "\n\n";
                     if (ob_get_level() > 0) {
@@ -260,7 +260,7 @@ class MessageController extends Controller
                     flush();
                 }
 
-                // 6. On envoie le signal de fin au front-end
+                // 6. Envoyer le signal de fin au frontend
                 echo "data: [DONE]\n\n";
                 if (ob_get_level() > 0) {
                     ob_flush();

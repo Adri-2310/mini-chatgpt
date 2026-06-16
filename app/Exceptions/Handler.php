@@ -17,10 +17,9 @@ class Handler extends ExceptionHandler
                 return parent::render($request, $e);
             }
 
-            if (in_array($status, [401, 403, 404, 500, 503])) {
-                return Inertia::render('Error', [
-                    'status' => $status,
-                ]);
+            // Utiliser les vues Blade personnalisées pour les erreurs
+            if (in_array($status, [401, 403, 404, 419, 429, 500, 503])) {
+                return response()->view("errors.{$status}", ['status' => $status], $status);
             }
         }
 

@@ -1,6 +1,10 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/Components/ui/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/ui/alert-dialog';
+import { Button } from '@/Components/ui/ui/button';
+import { Input } from '@/Components/ui/ui/input';
 
 const props = defineProps({
     conversations: {
@@ -206,59 +210,44 @@ const updateConversationTitle = async () => {
         </div>
     </div>
 
-    <!-- Modal d'édition -->
-    <div v-if="showEditModal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-card border border-border rounded-lg p-6 max-w-sm mx-4 space-y-4">
-            <h3 class="text-lg font-medium text-foreground">
-                Éditer la conversation
-            </h3>
-            <input
+    <!-- Dialog d'édition -->
+    <Dialog v-model:open="showEditModal">
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Éditer la conversation</DialogTitle>
+            </DialogHeader>
+            <Input
                 v-model="editTitle"
                 type="text"
-                class="w-full px-3 py-2 bg-input border border-border text-foreground placeholder-muted-foreground rounded-lg focus:border-primary focus:ring-1 focus:ring-primary focus:ring-offset-0 transition text-sm"
                 placeholder="Titre de la conversation"
                 autofocus
             />
-            <div class="flex gap-3 justify-end">
-                <button
-                    @click="showEditModal = false"
-                    class="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition text-sm"
-                >
+            <DialogFooter class="flex gap-3 justify-end">
+                <Button variant="secondary" @click="showEditModal = false">
                     Annuler
-                </button>
-                <button
-                    @click="updateConversationTitle"
-                    class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg transition text-sm"
-                >
+                </Button>
+                <Button @click="updateConversationTitle">
                     Enregistrer
-                </button>
-            </div>
-        </div>
-    </div>
+                </Button>
+            </DialogFooter>
+        </DialogContent>
+    </Dialog>
 
-    <!-- Modal de confirmation de suppression -->
-    <div v-if="showDeleteConfirm" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-        <div class="bg-card border border-border rounded-lg p-6 max-w-sm mx-4 space-y-4">
-            <h3 class="text-lg font-medium text-foreground">
-                Supprimer la conversation
-            </h3>
-            <p class="text-muted-foreground text-sm">
-                Êtes-vous sûr de vouloir supprimer "<strong>{{ conversationToDelete?.title }}</strong>" ? Cette action est irréversible.
-            </p>
-            <div class="flex gap-3 justify-end">
-                <button
-                    @click="showDeleteConfirm = false"
-                    class="px-4 py-2 bg-secondary hover:bg-secondary/80 text-foreground rounded-lg transition text-sm"
-                >
-                    Annuler
-                </button>
-                <button
-                    @click="deleteConversation"
-                    class="px-4 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-lg transition text-sm"
-                >
+    <!-- AlertDialog de confirmation de suppression -->
+    <AlertDialog v-model:open="showDeleteConfirm">
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Supprimer la conversation</AlertDialogTitle>
+                <AlertDialogDescription>
+                    Êtes-vous sûr de vouloir supprimer "<strong>{{ conversationToDelete?.title }}</strong>" ? Cette action est irréversible.
+                </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                <AlertDialogAction @click="deleteConversation" class="bg-destructive hover:bg-destructive/90">
                     Supprimer
-                </button>
-            </div>
-        </div>
-    </div>
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
 </template>

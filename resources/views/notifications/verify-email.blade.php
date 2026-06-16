@@ -14,5 +14,5 @@ Ce lien de vérification expirera dans 60 minutes.
 Si vous n'avez pas créé de compte, aucune action n'est nécessaire.
 
 Cordialement,
-Mini-ChatGPT
+SaveurIA
 @endcomponent

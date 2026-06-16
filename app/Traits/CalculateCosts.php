@@ -14,10 +14,10 @@ trait CalculateCosts
     {
         // Coût moyen par million de tokens (prix approximatif)
         $avgCostPer1M = [
-            'openai/gpt-4o-mini' => 0.75,          // ~$0.75 per 1M tokens (avg input+output)
-            'google/gemini-2.5-flash' => 0.20,     // ~$0.20 per 1M tokens
-            'anthropic/claude-3.5-haiku' => 2.40,  // ~$2.40 per 1M tokens
-            'anthropic/claude-3.5-sonnet' => 3.00, // ~$3.00 per 1M tokens
+            'openai/gpt-4o-mini' => 0.75,          // ~$0,75 pour 1M tokens (moyenne entrée+sortie)
+            'google/gemini-2.5-flash' => 0.20,     // ~$0,20 pour 1M tokens
+            'anthropic/claude-3.5-haiku' => 2.40,  // ~$2,40 pour 1M tokens
+            'anthropic/claude-3.5-sonnet' => 3.00, // ~$3,00 pour 1M tokens
         ];
 
         $costPer1M = $avgCostPer1M[$model] ?? 1.50; // Fallback si modèle inconnu

@@ -15,7 +15,7 @@ class ResetPasswordNotification extends BaseResetPassword
 
         return (new MailMessage)
             ->subject('Réinitialiser votre mot de passe')
-            ->greeting('Bonjour !')
+            ->line('🌶️ **SaveurIA**')
             ->line('Vous recevez cet email car nous avons reçu une demande de réinitialisation de mot de passe pour votre compte.')
             ->action('Réinitialiser le mot de passe', url(route('password.reset', [
                 'token' => $this->token,
@@ -23,6 +23,6 @@ class ResetPasswordNotification extends BaseResetPassword
             ], false)))
             ->line('Ce lien de réinitialisation expirera dans 60 minutes.')
             ->line('Si vous n\'avez pas demandé une réinitialisation de mot de passe, aucune action n\'est nécessaire.')
-            ->salutation('Cordialement,');
+            ->salutation('Cordialement, SaveurIA');
     }
 }

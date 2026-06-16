@@ -11,6 +11,6 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/ask', [AskController::class, 'store'])->name('ask.store');
-    Route::post('/ask/stream', [AskController::class, 'stream'])->name('ask.stream');
+    Route::post('/ask', [AskController::class, 'store'])->name('api.ask.store');
+    Route::post('/ask/stream', [AskController::class, 'stream'])->name('api.ask.stream');
 });
