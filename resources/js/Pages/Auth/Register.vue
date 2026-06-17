@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { inject } from 'vue';
+import { inject, computed } from 'vue';
 import Checkbox from '@/Components/Checkbox.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -8,6 +8,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
+import PasswordRequirements from '@/Components/PasswordRequirements.vue';
 
 const form = useForm({
     name: '',
@@ -19,7 +20,34 @@ const form = useForm({
 
 const $toastr = inject('$toastr');
 
+const passwordRequirementsMet = computed(() => {
+    const pwd = form.password;
+    return (
+        pwd.length >= 8 &&
+        /[A-Z]/.test(pwd) &&
+        /[0-9]/.test(pwd) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+    );
+});
+
+const isFormValid = computed(() => {
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+    const passwordsMatch = form.password === form.password_confirmation && form.password !== '';
+
+    return (
+        form.name.trim() !== '' &&
+        isEmailValid &&
+        passwordRequirementsMet.value &&
+        passwordsMatch &&
+        (!form.terms || form.terms === true)
+    );
+});
+
 const submit = () => {
+    if (!isFormValid.value) {
+        return;
+    }
+
     form.post(route('register'), {
         onError: (errors) => {
             if ($toastr && Object.keys(errors).length > 0) {
@@ -93,6 +121,7 @@ const submit = () => {
                         required
                         autocomplete="new-password"
                     />
+                    <PasswordRequirements :password="form.password" />
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
@@ -126,7 +155,7 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.terms" />
                 </div>
 
-                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full" :disabled="form.processing || !isFormValid">
                     {{ form.processing ? 'Inscription...' : 'S\'inscrire' }}
                 </PrimaryButton>
 

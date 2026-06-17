@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useForm } from '@inertiajs/vue3';
 import { inject } from 'vue';
 import FormSection from '@/Components/FormSection.vue';
@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
+import PasswordRequirements from '@/Components/PasswordRequirements.vue';
 
 const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
@@ -19,7 +20,26 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const passwordRequirementsMet = computed(() => {
+    const pwd = form.password;
+    return (
+        pwd.length >= 8 &&
+        /[A-Z]/.test(pwd) &&
+        /[0-9]/.test(pwd) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+    );
+});
+
+const isFormValid = computed(() => {
+    const passwordsMatch = form.password === form.password_confirmation && form.password !== '';
+    return form.current_password !== '' && passwordRequirementsMet.value && passwordsMatch;
+});
+
 const updatePassword = () => {
+    if (!isFormValid.value) {
+        return;
+    }
+
     form.put(route('user-password.update'), {
         errorBag: 'updatePassword',
         preserveScroll: true,
@@ -86,6 +106,7 @@ const updatePassword = () => {
                     class="mt-1 block w-full"
                     autocomplete="new-password"
                 />
+                <PasswordRequirements :password="form.password" />
                 <InputError :message="form.errors.password" class="mt-2" />
             </div>
 
@@ -103,7 +124,7 @@ const updatePassword = () => {
         </template>
 
         <template #actions>
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+            <PrimaryButton :class="{ 'opacity-25': form.processing || !isFormValid }" :disabled="form.processing || !isFormValid">
                 Enregistrer
             </PrimaryButton>
         </template>

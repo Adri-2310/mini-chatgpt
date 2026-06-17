@@ -20,6 +20,10 @@ Route::get('/', function () {
     ]);
 })->name('welcome');
 
+Route::get('/about', function () {
+    return Inertia::render('About');
+})->name('about');
+
 Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
     Route::get('/email/verify', function () {
         return Inertia::render('Auth/VerifyEmail');

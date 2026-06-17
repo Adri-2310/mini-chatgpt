@@ -39,12 +39,12 @@ onMounted(() => {
           >
             Commencer gratuitement
           </Link>
-          <a
-            href="#features"
+          <Link
+            :href="route('about')"
             class="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-bold py-3 px-8 rounded-lg transition"
           >
             En savoir plus
-          </a>
+          </Link>
         </div>
 
         <!-- Stats -->

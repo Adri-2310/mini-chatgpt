@@ -1,3 +1,7 @@
+<script setup>
+import { Link } from '@inertiajs/vue3';
+</script>
+
 <template>
   <footer class="bg-background border-t border-border py-12 transition-colors">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,19 +20,14 @@
           <h4 class="font-semibold text-foreground mb-4">Navigation</h4>
           <ul class="space-y-2 text-muted-foreground text-sm">
             <li>
-              <a href="#features" class="hover:text-foreground transition">
-                Fonctionnalités
-              </a>
+              <Link :href="route('welcome')" class="hover:text-foreground transition">
+                Accueil
+              </Link>
             </li>
             <li>
-              <a href="#" class="hover:text-foreground transition">
+              <Link :href="route('about')" class="hover:text-foreground transition">
                 À propos
-              </a>
-            </li>
-            <li>
-              <a href="#" class="hover:text-foreground transition">
-                Contact
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

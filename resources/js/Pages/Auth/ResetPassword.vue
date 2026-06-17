@@ -1,11 +1,13 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import ToastNotification from '@/Components/ToastNotification.vue';
 import ThemeToggle from '@/Components/ThemeToggle.vue';
+import PasswordRequirements from '@/Components/PasswordRequirements.vue';
 
 const props = defineProps({
     email: String,
@@ -19,7 +21,28 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const passwordRequirementsMet = computed(() => {
+    const pwd = form.password;
+    return (
+        pwd.length >= 8 &&
+        /[A-Z]/.test(pwd) &&
+        /[0-9]/.test(pwd) &&
+        /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd)
+    );
+});
+
+const isFormValid = computed(() => {
+    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
+    const passwordsMatch = form.password === form.password_confirmation && form.password !== '';
+
+    return isEmailValid && passwordRequirementsMet.value && passwordsMatch;
+});
+
 const submit = () => {
+    if (!isFormValid.value) {
+        return;
+    }
+
     form.post(route('password.update'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });
@@ -71,6 +94,7 @@ const submit = () => {
                         required
                         autocomplete="new-password"
                     />
+                    <PasswordRequirements :password="form.password" />
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
@@ -87,7 +111,7 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
                 </div>
 
-                <PrimaryButton type="submit" class="w-full" :disabled="form.processing">
+                <PrimaryButton type="submit" class="w-full" :disabled="form.processing || !isFormValid">
                     {{ form.processing ? 'Réinitialisation...' : 'Réinitialiser le mot de passe' }}
                 </PrimaryButton>
             </form>
