@@ -29,6 +29,7 @@ const error = ref(null);
 const isConversationStarted = ref(false);
 const messageListContainer = ref(null);
 const sidebarOpen = ref(true);
+const mobileMenuOpen = ref(false);
 
 // Création du buffer pour le streaming
 let streamBuffer = '';
@@ -264,7 +265,31 @@ const deleteConversation = async (conversationId) => {
 
 <template>
     <div class="flex h-full bg-background">
-        <!-- Sidebar -->
+        <!-- Mobile Drawer (fullscreen) (< md) -->
+        <div
+            v-if="mobileMenuOpen"
+            class="fixed inset-0 z-50 bg-background md:hidden flex flex-col"
+        >
+            <!-- Header -->
+            <div class="p-4 border-b border-border">
+                <h2 class="text-lg font-semibold text-foreground">Conversations</h2>
+            </div>
+
+            <!-- Conversations List -->
+            <div class="flex-1 overflow-y-auto">
+                <ConversationList
+                    :conversations="conversations"
+                    :active-conversation-id="activeConversationId"
+                    :sidebar-open="true"
+                    @select="(id) => { selectConversation(id); mobileMenuOpen = false; }"
+                    @new="() => { createNewConversation(); mobileMenuOpen = false; }"
+                    @delete="deleteConversation"
+                    @toggle-sidebar="mobileMenuOpen = false"
+                />
+            </div>
+        </div>
+
+        <!-- Desktop Sidebar (>= md) -->
         <div
             :class="[
                 'transition-all duration-300 border-r border-border bg-sidebar hidden md:flex flex-col',
@@ -284,6 +309,19 @@ const deleteConversation = async (conversationId) => {
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col">
+                <!-- Mobile Header (conversations button) - even without active conversation -->
+                <div v-if="!activeConversationId" class="md:hidden border-b border-border bg-card/50 px-4 py-3">
+                    <button
+                        @click="mobileMenuOpen = true"
+                        class="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary transition"
+                    >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        Conversations
+                    </button>
+                </div>
+
                 <ChatHeader
                     ref="chatHeaderRef"
                     v-if="activeConversationId"
@@ -293,6 +331,7 @@ const deleteConversation = async (conversationId) => {
                     :selected-model="selectedModel"
                     :models="models"
                     :model-disabled="isConversationStarted"
+                    :on-open-mobile-menu="() => mobileMenuOpen = true"
                     @update:selected-model="selectedModel = $event"
                 />
 

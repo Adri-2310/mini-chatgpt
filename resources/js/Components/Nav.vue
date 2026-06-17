@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { Link, router, usePage } from '@inertiajs/vue3';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -8,6 +8,11 @@ import ThemeToggle from '@/Components/ThemeToggle.vue';
 
 const page = usePage();
 const showingNavigationDropdown = ref(false);
+
+// Fermer le menu mobile quand la route change
+watch(() => page.url, () => {
+    showingNavigationDropdown.value = false;
+});
 
 const isAuthenticated = computed(() => !!page.props.auth.user);
 

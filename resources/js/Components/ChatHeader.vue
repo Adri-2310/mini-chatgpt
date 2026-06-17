@@ -30,6 +30,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    onOpenMobileMenu: {
+        type: Function,
+        default: () => {},
+    },
 });
 
 const emit = defineEmits(['update:selectedModel']);
@@ -69,8 +73,18 @@ defineExpose({
     <div class="border-b border-border bg-card/50 transition-colors">
         <!-- Info Panel: Exports + Stats + Titre + ModelSelector en une ligne -->
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 px-3 md:px-6 py-3 max-w-full">
-            <!-- Gauche: Boutons (Exports) -->
-            <div class="flex gap-2">
+            <!-- Gauche: Bouton mobile + Exports -->
+            <div class="flex gap-2 items-center">
+                <!-- Bouton menu mobile (conversations) -->
+                <button
+                    @click="props.onOpenMobileMenu()"
+                    class="md:hidden p-2 rounded-md hover:bg-secondary transition"
+                    title="Afficher les conversations"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
                 <ExportButtons :conversation-id="conversationId" :conversation-title="props.conversationTitle" />
             </div>
 
