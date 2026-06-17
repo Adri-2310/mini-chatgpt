@@ -1,298 +1,483 @@
-# 🏗️ Architecture Mini-ChatGPT
+# Architecture — SaveurIA
 
-Architecture système complète de l'application Mini-ChatGPT.
+Document technique détaillé : architecture, patterns, stack, et points d'attention.
+
+**Généré le** : 2026-06-17
 
 ---
 
-## 📊 Vue d'ensemble
+## 1. Vue d'ensemble
+
+SaveurIA est une application de chat IA multi-modèles. Elle expose deux modes :
+- **Chat** : conversation persistante avec historique complet
+- **Ask** : question directe sans contexte
+
+L'application est containerisée (Docker multi-stage) et prévue pour déploiement Coolify/Render.
+
+---
+
+## 2. Stack technique
+
+| Couche | Technologie | Rôle |
+|-------|---|---|
+| **Language Backend** | PHP 8.2+ | Serveur |
+| **Framework Backend** | Laravel 12 | MVC, ORM, auth, DB |
+| **Language Frontend** | JavaScript / TypeScript | Client |
+| **Framework Frontend** | Vue 3 + Inertia.js | UI réactive (SPA-like) |
+| **Build Frontend** | Vite 7 | Bundle, HMR |
+| **Styling** | Tailwind CSS 3 + shadcn-vue | Design system |
+| **Authentication** | Jetstream 5.5 + Fortify + Sanctum 4 | Login 2FA, tokens API |
+| **Database dev et prod** | MySQL 8+ | Persistance (prod et dev) |
+| **HTTP Client** | Guzzle | Requêtes OpenRouter |
+| **Streaming** | Server-Sent Events (SSE) | Messages temps réel |
+| **LLM Provider** | OpenRouter.ai | Gateway API 3 modèles |
+| **Container** | Docker | Deployment |
+
+---
+
+## 3. Architecture applicative (C4 simplifié)
+
+### Composants
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                Frontend (Vue.js 3)                  │
-│  - Interface de chat interactive                    │
-│  - Composants réutilisables                         │
-│  - Gestion d'état avec Composition API              │
-└────────────────┬────────────────────────────────────┘
-                 │ (Inertia.js + HTTP/WebSocket)
-┌────────────────▼────────────────────────────────────┐
-│              Backend (Laravel 12)                    │
-│  - API RESTful                                       │
-│  - Authentification (Jetstream)                      │
-│  - Services LLM (OpenAI, Gemini, Claude)             │
-│  - Gestion WebSocket/SSE (Reverb)                    │
-└────────────────┬────────────────────────────────────┘
+│ NAVIGATEUR (Vue 3 + Inertia.js)                    │
+│ ├── Pages/                                          │
+│ │   ├── Auth/*           (login, register, 2FA)    │
+│ │   ├── Chat.vue          (chat avec historique)   │
+│ │   ├── Ask.vue           (question directe)       │
+│ │   ├── Settings.vue      (instructions perso)     │
+│ │   └── Dashboard.vue     (stats)                  │
+│ └── Components/           (composants réutilisables)
+└────────────────┬──────────────────────────────────┘
+                 │ Inertia (JSON + état PHP)
                  │
-┌────────────────▼────────────────────────────────────┐
-│         Base de Données (PostgreSQL/MySQL)          │
-│  - Users, Conversations, Messages                   │
-│  - CustomInstructions, LLMModels                    │
-└─────────────────────────────────────────────────────┘
-                 │
-┌────────────────▼────────────────────────────────────┐
-│           APIs Externes (LLM Providers)              │
-│  - OpenAI (GPT-4o)                                   │
-│  - Google (Gemini 2.5 Flash)                        │
-│  - Anthropic (Claude)                               │
-└─────────────────────────────────────────────────────┘
+┌────────────────▼──────────────────────────────────┐
+│ LARAVEL 12 — API / Serveur de Rendu               │
+│                                                    │
+│ Routes                                             │
+│ ├── POST /ask                 (question directe)  │
+│ ├── POST /ask/stream          (streaming)         │
+│ ├── POST /conversations/{id}/messages (msg)      │
+│ ├── GET  /conversations       (liste)             │
+│ ├── POST /conversations       (créer)             │
+│ └── DELETE /conversations/{id} (supprimer)        │
+│                                                    │
+│ Controllers                                        │
+│ ├── AskController                                  │
+│ ├── ConversationController                        │
+│ ├── MessageController                             │
+│ └── SettingsController                            │
+│                                                    │
+│ Services                                           │
+│ └── ChatService              (client OpenRouter) │
+│                                                    │
+│ Models (Eloquent ORM)                             │
+│ ├── User                                           │
+│ ├── Conversation                                   │
+│ ├── Message                                        │
+│ ├── LlmModel                                       │
+│ ├── CustomInstruction                             │
+│ └── UserStats                                      │
+│                                                    │
+│ Middleware                                         │
+│ ├── auth:sanctum             (API tokens)         │
+│ ├── verified                 (email vérifié)      │
+│ └── throttle                 (rate limit)         │
+│                                                    │
+│ Observers                                          │
+│ ├── ConversationObserver     (stats auto-update)  │
+│ └── MessageObserver          (stats auto-update)  │
+│                                                    │
+│ Jobs (Queue)                                       │
+│ ├── DeleteUnverifiedUsers                         │
+│ └── CleanupPendingEmails                          │
+│                                                    │
+│ Policies (Authorization)                          │
+│ └── ConversationPolicy       (ownership check)   │
+└────────────┬─────────────────────────────┬────────┘
+             │                             │
+    ┌────────▼────────┐          ┌────────▼─────────┐
+    │ MySQL                      │  OpenRouter.ai   │
+    │ DB local/prod              │  LLM Gateway     │
+    │                            │  - GPT-4o mini   │
+    │ Tables :                   │  - Gemini 2.5    │
+    │ - users                    │  - Claude 3.5    │
+    │ - conversations            │                  │
+    │ - messages                 │  GET /api/models │
+    │ - llm_models               │  POST /chat/     │
+    │ - custom_instructions      │       completions│
+    │ - user_stats               │                  │
+    └────────────────┘          └──────────────────┘
 ```
 
 ---
 
-## 🏭 Composants Principaux
+## 4. Modèles de données (Eloquent)
 
-### Backend (Laravel)
+### User
 
-#### Controllers
-- `ChatController` - Gestion des conversations
-- `MessageController` - Gestion des messages
-- `ModelController` - Sélecteur de modèles
-- `InstructionController` - Instructions personnalisées
-
-#### Services
-- `OpenAIService` - Intégration OpenAI
-- `GeminiService` - Intégration Google Gemini
-- `ClaudeService` - Intégration Anthropic Claude
-- `StreamingService` - Gestion du streaming
-
-#### Models (Eloquent)
-- `User` - Utilisateur authentifié
-- `Conversation` - Conversation (avec titre auto-généré)
-- `Message` - Message (utilisateur ou IA)
-- `CustomInstruction` - Instructions personnalisées
-- `LLMModel` - Modèle disponible
-- `ApiCredential` - Clés API
-
-### Frontend (Vue.js 3)
-
-#### Layouts
-- `AppLayout` - Layout principal avec sidebar
-- `GuestLayout` - Layout pour auth
-
-#### Pages
-- `Chat.vue` - Page principale du chat
-- `Settings.vue` - Configuration instructions
-- `Profile.vue` - Profil utilisateur
-
-#### Components
-- `ChatMessage` - Message dans le chat
-- `ModelSelector` - Sélecteur de modèle
-- `ConversationList` - Liste des conversations
-- `InstructionForm` - Formulaire instructions
-
----
-
-## 🔄 Flux de Données
-
-### 1. **Envoi d'un message**
-```
-Utilisateur
-    ↓
-ChatMessage.vue (composant Vue)
-    ↓
-POST /api/messages (Laravel)
-    ↓
-MessageController@store
-    ↓
-StreamingService (sélection du LLM)
-    ↓
-API LLM (OpenAI/Gemini/Claude)
-    ↓
-WebSocket/SSE (streaming token par token)
-    ↓
-Vue.js (affichage temps réel)
+```php
+User {
+    id: bigint [PK]
+    name: string
+    email: string [UNIQUE]
+    email_verified_at: datetime
+    password: string (bcrypt)
+    pending_email: string [UNIQUE, nullable] — nouvel email en attente
+    pending_email_sent_at: datetime [nullable]
+    pending_email_token: string [UNIQUE, nullable] — SHA-256 token
+    two_factor_secret: text [nullable] — TOTP secret
+    two_factor_recovery_codes: text [nullable] — codes de secours
+    two_factor_confirmed_at: datetime [nullable]
+    remember_token: string [nullable]
+    profile_photo_path: varchar(2048) [nullable]
+    created_at, updated_at: timestamp
+    
+    Relations:
+    - HasMany Conversation (1-to-N, cascadeOnDelete)
+    - HasOne CustomInstruction (1-to-1, cascadeOnDelete)
+    - HasOne UserStats (1-to-1, cascadeOnDelete)
+    - HasManyThrough Message (via Conversation)
+    
+    Methods:
+    - sendEmailVerificationNotification()
+    - sendPasswordResetNotification(token)
+    - getDashboardStats(): array
+    - recordUsage(tokens, cost) — met à jour stats
+}
 ```
 
-### 2. **Historique des conversations**
-```
-Chargement page
-    ↓
-GET /api/conversations (Laravel)
-    ↓
-ConversationController@index
-    ↓
-Récupération BD
-    ↓
-ConversationList.vue (affichage)
-```
+### Conversation
 
-### 3. **Sélection de modèle**
-```
-ModelSelector.vue (combobox)
-    ↓
-Sauvegarde user preference
-    ↓
-POST /api/user/model
-    ↓
-UserController@updatePreferredModel
-    ↓
-BD (sauvegarde)
+```php
+Conversation {
+    id: bigint [PK]
+    user_id: bigint [FK → users, cascadeOnDelete, indexed auto]
+    title: string [nullable] — généré par IA ou utilisateur
+    model_used: string — identifiant modèle (ex: "openai/gpt-4o-mini")
+    created_at, updated_at: timestamp
+    deleted_at: timestamp [nullable] — soft deletes
+    
+    Relations:
+    - BelongsTo User
+    - HasMany Message (1-to-N, cascadeOnDelete)
+    
+    Scopes:
+    - whereNotTrashed() — exclure soft-deleted
+    - ordered() — tri par created_at DESC
+}
 ```
 
----
+### Message
 
-## 🗄️ Schéma Base de Données
-
-### Tables Principales
-
-#### users
-```sql
-id, name, email, password, created_at, updated_at
-preferred_model_id, custom_instructions (JSON)
+```php
+Message {
+    id: bigint [PK]
+    conversation_id: bigint [FK → conversations, cascadeOnDelete, indexed auto]
+    llm_model_id: bigint [FK → llm_models, nullOnDelete, indexed auto]
+    role: ENUM('user', 'assistant') [NOT indexed - faible sélectivité]
+    content: longtext
+    model: varchar(255) [nullable] — trace brute du model_id envoyé
+    tokens_used: int [unsigned, nullable]
+    cost_usd: decimal(8,6) [nullable] — max 99.999999 USD
+    created_at, updated_at: timestamp
+    
+    Relations:
+    - BelongsTo Conversation
+    - BelongsTo LlmModel (nullable)
+    
+    Scopes:
+    - byRole('user') / byRole('assistant')
+    - withCosts()
+}
 ```
 
-#### conversations
-```sql
-id, user_id, title, created_at, updated_at
-first_message_preview (pour générer le titre auto)
+### LlmModel
+
+```php
+LlmModel {
+    id: bigint [PK]
+    name: string [UNIQUE] — "GPT-4o mini"
+    provider: string [indexed] — "OpenAI" / "Google" / "Anthropic"
+    model_id: string [UNIQUE] — "openai/gpt-4o-mini"
+    description: text [nullable]
+    enabled: boolean [DEFAULT true]
+    max_tokens: int [DEFAULT 4096]
+    config: json [nullable] — température, top_p, etc.
+    created_at, updated_at: timestamp
+    
+    Relations:
+    - HasMany Message
+    
+    Methods:
+    - getEnabled(): Collection [static, cached 1h]
+    
+    Data (seeded) :
+    - openai/gpt-4o-mini
+    - google/gemini-2.5-flash
+    - anthropic/claude-3.5-haiku
+}
 ```
 
-#### messages
-```sql
-id, conversation_id, role (user|assistant), content, created_at
-model_used, tokens_used
+### CustomInstruction
+
+```php
+CustomInstruction {
+    id: bigint [PK]
+    user_id: bigint [FK → users, UNIQUE, cascadeOnDelete, indexed auto]
+    instructions: longtext [nullable] — system prompt libre
+    enabled: boolean [DEFAULT true]
+    created_at, updated_at: timestamp
+    
+    Relations:
+    - BelongsTo User
+    
+    Auto-created: à l'inscription de l'utilisateur via User::boot()
+}
 ```
 
-#### custom_instructions
-```sql
-id, user_id, instructions (TEXT), enabled, created_at, updated_at
-```
+### UserStats
 
-#### llm_models
-```sql
-id, name (gpt-4o, gemini-2.5-flash, claude-3.5), provider, config_json
-```
-
----
-
-## 🔐 Sécurité
-
-- **Authentication**: Laravel Sanctum + Sessions sécurisées
-- **API Keys**: Stockées en variables d'environnement (`.env`)
-- **CORS**: Configuré pour frontend uniquement
-- **CSRF**: Protection CSRF sur toutes les routes POST
-- **Rate Limiting**: Limiter les appels LLM par utilisateur
-- **Input Validation**: Validation côté serveur de tous les inputs
-
----
-
-## ⚡ Performance
-
-- **Frontend**: Vue.js 3 avec Composition API (réactif)
-- **Backend**: Laravel avec caching des conversations
-- **DB**: Indexing sur user_id, conversation_id
-- **Streaming**: WebSocket pour temps réel sans latence
-- **Assets**: TailwindCSS minifié, Vite bundling
-
----
-
-## 🔌 Technologies Stack
-
-| Couche | Technologie | Version |
-|--------|-------------|---------|
-| Backend | Laravel | 12.x |
-| Frontend | Vue.js | 3.5+ |
-| Bridge | Inertia.js | 2.0+ |
-| Styling | TailwindCSS 4 + Tweakcn | 4.x + CSS Variables |
-| Build | Vite | 7.x |
-| Database | PostgreSQL/MySQL | 14+/8+ |
-| Realtime | Laravel Reverb | Latest |
-| Auth | Jetstream + Sanctum | Latest |
-
----
-
-## 📦 Déploiement
-
-### Render.com
-```
-Frontend: Serveur Node.js (Vite dev server)
-Backend: Serveur Node.js (PHP avec Render runtime)
-Database: PostgreSQL managed
-```
-
-### Environnement Local
-```
-Backend: php artisan serve (port 8000)
-Frontend: npm run dev (Vite HMR)
-Database: PostgreSQL local
+```php
+UserStats {
+    id: bigint [PK]
+    user_id: bigint [FK → users, UNIQUE, cascadeOnDelete]
+    total_messages: int [unsigned, DEFAULT 0] — cumulatif
+    total_conversations: int [unsigned, DEFAULT 0] — cumulatif
+    total_tokens: bigint [unsigned, DEFAULT 0] — peut dépasser 4M
+    monthly_cost: decimal(10,6) [DEFAULT 0.00] — max 9999.999999 USD
+    monthly_messages: int [unsigned, DEFAULT 0] — du mois courant
+    last_activity_at: datetime [nullable]
+    stats_computed_at: timestamp [DEFAULT CURRENT_TIMESTAMP]
+    created_at, updated_at: timestamp
+    
+    Relations:
+    - BelongsTo User
+    
+    Updated by: Observers (ConversationObserver, MessageObserver)
+    
+    Note: `total_cost` a été volontairement supprimé (dérive à la demande).
+}
 ```
 
 ---
 
-## 🎨 Système de Design (Tweakcn)
+## 5. Flows principaux
 
-### Vue d'ensemble
-
-Le système de design Tweakcn est un ensemble de variables CSS personnalisées inspiré de shadcn/ui :
-
-- **Palette de couleurs** : Clair et sombre avec contraste WCAG AA
-- **Variables CSS** : 40+ tokens pour colors, typography, shadows
-- **Mode sombre natif** : Classe `.dark` appliquée à `<html>`
-- **Intégration Tailwind** : Toutes les variables utilisables comme classes Tailwind
-
-### Architecture
+### Flow 1 : Envoyer un message avec streaming
 
 ```
-resources/css/
-├── theme.css              # Variables CSS (~85 variables)
-├── app.css                # @tailwind directives
-└── theme integration:
-    └── tailwind.config.js  # Mappage variables → classes Tailwind
+Client (Vue)
+    │
+    ├─→ POST /conversations/{id}/messages/stream
+    │   └─→ ConversationPolicy::update() [vérifier ownership]
+    │       └─→ MessageController::storeStream()
+    │           └─→ ChatService::streamWithHistory()
+    │               └─→ Guzzle HTTP request (OpenRouter)
+    │                   ├─→ Récupère historique complet (prepareMessageContext)
+    │                   ├─→ Construit payload OpenRouter
+    │                   └─→ SSE stream (Server-Sent Events)
+    │
+    └─ Réception headers SSE + [DONE] token
+        ├─ MessageObserver::created() déclenché
+        │   └─ UserStats::updateStats() (tokens + cost)
+        └─ Notification toast succès
 ```
 
-### Variables principales
+### Flow 2 : Créer une conversation avec titre auto-généré
 
-**Couleurs**
-- `--background`, `--foreground` : Fond et texte principaux
-- `--primary`, `--primary-foreground` : Boutons CTA
-- `--secondary`, `--accent`, `--destructive` : États différents
-- `--card`, `--input`, `--border` : Composants UI
-- `--sidebar-*` : Éléments sidebar (optionnel)
-- `--chart-1` à `--chart-5` : Graphiques
+```
+Client (Vue)
+    │
+    ├─→ POST /conversations
+    │   └─→ ConversationController::store()
+    │       └─→ Conversation::create()
+    │           └─→ ConversationObserver::created()
+    │               └─→ UserStats::updateTotal()
+    │
+    ├─→ POST /conversations/{id}/messages (premier message)
+    │   └─→ [Flow ci-dessus] + ChatService::generateTitle()
+    │       └─→ Appel IA (GPT-4o mini fixe, 30 tokens max)
+    │           └─→ Conversation::update(['title' => '...'])
+    │
+    └─ Client reçoit conversation avec titre
+```
 
-**Typographie**
-- `--font-sans`, `--font-serif`, `--font-mono` : Familles de polices
-- `--radius` : Rayon de bordure global (0.75rem)
+### Flow 3 : Changement d'email sécurisé
 
-**Ombres**
-- `--shadow-2xs` à `--shadow-md` : Niveaux d'ombre
-
-### Mode sombre
-
-Le mode sombre utilise le modèle `darkMode: 'class'` de TailwindCSS. La classe `.dark` est appliquée à l'élément `<html>` pour activer automatiquement toutes les variables CSS du mode sombre.
-
-### Utilisation
-
-Tous les composants Vue utilisent les classes Tailwind générées à partir des variables CSS tweakcn.
-
-### Personnalisation
-
-Pour personnaliser le thème :
-
-1. **Modifier les couleurs** → Éditer `:root` et `.dark` dans `resources/css/theme.css`
-2. **Ajouter des variables** → Ajouter aussi dans `tailwind.config.js`
-3. **Créer un thème alternatif** → Ajouter une classe CSS au `<html>`
-
-### Bonnes pratiques
-
-✅ Utiliser les classes Tailwind (cohérence, maintenance)
-✅ Tester en mode clair et sombre
-✅ Respecter le contraste WCAG AA
-✅ Ajouter des transitions de couleur sur les changements de thème
-
-❌ Éviter les couleurs en dur (#rgb)
-❌ Créer des couleurs hors du système tweakcn
-❌ Oublier le dark mode lors du développement
-
-**Documentation détaillée** : [`docs/styling/THEME_TWEAKCN.md`](../styling/THEME_TWEAKCN.md)
+```
+Client (Vue)
+    │
+    ├─→ PUT /settings/email
+    │   └─→ User::update(['pending_email' => 'new@example.com'])
+    │       └─→ Notification email (lien avec token)
+    │           Token = SHA-256(new_email + secret + timestamp)
+    │
+    ├─→ Email click : GET /email/verify-change/{token}
+    │   └─→ Token valide && !expiré (7j) ?
+    │       └─→ User::update(['email' => pending_email, 'pending_email' => NULL])
+    │           └─→ Notification confirmation
+    │               └─→ Redirect login
+    │
+    └─ CleanupPendingEmails job (daily) : purge tokens > 7j
+```
 
 ---
 
-## 🧪 Tests
+## 6. Services et Traits
 
-- **Unit Tests**: Tests des Services LLM
-- **Feature Tests**: Tests des Controllers
-- **E2E Tests**: Dusk (optionnel)
-- **Coverage**: Minimum 50%
+### ChatService
+
+```php
+// app/Services/ChatService.php
+class ChatService {
+    // Interface publique
+    public function ask(string $prompt, ?string $modelId = null): string
+    public function askWithHistory(Conversation $conv, string $msg, ?string $modelId = null): string
+    public function stream(string $prompt, ?string $modelId = null)
+    public function streamWithHistory(Conversation $conv, string $msg, ?string $modelId = null)
+    
+    // Internal
+    private function prepareMessageContext(Conversation $conv): array
+    private function buildOpenRouterPayload(...): array
+    private function generateTitle(Conversation $conv, string $context): string
+    private function calculateCost(int $tokens_in, int $tokens_out): float
+}
+```
+
+### CalculateCosts (Trait)
+
+```php
+// app/Traits/CalculateCosts.php
+trait CalculateCosts {
+    // Calcule coût USD basé sur tokens
+    public function calculateCost(string $modelId, int $input_tokens, int $output_tokens): float
+    
+    // Lit config/ai_models.php pour pricing
+}
+```
+
+### Observers
+
+```php
+// app/Observers/ConversationObserver.php
+public function created(Conversation $conversation)
+    → UserStats::increment('total_conversations')
+
+public function deleted(Conversation $conversation)
+    → [soft delete, rien]
+
+public function forceDeleted(Conversation $conversation)
+    → UserStats::decrement('total_conversations')
+
+// app/Observers/MessageObserver.php
+public function created(Message $message)
+    → UserStats::updateStats($message->tokens_used, $message->cost_usd)
+```
 
 ---
 
+## 7. Routes API
+
+### Public
+```
+GET  /                          Welcome page
+GET  /about                     About page
+POST /register                  Inscription
+POST /login                     Connexion
+GET  /password/reset            Demande réinit password
+POST /password/reset            Confirmer réinit
+```
+
+### Authentifiés (auth:sanctum + verified)
+```
+GET  /dashboard                 Dashboard (stats)
+GET  /chat                      Interface Chat
+POST /ask                       Question directe (non-stream)
+POST /ask/stream                Question directe (SSE)
+
+GET    /conversations           Liste (PAGINER ?)
+POST   /conversations           Créer
+GET    /conversations/{id}      Détail
+PUT    /conversations/{id}      Modifier (title)
+DELETE /conversations/{id}      Soft delete
+
+GET    /conversations/{id}/stats         Stats tokens/coûts
+GET    /conversations/{id}/search?q=...  Recherche messages
+GET    /conversations/{id}/export?fmt=json|markdown   Export
+
+POST /conversations/{id}/messages          Envoyer (non-stream)
+POST /conversations/{id}/messages/stream   Envoyer (SSE)
+
+GET  /settings                  Settings page
+PUT  /settings/instructions     Mise à jour instructions
+PUT  /settings/email            Demande changement email
+
+GET  /email/verify/{id}/{hash}              Vérification inscription
+GET  /email/verify-change/{token}           Confirmation changement email
+POST /email/pending-email-send              Renvoi lien changement
+```
+
+---
+
+## 8. Configuration
+
+### config/ai_models.php
+
+```php
+return [
+    'default' => 'openai/gpt-4o-mini',
+    'models' => [
+        'openai/gpt-4o-mini' => [
+            'name' => 'GPT-4o mini',
+            'input_price_per_million' => 0.15,
+            'output_price_per_million' => 0.60,
+            'max_tokens' => 4096,
+        ],
+        // ... autres modèles
+    ],
+];
+```
+
+### config/saveurial.php
+
+```php
+return [
+    'name' => 'SaveurIA',
+    'system_prompt' => 'Tu es SaveurIA, un assistant culinaire expert...',
+    'default_model' => 'openai/gpt-4o-mini',
+    'title_generation' => [
+        'model' => 'openai/gpt-4o-mini', // fixe
+        'max_tokens' => 30,
+        'prompt' => 'Génère un titre court...',
+    ],
+];
+```
+
+---
+
+## 9. Points forts
+
+✅ **Architecture claire** : séparation Controller → Service → Model  
+✅ **Streaming SSE** : implémentation correcte du protocole HTTP  
+✅ **Sécurité email** : token SHA-256, unicité en DB, rate-limit  
+✅ **Observers idiomatiques** : stats auto-mises à jour sans logique dispersée  
+✅ **Autorisation stricte** : Policy ownership sur toutes les routes  
+✅ **LLM abstrait** : OpenRouter permet switch GPT ↔ Gemini ↔ Claude  
+✅ **Migrations documentées** : commentaires détaillés en français  
+✅ **Docker production** : multi-stage, Supervisor, optimisé  
+
+---
+
+## 10. Ressources
+
+- Laravel Docs : https://laravel.com/docs/12.x
+- Inertia.js : https://inertiajs.com/
+- OpenRouter : https://openrouter.ai/docs
+- SSE Protocol : https://html.spec.whatwg.org/multipage/server-sent-events.html
+
+---
+
+**Généré le** : 2026-06-17  
+**Auteur** : Adrien Mertens

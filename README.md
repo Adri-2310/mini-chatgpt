@@ -1,54 +1,25 @@
-# 🌶️ Saveur IA
+# SaveurIA — Assistant IA Culinaire
 
-Une application web moderne pour interagir avec plusieurs modèles d'IA (GPT-4o, Gemini, Claude) avec historique persistant et streaming en temps réel.
+SaveurIA est une application web de chat IA multi-modèles, présentée comme un assistant culinaire expert. Construite avec **Laravel 12** et **Vue 3 + Inertia.js**, elle permet aux utilisateurs de gérer des conversations persistantes avec différents modèles LLM (GPT-4o, Gemini, Claude) via **OpenRouter.ai**.
 
-**Stack**: Laravel 12 + Vue.js 3 + Inertia.js + TailwindCSS 3  
-**Status**: ✅ Production (Coolify + MySQL)
-
----
-
-## 🚀 Fonctionnalités principales
-
-- ✅ **Sélecteur de modèles** : Basculer entre GPT-4o, Gemini et Claude en temps réel
-- ✅ **Streaming SSE** : Affichage token-par-token des réponses
-- ✅ **Historique persistant** : Conversations auto-sauvegardées avec titres générés par IA
-- ✅ **Instructions personnalisées** : Configurer le comportement de l'IA par utilisateur
-- ✅ **Authentification sécurisée** : Jetstream + Fortify avec 2FA (TOTP)
-- ✅ **Mode sombre** : Thème clair/sombre avec variables CSS
-- ✅ **Localisation française** : Interface et emails 100% en français
+**Status** : ✅ Production-ready (Coolify + PostgreSQL)  
+**Dernière mise à jour** : 2026-06-17
 
 ---
 
-## 🛠️ Stack technologique
+## 🚀 Démarrage rapide
 
-| Composant | Version | Rôle |
-|-----------|---------|------|
-| **Backend** | Laravel 12 | API, authentification, gestion données |
-| **Frontend** | Vue.js 3 | Interface réactive (Composition API) |
-| **Bridge** | Inertia.js | Liaison Laravel ↔ Vue.js |
-| **Components** | shadcn/vue | Composants UI premium |
-| **Styling** | TailwindCSS 3 | Design système |
-| **Auth** | Jetstream + Fortify | Authentification sécurisée |
-| **Temps réel** | SSE | Streaming des réponses IA |
-| **BD** | MySQL | Persistance des données |
-| **Déploiement** | Coolify | Container orchestration |
+### Prérequis
+- PHP >= 8.2
+- Node.js >= 18
+- MySQL (dev et rod)
+- Composer 2.2+, npm 10+
 
----
-
-## 📋 Prérequis
-
-- **PHP 8.4+**
-- **Composer 2.2+**
-- **Node.js 20+ et npm 10+**
-- **MySQL 8.0+**
-
----
-
-## 🔧 Installation
+### Installation locale
 
 ```bash
-# 1. Cloner le repository
-git clone https://github.com/ton-username/mini-chatgpt.git
+# 1. Cloner le projet
+git clone <repo> mini-chatgpt
 cd mini-chatgpt
 
 # 2. Installer les dépendances
@@ -59,29 +30,121 @@ npm install
 cp .env.example .env
 php artisan key:generate
 
-# 4. Configurer la base de données dans .env
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=mini_chatgpt
-# DB_USERNAME=root
-# DB_PASSWORD=root
+# 4. Créer la base de données
+php artisan migrate:fresh --seed
 
-# 5. Créer les tables
-php artisan migrate
-
-# 6. Démarrer en développement
-npm run dev  # Terminal 1 - Frontend (Vite)
+# 5. Lancer le serveur
+npm run dev        # Terminal 1 - Frontend (Vite)
 php artisan serve  # Terminal 2 - Backend
 ```
 
-L'app sera accessible à: **http://localhost:8000**
+Accès : **http://localhost:8000**
+
+---
+
+## 📋 Stack technique
+
+| Composant | Technologie | Version |
+|-----------|-------------|---------|
+| **Backend** | Laravel | 12.x |
+| **Frontend** | Vue 3 + Inertia.js | 3.3 / 2.0 |
+| **Build** | Vite | 7.x |
+| **Styling** | Tailwind CSS | 3.4 |
+| **Components** | shadcn-vue | 2.7+ |
+| **Auth** | Jetstream + Fortify + Sanctum | 5.5 / 4.0 |
+| **Database** | MySQL (dev), PostgreSQL (prod) | — |
+| **LLM Gateway** | OpenRouter.ai | API REST |
+| **Container** | Docker | Multi-stage |
+
+---
+
+## 🎯 Fonctionnalités principales
+
+### Authentification
+- ✅ Inscription + vérification email obligatoire
+- ✅ 2FA (TOTP - Fortify)
+- ✅ Changement d'email sécurisé (token + rate-limit)
+- ✅ Profil utilisateur (photo, instructions personnalisées)
+
+### Conversations IA
+- ✅ Deux modes : **Chat** (avec historique) et **Ask** (question directe)
+- ✅ Sélection du modèle LLM par message
+- ✅ Streaming temps réel (SSE)
+- ✅ Génération automatique du titre par IA
+- ✅ Soft deletes (corbeille)
+- ✅ Export (JSON / Markdown)
+- ✅ Recherche dans messages
+
+### Suivi & Statistiques
+- ✅ Comptage tokens (input + output)
+- ✅ Calcul coût USD en temps réel
+- ✅ Dashboard avec stats mensuelles
+- ✅ Historique conversations
+
+### Interface
+- ✅ Thème clair/sombre
+- ✅ Rendu Markdown + coloration syntaxique
+- ✅ Notifications toast
+- ✅ Responsive design
+- ✅ Localisation française complète
+
+---
+
+## 🏗️ Architecture
+
+```
+┌─────────────────────────────────────────────┐
+│         Navigateur (Vue 3 + Inertia)        │
+└────────────────┬────────────────────────────┘
+                 │ SPA-like (pas de refresh)
+┌────────────────▼────────────────────────────┐
+│      Laravel 12 — Backend                   │
+├─────────────────────────────────────────────┤
+│ Routes (web.php, api.php)                   │
+│ ├── Auth & Profile                          │
+│ ├── Chat (ask, conversations, messages)     │
+│ └── Settings                                │
+│                                             │
+│ Controllers → Services → Models → DB        │
+│ ├── ChatService (OpenRouter client)         │
+│ ├── Observers (stats auto-update)           │
+│ └── Policies (authorization)                │
+└─────────────────┬──────────────────────────┘
+                  │
+         ┌────────┴─────────┐
+         │                  │
+    ┌────▼────┐      ┌──────▼──────┐
+    │ MySQL   │      │ OpenRouter  │
+    │dev prod │      │ (LLM API)   │
+    └─────────┘      └─────────────┘
+```
+
+**Modèles clés :**
+- `User` : entité centrale avec 2FA, changement email sécurisé
+- `Conversation` : conversations avec soft deletes
+- `Message` : messages avec tokens et coûts
+- `LlmModel` : référentiel des modèles disponibles
+- `CustomInstruction` : system prompt personnalisé (1-to-1 user)
+- `UserStats` : statistiques mensuelles/cumulatives
+
+[Voir le détail complet : `docs/ARCHITECTURE.md`]
+
+---
+
+## 🔐 Sécurité
+
+- **Authentification** : Fortify + Sanctum tokens
+- **Autorisation** : Policy stricte (ownership user_id)
+- **Email change** : Token SHA-256, rate-limiting 5min, expiration 7j
+- **2FA** : TOTP (Time-based OTP)
+- **CSRF** : Protection middleware Laravel
+- **SQL** : Prepared statements (Eloquent)
 
 ---
 
 ## ⚙️ Configuration
 
-### Variables d'environnement essentielles
+### Variables d'environnement
 
 ```env
 # Application
@@ -90,222 +153,168 @@ APP_ENV=local
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 APP_LOCALE=fr
-APP_FALLBACK_LOCALE=fr
 
-# Base de données
+# Database
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=mini_chatgpt
+DB_DATABASE=db_saveuria_dev
 DB_USERNAME=root
 DB_PASSWORD=root
 
-# LLM API (OpenRouter)
-# Obtenir la clé: https://openrouter.ai
+# LLM (OpenRouter)
 OPENROUTER_API_KEY=sk-or-v1-...
 
-# Email (optionnel)
+# Mail
 MAIL_MAILER=log
-MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_ADDRESS=hello@example.com
 ```
 
-### Clé API OpenRouter
+### Configuration fichiers
 
-Les 3 modèles (GPT-4o, Gemini, Claude) fonctionnent via **OpenRouter** :
-
-1. Créer un compte : https://openrouter.ai
-2. Générer une clé API
-3. Ajouter `OPENROUTER_API_KEY` au `.env`
+- `config/ai_models.php` : Modèles LLM, prix, comportements
+- `config/saveurial.php` : Identité assistant, system prompt
+- `config/logging.php` : Canal `ai` pour logs appels IA
 
 ---
 
-## 🔐 Authentification
+## 📦 Dépendances principales
 
-L'app utilise **Laravel Jetstream** avec **Fortify** :
-
-- **Inscription/Connexion** : Email et mot de passe
-- **Vérification d'email** : Obligatoire avant accès
-- **Réinitialisation de mot de passe** : Lien temporaire (60 min)
-- **2FA (TOTP)** : Time-based One-Time Password
-- **Gestion des sessions** : Sécurisée et persistante
-
----
-
-## 🎮 Utilisation
-
-### Développement
-
-```bash
-# Terminal 1: Frontend (Vite)
-npm run dev
-
-# Terminal 2: Backend (Laravel)
-php artisan serve
-
-# Terminal 3 (optionnel): Afficher les logs
-php artisan pail
+**Backend (PHP)**
+```
+laravel/framework ^12.0
+laravel/jetstream ^5.5
+laravel/fortify
+laravel/sanctum ^4.0
+guzzlehttp/guzzle
 ```
 
-### Production (Coolify)
-
-```bash
-# Build
-npm run build
-
-# Optimiser
-php artisan optimize
-php artisan config:cache
-
-# Déployer via git push
-git push origin main
+**Frontend (JavaScript)**
+```
+vue ^3.3
+@inertiajs/vue3 ^2.0
+tailwindcss ^3.4
+shadcn-vue 2.7+
 ```
 
----
-
-## 📊 Architecture
-
-```
-mini-chatgpt/
-├── app/
-│   ├── Models/
-│   │   ├── User.php
-│   │   ├── Conversation.php
-│   │   ├── Message.php
-│   │   ├── CustomInstruction.php
-│   │   └── LlmModel.php
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   ├── Middleware/
-│   │   └── Requests/
-│   └── Services/
-│       └── ChatService.php
-├── resources/
-│   ├── js/
-│   │   ├── Components/
-│   │   ├── Layouts/AppLayout.vue
-│   │   ├── Pages/
-│   │   │   ├── Auth/
-│   │   │   ├── Chat.vue
-│   │   │   └── Settings.vue
-│   │   └── app.js
-│   ├── css/
-│   │   └── app.css
-│   └── lang/fr/
-├── database/
-│   ├── migrations/
-│   └── factories/
-├── routes/
-│   ├── web.php
-│   └── api.php
-└── config/
-    ├── ai_models.php
-    └── jetstream.php
-```
-
-### Modèles de données
-
-| Table | Description |
-|-------|-------------|
-| `users` | Utilisateurs avec authentification |
-| `conversations` | Conversations de chat |
-| `messages` | Messages avec FK vers LlmModel |
-| `custom_instructions` | Instructions personnalisées par user |
-| `llm_models` | Modèles IA disponibles |
+[Versions exactes : `composer.json`, `package.json`]
 
 ---
 
 ## 🧪 Tests
 
 ```bash
-# Lancer tous les tests
+# Lancer les tests
 php artisan test
 
-# Tests spécifiques
-php artisan test --filter MessageController
-php artisan test --filter ChatService
-
-# Avec couverture
+# Avec couverture de code
 php artisan test --coverage
+
+# Tests spécifiques
+php artisan test --filter ChatService
 ```
+
+**Couverture** : Tests Feature complets sur flux critiques (auth, conversations, messages, ask).
 
 ---
 
-## 🎨 Thème (TailwindCSS 3)
+## 🚢 Déploiement
 
-Le système de couleurs utilise des variables CSS personnalisées :
-
-```css
---background, --foreground, --card, --primary,
---secondary, --accent, --destructive, --border, --ring
-```
-
-**Mode sombre** : Activé via classe `.dark` sur `<html>`
-
-Voir `resources/css/theme.css` pour les variables complètes.
-
----
-
-## 🚀 Déploiement (Coolify)
-
-### Configuration Coolify
-
-```dockerfile
-# Dockerfile minimal
-FROM php:8.4-fpm
-RUN docker-php-ext-install pdo_mysql
-WORKDIR /app
-COPY . .
-RUN composer install --no-dev
-RUN npm ci && npm run build
-```
-
-### Variables d'environnement Coolify
-
-```
-APP_ENV=production
-APP_DEBUG=false
-DB_CONNECTION=mysql
-DB_HOST=db-container
-OPENROUTER_API_KEY=sk-or-v1-...
-```
-
-### Déployer
+### Production (Docker)
 
 ```bash
-git push origin main
-# Coolify rebuild automatiquement
+# Build
+docker build -t saveuria:latest .
+
+# Run
+docker run -p 80:80 \
+  -e APP_ENV=production \
+  -e OPENROUTER_API_KEY=sk-or-v1-... \
+  saveuria:latest
+```
+
+**Build multi-stage** :
+1. Composer dependencies (vendors optimisés)
+2. Vite build (assets compilés)
+3. Runtime (PHP 8.4 + Nginx + Supervisor)
+
+**Services :** PostgreSQL + Redis (recommandé pour cache/queue)
+
+---
+
+## ⚡ Points clés
+
+### Points forts ✅
+- Architecture propre (Controller / Service / Observer)
+- Streaming SSE natif (pas de polling)
+- Sécurité email robuste
+- Migrations documentées en français
+- Docker production-ready
+- Tests Feature complets
+
+### À améliorer ⚠️
+- Pagination conversations (charger toutes actuellement)
+- Fenêtre contexte LLM (limiter tokens envoyés)
+
+[Voir détails : `docs/ARCHITECTURE.md` § Faiblesses]
+
+---
+
+## 📚 Documentation
+
+- **[ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md)** — Architecture technique détaillée, patterns, faiblesses
+- **[DATABASE_SCHEMA.sql](docs/DATABASE_SCHEMA.sql)** — Schéma complet avec commentaires
+- **[DIAGRAM_CLASSES.puml](docs/DIAGRAM_CLASSES.puml)** — Diagramme UML (classes + relations)
+
+---
+
+## 🔄 Versioning migrations
+
+Toutes les migrations utilisent le préfixe `2024_01_01_00000X_*` pour garantir un ordre d'exécution déterministe.
+
+**Actuels** : 7 migrations consolidées (une par table)
+```
+2024_01_01_000000 — Infrastructure Laravel (sessions, cache, jobs)
+2024_01_01_000001 — Users
+2024_01_01_000002 — Conversations
+2024_01_01_000003 — LLM Models (+ seed 3 modèles)
+2024_01_01_000004 — Messages
+2024_01_01_000005 — Custom Instructions
+2024_01_01_000006 — User Stats
 ```
 
 ---
 
-## 🐛 Troubleshooting
+## 📊 Statistiques du projet
 
-| Erreur | Solution |
-|--------|----------|
-| "SQLSTATE[HY000]" | Vérifier la connexion MySQL dans `.env` |
-| "OPENROUTER_API_KEY not found" | Ajouter la clé dans `.env` |
-| "SSE timeout" | Augmenter `max_execution_time` en PHP |
-| "Mode sombre ne marche pas" | Vérifier que `theme.css` est importé |
-
----
-
-## 📝 Licence
-
-MIT - Projet étudiant (Examen SGBD 2026)
-
----
-
-## 👨‍💻 Auteur
-
-**Adrien Mertens** | Étudiant - Examen SGBD 2026
-
-**Dernière mise à jour:** 16 Juin 2026
+| Métrique | Valeur |
+|----------|--------|
+| **Fichiers PHP** | ~80 (Controllers, Models, Services, etc.) |
+| **Fichiers Vue** | ~40 (Pages, Components, Layouts) |
+| **Tests** | 14+ fichiers Feature, 1 Unit |
+| **Migrations** | 7 (consolidées) |
+| **Seeders** | 4 (User, Conversation, Message, CustomInstruction) |
+| **Routes web** | 20+ endpoints |
+| **Routes API** | 15+ endpoints (Sanctum) |
 
 ---
 
 ## 🔗 Ressources
 
-- [Laravel 12 Docs](https://laravel.com/docs/12.x)
+- [Laravel 12 Documentation](https://laravel.com/docs/12.x)
 - [Vue.js 3 Guide](https://vuejs.org/guide/)
+- [Inertia.js](https://inertiajs.com/)
 - [OpenRouter API](https://openrouter.ai/docs)
-- [TailwindCSS Docs](https://tailwindcss.com/docs/v3)
+- [TailwindCSS 3](https://tailwindcss.com/docs/v3)
+
+---
+
+## 👨‍💻 Auteur
+
+**Adrien Mertens**  
+Projet d'examen SGBD — Année 2026
+
+---
+
+## 📄 Licence
+
+Tous droits réservés. Usage personnel.
