@@ -10,14 +10,13 @@ return new class extends Migration
      * Crée la table custom_instructions.
      *
      * Relation 1-to-1 avec users : chaque utilisateur peut définir au maximum
-     * une instruction système envoyée en tête de chaque conversation IA.
+     * une instruction système, envoyée en tête de chaque conversation IA.
      *
      * Colonnes clés :
-     *   - user_id      : UNIQUE — garantit la contrainte 1-to-1 au niveau base de données
-     *   - instructions : nullable — un utilisateur peut ne pas avoir d'instruction définie
-     *   - enabled      : permet de désactiver temporairement l'instruction sans la supprimer
-     *
-     * La suppression de l'utilisateur entraine la suppression en cascade de son instruction.
+     *   - user_id      : UNIQUE — garantit le 1-to-1 au niveau base de données
+     *                    (cascadeOnDelete : supprimée avec l'utilisateur).
+     *   - instructions : nullable — un utilisateur peut n'avoir aucune instruction.
+     *   - enabled      : désactivation temporaire sans suppression.
      */
     public function up(): void
     {

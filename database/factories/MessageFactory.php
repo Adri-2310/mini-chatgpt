@@ -22,7 +22,8 @@ class MessageFactory extends Factory
             'conversation_id' => Conversation::factory(),
             'role' => $this->faker->randomElement(['user', 'assistant']),
             'content' => $this->faker->paragraph(),
-            'model' => 'gpt-4o-mini',
+            // Alignement sur les model_id du référentiel llm_models (voir migration create_llm_models_table)
+            'model' => 'openai/gpt-4o-mini',
         ];
     }
 }

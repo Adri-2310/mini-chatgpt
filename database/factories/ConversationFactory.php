@@ -20,7 +20,8 @@ class ConversationFactory extends Factory
         return [
             'user_id' => User::factory(),
             'title' => 'Nouvelle conversation',
-            'model_used' => 'gpt-4o-mini',
+            // Alignement sur les model_id du référentiel llm_models (voir migration create_llm_models_table)
+            'model_used' => 'openai/gpt-4o-mini',
         ];
     }
 }
