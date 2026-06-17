@@ -6,7 +6,16 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // Table pour les jobs en queue (QUEUE_CONNECTION=database)
+    /**
+     * Crée les tables jobs et job_batches (QUEUE_CONNECTION=database dans .env).
+     *
+     * - jobs       : file d'attente des tâches asynchrones (envoi d'emails, etc.)
+     * - job_batches : suivi des lots de jobs (Bus::batch())
+     *
+     * Les deux tables sont regroupées ici car elles constituent ensemble
+     * l'infrastructure de queue et sont toujours activées ou désactivées ensemble.
+     * Les timestamps sont des entiers Unix (non des TIMESTAMP SQL) : convention Laravel Queue.
+     */
     public function up(): void
     {
         Schema::create('jobs', function (Blueprint $table) {
@@ -32,9 +41,12 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Supprime les tables jobs et job_batches.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('jobs');
         Schema::dropIfExists('job_batches');
+        Schema::dropIfExists('jobs');
     }
 };

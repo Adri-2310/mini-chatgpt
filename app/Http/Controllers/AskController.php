@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\LlmModel;
 use App\Services\ChatService;
+use App\Traits\CalculateCosts;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class AskController extends Controller
 {
+    use CalculateCosts;
+
     private ChatService $chatService;
 
     public function __construct(ChatService $chatService)
@@ -40,6 +43,10 @@ class AskController extends Controller
                 $request->input('question'),
                 $systemPrompt
             );
+
+            $tokensUsed = $result['tokens'] ?? 0;
+            $cost = $this->calculateCostByTokens($request->input('model'), $tokensUsed);
+            auth()->user()->recordUsage($tokensUsed, $cost, $request->input('model'));
 
             return response()->json([
                 'success' => true,
@@ -88,6 +95,9 @@ class AskController extends Controller
                 // 3. Envoyer l'utilisation des tokens au frontend avant de fermer
                 $tokensUsed = $this->chatService->getLastStreamTokens();
                 if ($tokensUsed) {
+                    $cost = $this->calculateCostByTokens($request->input('model'), $tokensUsed);
+                    auth()->user()->recordUsage($tokensUsed, $cost, $request->input('model'));
+
                     echo "data: " . json_encode(['type' => 'usage', 'tokens' => $tokensUsed]) . "\n\n";
                     if (ob_get_level() > 0) {
                         ob_flush();

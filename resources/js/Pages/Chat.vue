@@ -153,6 +153,15 @@ const { isStreaming, send: sendStream } = useStream(
                                 // On ajoute la lettre générée !
                                 lastMessage.content += data.content;
                             }
+                        } else if (data.type === 'title_updated' && data.title) {
+                            // Mise à jour immédiate du titre dans la liste des conversations
+                            const index = conversations.value.findIndex(c => c.id === activeConversationId.value);
+                            if (index > -1) {
+                                conversations.value[index] = {
+                                    ...conversations.value[index],
+                                    title: data.title,
+                                };
+                            }
                         }
                     } catch (e) {
                         console.error('Erreur de parsing JSON sur un chunk:', e);
@@ -211,7 +220,6 @@ const handleMessageSubmit = async (content) => {
         return;
     }
 
-    error.value = null;
     streamBuffer = '';
     isConversationStarted.value = true;
 

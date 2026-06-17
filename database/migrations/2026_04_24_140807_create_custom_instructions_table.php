@@ -7,14 +7,20 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Crée la table custom_instructions.
+     *
+     * Relation 1-to-1 avec users : chaque utilisateur peut définir au maximum
+     * une instruction système envoyée en tête de chaque conversation IA.
+     *
+     * Colonnes clés :
+     *   - user_id      : UNIQUE — garantit la contrainte 1-to-1 au niveau base de données
+     *   - instructions : nullable — un utilisateur peut ne pas avoir d'instruction définie
+     *   - enabled      : permet de désactiver temporairement l'instruction sans la supprimer
+     *
+     * La suppression de l'utilisateur entraine la suppression en cascade de son instruction.
      */
     public function up(): void
     {
-        // Table des instructions personnalisées : chaque user peut avoir 1 seule instruction
-        // unique() : un user = une instruction (relation 1-to-1)
-        // enabled : permet de désactiver temporairement l'instruction sans la supprimer
-        // instructions : nullable pour permettre à l'user de ne pas en avoir
         Schema::create('custom_instructions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->unique()->constrained()->cascadeOnDelete();
@@ -25,7 +31,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Supprime la table custom_instructions.
      */
     public function down(): void
     {

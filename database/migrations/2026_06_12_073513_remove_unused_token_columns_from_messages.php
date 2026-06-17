@@ -1,30 +1,25 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
+/**
+ * Migration consolidée — vide intentionnellement.
+ *
+ * Historique : cette migration supprimait les colonnes input_tokens et output_tokens
+ * qui avaient été ajoutées par erreur dans 2026_06_12_065315_add_cost_tracking_to_messages.
+ * Ces colonnes n'ont jamais été créées dans la version consolidée de cette branche.
+ * Ce fichier est conservé pour ne pas briser l'historique des migrations déjà appliquées
+ * en production. Ne pas supprimer ce fichier.
+ */
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->dropColumn(['input_tokens', 'output_tokens', 'cost_usd']);
-        });
+        // No-op : colonnes input_tokens et output_tokens non présentes dans ce schéma.
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('messages', function (Blueprint $table) {
-            $table->integer('input_tokens')->nullable();
-            $table->integer('output_tokens')->nullable();
-            $table->decimal('cost_usd', 8, 6)->nullable()->default(0);
-        });
+        // No-op.
     }
 };

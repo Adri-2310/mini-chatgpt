@@ -5,4 +5,5 @@ return [
     'password_updated' => 'Votre mot de passe a été mis à jour avec succès.',
     'two_factor_authentication_enabled' => 'L\'authentification à deux facteurs a été activée.',
     'two_factor_authentication_disabled' => 'L\'authentification à deux facteurs a été désactivée.',
+    'verification-link-sent' => 'Un nouveau lien de vérification a été envoyé à votre adresse e-mail.',
 ];

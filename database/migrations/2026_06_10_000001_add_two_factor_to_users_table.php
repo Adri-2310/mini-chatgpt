@@ -6,10 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // Ajoute l'authentification à deux facteurs à la table users
-    // two_factor_secret : clé secrète pour l'app authenticator
-    // two_factor_recovery_codes : codes de secours en cas de perte d'authenticator
-    // two_factor_confirmed_at : timestamp quand la 2FA a été confirmée (Fortify l'utilise obligatoirement)
+    /**
+     * Ajoute le support de l'authentification à deux facteurs (2FA) à la table users.
+     *
+     * Colonnes ajoutées (requises par Laravel Fortify) :
+     *   - two_factor_secret         : clé TOTP chiffrée pour l'application authenticator
+     *   - two_factor_recovery_codes : codes de secours JSON chiffrés (accès d'urgence)
+     *   - two_factor_confirmed_at   : timestamp de confirmation initiale (null = 2FA non activée)
+     */
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
@@ -19,12 +23,17 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Supprime les colonnes 2FA de la table users.
+     */
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('two_factor_secret');
-            $table->dropColumn('two_factor_recovery_codes');
-            $table->dropColumn('two_factor_confirmed_at');
+            $table->dropColumn([
+                'two_factor_secret',
+                'two_factor_recovery_codes',
+                'two_factor_confirmed_at',
+            ]);
         });
     }
 };

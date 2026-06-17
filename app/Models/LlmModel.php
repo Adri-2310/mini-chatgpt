@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Cache;
 
 class LlmModel extends Model
@@ -13,6 +14,11 @@ class LlmModel extends Model
         'enabled' => 'boolean',
         'config' => 'array',
     ];
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(Message::class);
+    }
 
     public static function getEnabled()
     {

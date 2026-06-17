@@ -7,24 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Crée la table conversations.
+     *
+     * Une conversation appartient à un utilisateur et contient plusieurs messages.
+     * La suppression de l'utilisateur entraine la suppression en cascade de ses conversations.
+     * Note : foreignId()->constrained() crée automatiquement l'index sur user_id.
      */
     public function up(): void
     {
-        // Table des conversations : chaque user peut avoir plusieurs conversations
-        // cascadeOnDelete : si l'user est supprimé, toutes ses conversations le sont aussi
         Schema::create('conversations', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('title')->nullable();
             $table->string('model_used')->default('gpt-4o');
             $table->timestamps();
-            $table->index('user_id');
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Supprime la table conversations.
      */
     public function down(): void
     {

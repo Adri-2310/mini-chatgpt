@@ -4,22 +4,37 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+/**
+ * DatabaseSeeder
+ *
+ * Point d'entrée unique pour le seeding de la base de données.
+ * Appelle les seeders dans l'ordre de dépendance strict :
+ *
+ *   1. LlmModelSeeder   — référentiel des modèles LLM (aucune dépendance)
+ *   2. UserSeeder        — utilisateurs de test (dépend de rien)
+ *   3. ConversationSeeder — conversations de test (dépend de users + llm_models)
+ *   4. MessageSeeder     — messages de test (dépend de conversations)
+ *
+ * Idempotence globale : chaque seeder gère sa propre idempotence.
+ * `php artisan migrate:fresh --seed` peut être relancé sans erreur.
+ *
+ * ATTENTION : ces données sont réservées aux environnements de développement
+ * et de test. Ne pas exécuter en production.
+ */
 class DatabaseSeeder extends Seeder
 {
-    // Permet aux model events (boot hooks) de s'exécuter pendant le seeding
-    // Nécessaire pour que User::boot() crée automatiquement CustomInstruction
-
     /**
-     * Seed the application's database.
+     * Exécute tous les seeders dans l'ordre de dépendance.
+     *
+     * @return void
      */
     public function run(): void
     {
-        // Les modèles LLM sont maintenant insérés par migration (2026_06_11_000001_populate_llm_models_table)
-
-        // Données de test et développement (local uniquement)
-        // À ne pas exécuter en production
-        $this->call(UserSeeder::class);
-        $this->call(ConversationSeeder::class);
-        $this->call(MessageSeeder::class);
+        $this->call([
+            UserSeeder::class,
+            ConversationSeeder::class,
+            MessageSeeder::class,
+            CustomInstructionSeeder::class,
+        ]);
     }
 }

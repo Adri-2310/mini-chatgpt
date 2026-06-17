@@ -24,7 +24,7 @@ class Message extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['conversation_id', 'llm_model_id', 'role', 'content', 'model', 'tokens_used'];
+    protected $fillable = ['conversation_id', 'llm_model_id', 'role', 'content', 'model', 'tokens_used', 'cost_usd'];
     protected $touches = ['conversation'];
 
     /**

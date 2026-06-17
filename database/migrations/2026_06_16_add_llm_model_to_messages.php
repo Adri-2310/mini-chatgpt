@@ -7,30 +7,32 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Ajoute la relation entre messages et llm_models.
+     *
+     * Permet de tracer exactement quel modèle LLM a généré chaque message assistant.
+     * La FK est nullable (nullOnDelete) : si un modèle est supprimé du référentiel,
+     * les messages associés sont conservés sans référence plutôt que supprimés.
+     *
+     * Note : foreignId()->constrained() crée automatiquement l'index sur llm_model_id.
      */
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            // Ajouter la FK vers llm_models pour la relation (Message 0..* -- 1 LlmModel)
             $table->foreignId('llm_model_id')
                 ->nullable()
                 ->after('conversation_id')
                 ->constrained('llm_models')
                 ->nullOnDelete();
-
-            // Indexer pour les performances
-            $table->index('llm_model_id');
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Supprime la colonne llm_model_id et sa contrainte de clé étrangère.
      */
     public function down(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            $table->dropForeignKeyIfExists(['llm_model_id']);
+            $table->dropForeign(['llm_model_id']);
             $table->dropColumn('llm_model_id');
         });
     }

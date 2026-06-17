@@ -2,7 +2,6 @@
 import { ref, computed } from 'vue';
 import { usePage } from '@inertiajs/vue3';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/Components/ui/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/Components/ui/ui/alert-dialog';
 import { Button } from '@/Components/ui/ui/button';
 import { Input } from '@/Components/ui/ui/input';
 
@@ -211,21 +210,44 @@ const updateConversationTitle = async () => {
         </DialogContent>
     </Dialog>
 
-    <!-- AlertDialog de confirmation de suppression -->
-    <AlertDialog v-model:open="showDeleteConfirm">
-        <AlertDialogContent>
-            <AlertDialogHeader>
-                <AlertDialogTitle>Supprimer la conversation</AlertDialogTitle>
-                <AlertDialogDescription>
-                    Êtes-vous sûr de vouloir supprimer "<strong>{{ conversationToDelete?.title }}</strong>" ? Cette action est irréversible.
-                </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-                <AlertDialogCancel>Annuler</AlertDialogCancel>
-                <AlertDialogAction @click="deleteConversation" class="bg-destructive hover:bg-destructive/90">
-                    Supprimer
-                </AlertDialogAction>
-            </AlertDialogFooter>
-        </AlertDialogContent>
-    </AlertDialog>
+    <!-- Modal de confirmation de suppression (natif Vue, sans dépendance reka-ui) -->
+    <Teleport to="body">
+        <div
+            v-if="showDeleteConfirm"
+            class="fixed inset-0 z-50 flex items-center justify-center"
+            role="alertdialog"
+            aria-modal="true"
+        >
+            <!-- Overlay -->
+            <div
+                class="absolute inset-0 bg-black/80"
+                @click="showDeleteConfirm = false"
+            />
+            <!-- Contenu du modal -->
+            <div class="relative z-10 w-full max-w-lg mx-4 bg-background border rounded-lg shadow-lg p-6 flex flex-col gap-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-foreground">Supprimer la conversation</h2>
+                    <p class="mt-2 text-sm text-muted-foreground">
+                        Êtes-vous sûr de vouloir supprimer "<strong>{{ conversationToDelete?.title }}</strong>" ? Cette action est irréversible.
+                    </p>
+                </div>
+                <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="showDeleteConfirm = false"
+                        class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors"
+                    >
+                        Annuler
+                    </button>
+                    <button
+                        type="button"
+                        @click="deleteConversation"
+                        class="inline-flex items-center justify-center rounded-md bg-destructive px-4 py-2 text-sm font-medium text-destructive-foreground shadow hover:bg-destructive/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 transition-colors"
+                    >
+                        Supprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </Teleport>
 </template>

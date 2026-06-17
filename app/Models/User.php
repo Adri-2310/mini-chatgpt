@@ -8,6 +8,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -66,13 +68,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(CustomInstruction::class);
     }
 
+    public function messages()
+    {
+        return $this->hasManyThrough(Message::class, Conversation::class);
+    }
+
+    public function userStats(): HasOne
+    {
+        return $this->hasOne(UserStats::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::created(function (Model $user) {
             $user->customInstruction()->create([
-                'instructions' => '',
+                'instructions' => null,
                 'enabled' => true,
             ]);
         });
@@ -86,5 +98,32 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPasswordNotification($token));
+    }
+
+    public function getDashboardStats()
+    {
+        $stats = UserStats::firstOrCreate(['user_id' => $this->id]);
+
+        return [
+            'monthly_cost' => (float) $stats->monthly_cost ?? 0,
+            'conversations_total' => (int) $stats->total_conversations ?? 0,
+            'monthly_messages' => (int) $stats->monthly_messages ?? 0,
+        ];
+    }
+
+    public function recordUsage($tokens, $cost, $model, $date = null)
+    {
+        $date = $date ?? now();
+        $firstDayOfMonth = $date->copy()->startOfMonth();
+
+        $stats = UserStats::firstOrCreate(['user_id' => $this->id]);
+
+        // Incrémenter si c'est du mois courant
+        if ($date >= $firstDayOfMonth) {
+            $stats->increment('monthly_messages');
+            $stats->increment('monthly_cost', $cost);
+        }
+
+        $stats->update(['last_activity_at' => $date]);
     }
 }

@@ -36,7 +36,7 @@ class ChatService
         return $systemPrompt;
     }
 
-    public function ask(string $model, string $question, ?string $systemPrompt = null): array
+    public function ask(string $model, string $question, ?string $systemPrompt = null, int $maxTokens = 1024): array
     {
         $startTime = microtime(true);
 
@@ -68,7 +68,7 @@ class ChatService
                 'model' => $model,
                 'messages' => $messages,
                 'temperature' => 0.7,
-                'max_tokens' => 2000,
+                'max_tokens' => $maxTokens,
             ]);
 
             if ($response->failed()) {
@@ -104,7 +104,7 @@ class ChatService
         }
     }
 
-    public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null): array
+    public function askWithHistory(string $model, array $messages, ?string $systemPrompt = null, int $maxTokens = 1024): array
     {
         $startTime = microtime(true);
 
@@ -130,7 +130,7 @@ class ChatService
                 'model' => $model,
                 'messages' => $messages,
                 'temperature' => 0.7,
-                'max_tokens' => 2000,
+                'max_tokens' => $maxTokens,
             ]);
 
             if ($response->failed()) {
@@ -166,7 +166,7 @@ class ChatService
         }
     }
 
-    public function streamAsk(string $model, string $question, ?string $systemPrompt = null): \Generator
+    public function streamAsk(string $model, string $question, ?string $systemPrompt = null, int $maxTokens = 1024): \Generator
     {
         try {
             Log::channel('ai')->info('IA streaming started', [
@@ -188,7 +188,7 @@ class ChatService
                 'content' => $question,
             ];
 
-            yield from $this->streamMessages($model, $messages, 'streamAsk');
+            yield from $this->streamMessages($model, $messages, 'streamAsk', $maxTokens);
         } catch (\Exception $e) {
             Log::channel('ai')->error('IA streaming failed', [
                 'model' => $model,
@@ -199,7 +199,7 @@ class ChatService
         }
     }
 
-    public function streamWithHistory(string $model, array $messages, ?string $systemPrompt = null): \Generator
+    public function streamWithHistory(string $model, array $messages, ?string $systemPrompt = null, int $maxTokens = 1024): \Generator
     {
         try {
             Log::channel('ai')->info('IA streaming started', [
@@ -215,7 +215,7 @@ class ChatService
                 ]);
             }
 
-            yield from $this->streamMessages($model, $messages, 'streamWithHistory');
+            yield from $this->streamMessages($model, $messages, 'streamWithHistory', $maxTokens);
         } catch (\Exception $e) {
             Log::channel('ai')->error('IA streaming failed', [
                 'model' => $model,
@@ -226,7 +226,7 @@ class ChatService
         }
     }
 
-    private function streamMessages(string $model, array $messages, string $method = 'unknown'): \Generator
+    private function streamMessages(string $model, array $messages, string $method = 'unknown', int $maxTokens = 1024): \Generator
     {
         try {
             $client = new \GuzzleHttp\Client();
@@ -240,7 +240,7 @@ class ChatService
                     'model' => $model,
                     'messages' => $messages,
                     'temperature' => 0.7,
-                    'max_tokens' => 2000,
+                    'max_tokens' => $maxTokens,
                     'stream' => true,
                 ],
                 'stream' => true,

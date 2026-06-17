@@ -6,7 +6,14 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    // Tokens pour réinitialiser le mot de passe (Fortify)
+    /**
+     * Crée la table password_reset_tokens (Laravel Fortify).
+     *
+     * Stocke les tokens temporaires pour la réinitialisation de mot de passe.
+     * La clé primaire est l'email : un seul token actif par adresse à la fois.
+     * Le token est stocké haché (bcrypt) par Fortify avant insertion.
+     * Expiration configurée via config/auth.php (passwords.users.expire).
+     */
     public function up(): void
     {
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -16,6 +23,9 @@ return new class extends Migration
         });
     }
 
+    /**
+     * Supprime la table password_reset_tokens.
+     */
     public function down(): void
     {
         Schema::dropIfExists('password_reset_tokens');

@@ -26,11 +26,6 @@ class CustomInstruction extends Model
         'enabled' => 'boolean',
     ];
 
-    protected function getEnabledAttribute($value)
-    {
-        return (bool) $value;
-    }
-
     /**
      * Relation: L'utilisateur propriétaire des instructions
      *

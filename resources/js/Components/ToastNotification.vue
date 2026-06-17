@@ -18,6 +18,7 @@ const messageTranslations = {
     'auth.throttle': 'Trop de tentatives de connexion. Veuillez réessayer dans quelques secondes.',
     'auth.password': 'Le mot de passe fourni est incorrect.',
     'passwords.sent': 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.',
+    'verification-link-sent': 'Un nouveau lien de vérification a été envoyé à votre adresse e-mail.',
 };
 
 const translateMessage = (message) => {

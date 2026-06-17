@@ -1,5 +1,5 @@
 @startuml SaveurIA_ClassDiagram
-title SaveurIA - Diagramme de Classes 
+title SaveurIA - Class Diagram
 
 !theme plain
 skinparam classBackgroundColor #FFFFFF
@@ -8,9 +8,10 @@ skinparam classArrowThickness 2
 skinparam arrowColor #000000
 skinparam attributeIconSize 0
 
-' ==================== MODELS ====================
+' ==================== ENTITIES ====================
 
 class User {
+    - id: bigint
     - name: string
     - email: string
     - password: string
@@ -23,36 +24,46 @@ class User {
     ---
     + conversations(): HasMany
     + customInstruction(): HasOne
+    + messages(): HasManyThrough
+    + getDashboardStats(): array
     + sendEmailVerificationNotification()
     + sendPasswordResetNotification(token)
 }
 
 class Conversation {
+    - id: bigint
+    - user_id: bigint
     - title: string
     - model_used: string
     - created_at: datetime
     - updated_at: datetime
+    - deleted_at: datetime
     ---
     + user(): BelongsTo
     + messages(): HasMany
-    + calculateCostByTokens(model, tokens): float [trait]
-    + getConversationStats(): array [trait]
 }
 
 class Message {
-    - role: string {user|assistant}
+    - id: bigint
+    - conversation_id: bigint
+    - llm_model_id: bigint
+    - role: enum {user|assistant}
     - content: text
     - model: string
     - tokens_used: int
+    - input_tokens: int
+    - output_tokens: int
+    - cost_usd: decimal(8,6)
     - created_at: datetime
     - updated_at: datetime
     ---
     + conversation(): BelongsTo
-    + calculateCostByTokens(model, tokens): float [trait]
-    + getConversationStats(): array [trait]
+    + llmModel(): BelongsTo
 }
 
 class CustomInstruction {
+    - id: bigint
+    - user_id: bigint
     - instructions: text
     - enabled: boolean
     - created_at: datetime
@@ -62,45 +73,43 @@ class CustomInstruction {
 }
 
 class LlmModel {
+    - id: bigint
     - name: string
     - provider: string
     - model_id: string
     - description: string
     - enabled: boolean
     - max_tokens: int
-    - config: array (JSON)
+    - config: json
     - created_at: datetime
+    - updated_at: datetime
     ---
+    + messages(): HasMany
     + getEnabled(): Collection [static, cached]
 }
 
-' ==================== TRAITS ====================
-
-class CalculateCosts <<trait>> {
-    {abstract} + calculateCostByTokens(model: string, tokensUsed: int): float
-    {abstract} + getConversationStats(conversation): array
-}
-
-' ==================== POLICIES ====================
-
 class ConversationPolicy {
     + view(User, Conversation): boolean
+    + create(User): boolean
     + update(User, Conversation): boolean
     + delete(User, Conversation): boolean
-    + addMessage(User, Conversation): boolean
+    + restore(User, Conversation): boolean
+    + forceDelete(User, Conversation): boolean
 }
 
 ' ==================== RELATIONS ====================
 
-' Associations (Eloquent Relations - Une seule flèche par relation)
+' UML Cardinalities:
+' 1 = exactly 1
+' 0..1 = 0 or 1 (optional)
+' 0..* = 0 or more (collection)
+' 1..* = 1 or more
+
 User "1" -- "0..*" Conversation : owns
 Conversation "1" -- "0..*" Message : contains
-Message "0..*" -- "1" LlmModel : uses
 User "1" -- "0..1" CustomInstruction : has
-ConversationPolicy "1" -- "0..*" Conversation : protects
-
-' Trait Implementation
-Conversation "1" -- "1" CalculateCosts : implements
-Message "0..*" -- "1" CalculateCosts : implements
+Message "0..*" -- "1" LlmModel : uses
+User "1" -- "0..*" Message : generates
+ConversationPolicy "1" -- "0..*" Conversation : authorizes
 
 @enduml

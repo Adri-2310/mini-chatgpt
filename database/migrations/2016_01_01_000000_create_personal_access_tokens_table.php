@@ -7,7 +7,11 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations.
+     * Crée la table personal_access_tokens (Laravel Sanctum).
+     *
+     * Gère les tokens API personnels pour l'authentification SPA et mobile.
+     * Relation polymorphique : un token peut appartenir à n'importe quel modèle
+     * implémentant HasApiTokens (ici : User).
      */
     public function up(): void
     {
@@ -24,7 +28,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Supprime la table personal_access_tokens.
      */
     public function down(): void
     {

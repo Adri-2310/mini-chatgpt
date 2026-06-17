@@ -8,8 +8,8 @@ return [
             'provider' => 'OpenAI',
         ],
         [
-            'id' => 'google/gemini-3-flash-preview',
-            'name' => 'Gemini 3 Flash Preview',
+            'id' => 'google/gemini-2.5-flash',
+            'name' => 'Gemini 2.5 Flash',
             'provider' => 'Google',
         ],
         [
@@ -27,8 +27,8 @@ return [
             'input' => 0.15,    // $0.15 per 1M input tokens
             'output' => 0.60,   // $0.60 per 1M output tokens
         ],
-        'google/gemini-3-flash-preview' => [
-            'input' => 0.075,   // $0.075 per 1M input tokens (gratuit jusqu'à 15k RPM)
+        'google/gemini-2.5-flash' => [
+            'input' => 0.075,   // $0.075 per 1M input tokens
             'output' => 0.30,   // $0.30 per 1M output tokens
         ],
         'anthropic/claude-3.5-haiku' => [

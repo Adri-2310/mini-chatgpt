@@ -13,7 +13,7 @@ trait CalculateCosts
      */
     public function calculateCostByTokens(string $model, int $tokensUsed): float
     {
-        $pricing = Config::get('ai_models.pricing.' . $model);
+        $pricing = config('ai_models.pricing')[$model] ?? null;
 
         if (!$pricing) {
             return 0;

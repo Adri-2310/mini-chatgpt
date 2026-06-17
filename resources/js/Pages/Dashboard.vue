@@ -8,13 +8,17 @@ defineOptions({
     title: 'Dashboard'
   }
 });
+
+defineProps({
+  stats: Object,
+});
 </script>
 
 <template>
     <Head title="Dashboard" />
 
     <!-- Hero Section -->
-    <div class="mb-16 text-center">
+    <div class="mb-12 text-center">
         <h1 class="text-4xl sm:text-5xl font-bold text-foreground mb-4">
             Bienvenue sur SaveurIA, {{ $page.props.auth.user.name }}!
         </h1>
@@ -23,8 +27,52 @@ defineOptions({
         </p>
     </div>
 
-    <!-- Feature Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Statistics Section -->
+    <div class="mb-16" v-if="stats">
+        <h2 class="text-2xl font-bold text-foreground mb-6">📊 Vos Statistiques</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Monthly Cost Card -->
+            <div class="p-6 rounded-lg border border-border bg-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-muted-foreground text-sm mb-2">Coût ce Mois</p>
+                        <p class="text-3xl font-bold text-foreground">${{ stats.monthly_cost.toFixed(6) }}</p>
+                        <p class="text-xs text-muted-foreground mt-2">depuis le 1er du mois</p>
+                    </div>
+                    <div class="text-4xl">💳</div>
+                </div>
+            </div>
+
+            <!-- Total Conversations Card -->
+            <div class="p-6 rounded-lg border border-border bg-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-muted-foreground text-sm mb-2">Conversations</p>
+                        <p class="text-3xl font-bold text-foreground">{{ stats.conversations_total }}</p>
+                        <p class="text-xs text-muted-foreground mt-2">total</p>
+                    </div>
+                    <div class="text-4xl">📚</div>
+                </div>
+            </div>
+
+            <!-- Monthly Messages Card -->
+            <div class="p-6 rounded-lg border border-border bg-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-muted-foreground text-sm mb-2">Messages ce Mois</p>
+                        <p class="text-3xl font-bold text-foreground">{{ stats.monthly_messages }}</p>
+                        <p class="text-xs text-muted-foreground mt-2">depuis le 1er du mois</p>
+                    </div>
+                    <div class="text-4xl">💬</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Section -->
+    <div>
+        <h2 class="text-2xl font-bold text-foreground mb-6">🚀 Actions Rapides</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <!-- Parler Card -->
         <Link :href="route('ask')" class="group">
             <div class="h-full p-8 rounded-lg border-2 border-primary bg-card hover:bg-secondary transition transform hover:scale-105">
@@ -66,5 +114,6 @@ defineOptions({
                 </div>
             </div>
         </Link>
+    </div>
     </div>
 </template>
