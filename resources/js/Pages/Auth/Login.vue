@@ -61,10 +61,6 @@ const submit = () => {
             <p class="text-muted-foreground text-sm mb-6">Accédez à votre compte SaveurIA</p>
 
             <form @submit.prevent="submit" class="space-y-5">
-                <div v-if="status" class="rounded-lg bg-green-100 dark:bg-green-950 p-4 border border-green-200 dark:border-green-800">
-                    <p class="text-sm font-medium text-green-800 dark:text-green-200">{{ status }}</p>
-                </div>
-
                 <div>
                     <InputLabel for="email" value="Email" />
                     <TextInput
