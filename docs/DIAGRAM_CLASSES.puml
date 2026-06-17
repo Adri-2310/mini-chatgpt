@@ -1,4 +1,4 @@
-@startuml SaveurIA_ClassDiagram
+@startuml MiniChatGPT_ClassDiagram
 title SaveurIA - Class Diagram
 
 !theme plain
@@ -14,16 +14,22 @@ class User {
     - id: bigint
     - name: string
     - email: string
-    - password: string
     - email_verified_at: datetime
+    - password: string
+    - pending_email: string
+    - pending_email_sent_at: datetime
+    - pending_email_token: string
+    - two_factor_secret: text
+    - two_factor_recovery_codes: text
+    - two_factor_confirmed_at: datetime
+    - remember_token: string
     - profile_photo_path: string
-    - two_factor_secret: string
-    - two_factor_recovery_codes: string
     - created_at: datetime
     - updated_at: datetime
     ---
     + conversations(): HasMany
     + customInstruction(): HasOne
+    + userStats(): HasOne
     + messages(): HasManyThrough
     + getDashboardStats(): array
     + sendEmailVerificationNotification()
@@ -32,7 +38,6 @@ class User {
 
 class Conversation {
     - id: bigint
-    - user_id: bigint
     - title: string
     - model_used: string
     - created_at: datetime
@@ -45,14 +50,10 @@ class Conversation {
 
 class Message {
     - id: bigint
-    - conversation_id: bigint
-    - llm_model_id: bigint
     - role: enum {user|assistant}
     - content: text
     - model: string
     - tokens_used: int
-    - input_tokens: int
-    - output_tokens: int
     - cost_usd: decimal(8,6)
     - created_at: datetime
     - updated_at: datetime
@@ -63,7 +64,6 @@ class Message {
 
 class CustomInstruction {
     - id: bigint
-    - user_id: bigint
     - instructions: text
     - enabled: boolean
     - created_at: datetime
@@ -77,7 +77,7 @@ class LlmModel {
     - name: string
     - provider: string
     - model_id: string
-    - description: string
+    - description: text
     - enabled: boolean
     - max_tokens: int
     - config: json
@@ -85,31 +85,36 @@ class LlmModel {
     - updated_at: datetime
     ---
     + messages(): HasMany
-    + getEnabled(): Collection [static, cached]
+    + getEnabled(): Collection
 }
 
-class ConversationPolicy {
-    + view(User, Conversation): boolean
-    + create(User): boolean
-    + update(User, Conversation): boolean
-    + delete(User, Conversation): boolean
-    + restore(User, Conversation): boolean
-    + forceDelete(User, Conversation): boolean
+class UserStats {
+    - id: bigint
+    - total_messages: int
+    - total_conversations: int
+    - total_tokens: bigint
+    - monthly_cost: decimal(10,6)
+    - monthly_messages: int
+    - last_activity_at: datetime
+    - stats_computed_at: datetime
+    - created_at: datetime
+    - updated_at: datetime
+    ---
+    + user(): BelongsTo
 }
 
 ' ==================== RELATIONS ====================
 
 ' UML Cardinalities:
-' 1 = exactly 1
-' 0..1 = 0 or 1 (optional)
-' 0..* = 0 or more (collection)
-' 1..* = 1 or more
+' 1     = exactly 1
+' 0..1  = 0 or 1 (optional)
+' 0..*  = 0 or more (collection)
+' 1..*  = 1 or more
 
 User "1" -- "0..*" Conversation : owns
 Conversation "1" -- "0..*" Message : contains
 User "1" -- "0..1" CustomInstruction : has
-Message "0..*" -- "1" LlmModel : uses
-User "1" -- "0..*" Message : generates
-ConversationPolicy "1" -- "0..*" Conversation : authorizes
+User "1" -- "0..1" UserStats : tracks
+Message "0..*" -- "0..1" LlmModel : uses
 
 @enduml
