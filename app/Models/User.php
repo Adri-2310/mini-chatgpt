@@ -34,6 +34,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
+        'pending_email',
+        'pending_email_sent_at',
+        'pending_email_token',
     ];
 
     protected $hidden = [
@@ -54,6 +57,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'pending_email_sent_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use App\Notifications\VerifyEmailChangeNotification;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -10,11 +11,6 @@ use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
 
 class UpdateUserProfileInformation implements UpdatesUserProfileInformation
 {
-    /**
-     * Validate and update the given user's profile information.
-     *
-     * @param  array<string, mixed>  $input
-     */
     public function update(User $user, array $input): void
     {
         Validator::make($input, [
@@ -27,9 +23,8 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             $user->updateProfilePhoto($input['photo']);
         }
 
-        if ($input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail) {
-            $this->updateVerifiedUser($user, $input);
+        if ($input['email'] !== $user->email && $user instanceof MustVerifyEmail) {
+            $this->handleEmailChange($user, $input);
         } else {
             $user->forceFill([
                 'name' => $input['name'],
@@ -38,19 +33,28 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
         }
     }
 
-    /**
-     * Update the given verified user's profile information.
-     *
-     * @param  array<string, string>  $input
-     */
-    protected function updateVerifiedUser(User $user, array $input): void
+    protected function handleEmailChange(User $user, array $input): void
     {
+        // Vérifier si une vérification d'email est déjà en attente
+        if (!is_null($user->pending_email)) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Une vérification d\'email est déjà en attente. Veuillez attendre 7 jours ou cliquer sur le lien dans votre email.',
+            ]);
+        }
+
+        // Rate limiting : minimum 5 minutes entre les demandes
+        if ($user->pending_email_sent_at && $user->pending_email_sent_at->addMinutes(5) > now()) {
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'email' => 'Veuillez attendre 5 minutes avant de demander un nouveau changement d\'email.',
+            ]);
+        }
+
         $user->forceFill([
             'name' => $input['name'],
-            'email' => $input['email'],
-            'email_verified_at' => null,
+            'pending_email' => $input['email'],
+            'pending_email_sent_at' => now(),
         ])->save();
 
-        $user->sendEmailVerificationNotification();
+        $user->notify(new VerifyEmailChangeNotification($input['email']));
     }
 }

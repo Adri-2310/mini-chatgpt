@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Jobs\CleanupPendingEmails;
 use App\Jobs\DeleteUnverifiedUsers;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -11,6 +12,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->job(new DeleteUnverifiedUsers)->daily();
+        $schedule->job(new CleanupPendingEmails)->daily();
     }
 
     protected function commands(): void

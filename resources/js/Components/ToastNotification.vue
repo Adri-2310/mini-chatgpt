@@ -19,6 +19,9 @@ const messageTranslations = {
     'auth.password': 'Le mot de passe fourni est incorrect.',
     'passwords.sent': 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.',
     'verification-link-sent': 'Un nouveau lien de vérification a été envoyé à votre adresse e-mail.',
+    'pending-email-sent': 'Un lien de confirmation a été envoyé à votre nouvelle adresse e-mail. Vous avez 7 jours pour confirmer.',
+    'email-change-verified': 'Votre adresse e-mail a été confirmée avec succès.',
+    'email-confirmed-please-login': 'Votre nouvelle adresse e-mail a été confirmée avec succès ! Veuillez vous connecter.',
 };
 
 const translateMessage = (message) => {
@@ -50,7 +53,8 @@ watch(
         if (newStatus) {
             showToast(newStatus, 'success');
         }
-    }
+    },
+    { deep: true, flush: 'post' }
 );
 
 watch(

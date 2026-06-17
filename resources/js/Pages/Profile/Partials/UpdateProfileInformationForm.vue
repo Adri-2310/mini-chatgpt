@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { Link, router, useForm } from '@inertiajs/vue3';
+import { ref, watch, onMounted } from 'vue';
+import { Link, router, useForm, usePage } from '@inertiajs/vue3';
 import { inject } from 'vue';
 import FormSection from '@/Components/FormSection.vue';
 import InputError from '@/Components/InputError.vue';
@@ -13,6 +13,7 @@ const props = defineProps({
     user: Object,
 });
 
+const page = usePage();
 const $toastr = inject('$toastr');
 
 const form = useForm({
@@ -23,8 +24,10 @@ const form = useForm({
 });
 
 const verificationLinkSent = ref(null);
+const pendingEmailLinkSent = ref(null);
 const photoPreview = ref(null);
 const photoInput = ref(null);
+const emailJustVerified = ref(false);
 
 const updateProfileInformation = () => {
     if (photoInput.value) {
@@ -55,6 +58,14 @@ const sendEmailVerification = () => {
     router.post(route('verification.send'), {}, {
         onSuccess: () => {
             verificationLinkSent.value = true;
+        },
+    });
+};
+
+const sendPendingEmailVerification = () => {
+    router.post(route('verification.pending-email-send'), {}, {
+        onSuccess: () => {
+            pendingEmailLinkSent.value = true;
         },
     });
 };
@@ -92,9 +103,29 @@ const clearPhotoFileInput = () => {
         photoInput.value.value = null;
     }
 };
+
+// Afficher alerte si email vient d'être confirmé
+onMounted(() => {
+    if (page.props.flash?.status === 'email-change-verified') {
+        emailJustVerified.value = true;
+        setTimeout(() => {
+            emailJustVerified.value = false;
+        }, 8000);
+    }
+});
 </script>
 
 <template>
+    <!-- Alerte email confirmé (AVANT FormSection) -->
+    <div v-if="emailJustVerified" class="mb-4 p-4 bg-green-50 dark:bg-green-950 border-l-4 border-green-500 rounded-r-md">
+        <p class="text-sm font-medium text-green-900 dark:text-green-100">
+            ✅ <strong>Email confirmé avec succès !</strong>
+        </p>
+        <p class="text-sm text-green-800 dark:text-green-200 mt-1">
+            Votre nouvelle adresse e-mail est maintenant : <strong>{{ user.email }}</strong>
+        </p>
+    </div>
+
     <FormSection @submitted="updateProfileInformation">
         <template #title>
             Informations de Profil
@@ -174,6 +205,7 @@ const clearPhotoFileInput = () => {
                 />
                 <InputError :message="form.errors.email" class="mt-2" />
 
+                <!-- Vérification email principal -->
                 <div v-if="$page.props.jetstream.hasEmailVerification && user.email_verified_at === null">
                     <p class="text-sm mt-2">
                         Votre adresse e-mail n'est pas vérifiée.
@@ -191,6 +223,30 @@ const clearPhotoFileInput = () => {
 
                     <div v-show="verificationLinkSent" class="mt-2 font-medium text-sm text-green-600">
                         Un nouveau lien de vérification a été envoyé à votre adresse e-mail.
+                    </div>
+                </div>
+
+                <!-- Vérification nouvel email en attente -->
+                <div v-if="user.pending_email" class="mt-4 p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-md">
+                    <p class="text-sm text-blue-900 dark:text-blue-100">
+                        ⏳ Vous avez demandé de changer votre adresse e-mail pour : <strong>{{ user.pending_email }}</strong>
+                    </p>
+                    <p class="text-sm text-blue-900 dark:text-blue-100 mt-2">
+                        Un lien de confirmation a été envoyé. Vous avez 7 jours pour confirmer.
+
+                        <Link
+                            :href="route('verification.pending-email-send')"
+                            method="post"
+                            as="button"
+                            class="underline text-sm text-primary hover:text-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                            @click.prevent="sendPendingEmailVerification"
+                        >
+                            Renvoyer le lien
+                        </Link>
+                    </p>
+
+                    <div v-show="pendingEmailLinkSent" class="mt-2 font-medium text-sm text-green-600">
+                        Un nouveau lien de confirmation a été envoyé.
                     </div>
                 </div>
             </div>
