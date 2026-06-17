@@ -89,11 +89,10 @@ const confirmTwoFactorAuthentication = () => {
         },
         onError: () => {
             if ($toastr && Object.keys(confirmationForm.errors).length > 0) {
-                Object.values(confirmationForm.errors).forEach(error => {
-                    if (error) {
-                        $toastr.error(error);
-                    }
-                });
+                const firstError = Object.values(confirmationForm.errors)[0];
+                if (firstError) {
+                    $toastr.error(firstError);
+                }
             }
         },
     });

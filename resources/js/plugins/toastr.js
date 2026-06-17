@@ -17,7 +17,7 @@ toastr.options = {
     hideEasing: 'linear',
     showMethod: 'slideDown',
     hideMethod: 'slideUp',
-    escapeHtml: false,
+    escapeHtml: true,
 };
 
 window.toastr = toastr;

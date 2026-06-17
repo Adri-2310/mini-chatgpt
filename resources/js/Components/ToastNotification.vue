@@ -17,6 +17,7 @@ const messageTranslations = {
     'auth.failed': 'Identifiants invalides.',
     'auth.throttle': 'Trop de tentatives de connexion. Veuillez réessayer dans quelques secondes.',
     'auth.password': 'Le mot de passe fourni est incorrect.',
+    'passwords.sent': 'Un lien de réinitialisation de mot de passe a été envoyé à votre adresse email.',
 };
 
 const translateMessage = (message) => {

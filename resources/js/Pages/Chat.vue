@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { usePage, router } from '@inertiajs/vue3';
 import { useStream } from '@laravel/stream-vue';
 import ChatLayout from '../Layouts/ChatLayout.vue';
@@ -21,11 +21,11 @@ const props = defineProps({
 });
 
 const page = usePage();
+const $toastr = inject('$toastr');
 const conversations = ref(props.conversations);
 const activeConversationId = ref(null);
 const messages = ref([]);
 const selectedModel = ref('openai/gpt-4o-mini');
-const error = ref(null);
 const isConversationStarted = ref(false);
 const messageListContainer = ref(null);
 const sidebarOpen = ref(true);
@@ -71,17 +71,20 @@ const createNewConversation = async () => {
             activeConversationId.value = data.id;
             messages.value = [];
             isConversationStarted.value = false;
-            error.value = null;
 
             // Refetch stats pour la nouvelle conversation
             if (chatHeaderRef.value?.fetchStats) {
                 await chatHeaderRef.value.fetchStats();
             }
         } else {
-            error.value = data.error || 'Une erreur est survenue';
+            if ($toastr) {
+                $toastr.error(data.error || 'Une erreur est survenue');
+            }
         }
     } catch (err) {
-        error.value = 'Une erreur est survenue lors de la création de la conversation';
+        if ($toastr) {
+            $toastr.error('Une erreur est survenue lors de la création de la conversation');
+        }
         console.error('Error creating conversation:', err);
     }
 };
@@ -106,13 +109,16 @@ const selectConversation = async (conversationId) => {
                 await chatHeaderRef.value.fetchStats();
             }
 
-            error.value = null;
             scrollToBottom();
         } else {
-            error.value = 'Erreur lors du chargement de la conversation';
+            if ($toastr) {
+                $toastr.error('Erreur lors du chargement de la conversation');
+            }
         }
     } catch (err) {
-        error.value = 'Erreur lors du chargement de la conversation';
+        if ($toastr) {
+            $toastr.error('Erreur lors du chargement de la conversation');
+        }
         console.error('Error loading conversation:', err);
     }
 };
@@ -192,7 +198,9 @@ const { isStreaming, send: sendStream } = useStream(
             scrollToBottom();
         },
         onError: (err) => {
-            error.value = 'Erreur lors du streaming: ' + err;
+            if ($toastr) {
+                $toastr.error('Erreur lors du streaming');
+            }
             console.error('Stream error:', err);
         },
     }
@@ -251,13 +259,15 @@ const deleteConversation = async (conversationId) => {
                 activeConversationId.value = null;
                 messages.value = [];
             }
-
-            error.value = null;
         } else {
-            error.value = 'Erreur lors de la suppression';
+            if ($toastr) {
+                $toastr.error('Erreur lors de la suppression');
+            }
         }
     } catch (err) {
-        error.value = 'Erreur lors de la suppression de la conversation';
+        if ($toastr) {
+            $toastr.error('Erreur lors de la suppression de la conversation');
+        }
         console.error('Error deleting conversation:', err);
     }
 };
@@ -334,10 +344,6 @@ const deleteConversation = async (conversationId) => {
                     :on-open-mobile-menu="() => mobileMenuOpen = true"
                     @update:selected-model="selectedModel = $event"
                 />
-
-                <div v-if="error" class="px-4 py-3 bg-destructive/10 border border-destructive text-destructive text-sm mx-4 mt-4 rounded">
-                    {{ error }}
-                </div>
 
                 <template v-if="!activeConversationId">
                     <div class="flex-1 flex flex-col items-center justify-center">

@@ -42,11 +42,10 @@ const updateProfileInformation = () => {
         },
         onError: () => {
             if ($toastr && Object.keys(form.errors).length > 0) {
-                Object.values(form.errors).forEach(error => {
-                    if (error) {
-                        $toastr.error(error);
-                    }
-                });
+                const firstError = Object.values(form.errors)[0];
+                if (firstError) {
+                    $toastr.error(firstError);
+                }
             }
         },
     });

@@ -51,11 +51,10 @@ const submit = () => {
     form.post(route('register'), {
         onError: (errors) => {
             if ($toastr && Object.keys(errors).length > 0) {
-                Object.values(errors).forEach(error => {
-                    if (error) {
-                        $toastr.error(error);
-                    }
-                });
+                const firstError = Object.values(errors)[0];
+                if (firstError) {
+                    $toastr.error(firstError);
+                }
             }
         },
         onFinish: () => form.reset('password', 'password_confirmation'),
